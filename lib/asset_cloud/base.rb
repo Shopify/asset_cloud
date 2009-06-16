@@ -58,7 +58,7 @@ module AssetCloud
       root
     end
     
-    def find(key)
+    def asset_at(key)
       check_key_for_errors(key)
       
       Asset.at(self, key)        
@@ -68,7 +68,7 @@ module AssetCloud
       return if source == destination                   
 
       object = copy(source, destination)                      
-      find(source).delete
+      asset_at(source).delete
       object
     end       
   
@@ -134,7 +134,7 @@ module AssetCloud
     end
 
     def [](key)
-      find(key)
+      asset_at(key)
     end
        
     protected                    

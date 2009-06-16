@@ -21,10 +21,6 @@ module AssetCloud
       raise InvalidBucketError, Error % key
     end           
     
-    def find(key)        
-      raise InvalidBucketError, Error % key
-    end
-    
     def stat(key)
       raise InvalidBucketError, Error % key
     end

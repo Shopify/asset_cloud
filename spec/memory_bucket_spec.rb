@@ -4,7 +4,7 @@ class MemoryCloud < AssetCloud::Base
   bucket :memory, AssetCloud::MemoryBucket
 end
 
-describe MemoryBucket do    
+describe AssetCloud::MemoryBucket do    
   directory = File.dirname(__FILE__) + '/files'
                     
   before do

@@ -17,10 +17,6 @@ module AssetCloud
       nil
     end           
     
-    def find(key)        
-      nil
-    end
-    
     def stat(key)
       Metadata.new(false)
     end
