@@ -1,3 +1,5 @@
+require 'active_support'
+
 # Core
 require File.dirname(__FILE__) + '/asset_cloud/asset'
 require File.dirname(__FILE__) + '/asset_cloud/metadata'
