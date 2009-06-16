@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
                                                     
-class MemoryBucket < AssetCloud::Base
+class MemoryCloud < AssetCloud::Base
   bucket :memory, AssetCloud::MemoryBucket
 end
 
@@ -8,7 +8,7 @@ describe MemoryBucket do
   directory = File.dirname(__FILE__) + '/files'
                     
   before do
-    @fs = MemoryBucket.new(directory , 'http://assets/files' )
+    @fs = MemoryCloud.new(directory , 'http://assets/files' )
   end                        
     
 
@@ -18,7 +18,7 @@ describe MemoryBucket do
       @fs['memory/essay.txt'].exist?.should == false
     end
     
-    it "should return return set content when asked for the same file" do
+    it "should return set content when asked for the same file" do
       @fs['memory/essay.txt'] = 'text'
       @fs['memory/essay.txt'].value.should == 'text'
     end
