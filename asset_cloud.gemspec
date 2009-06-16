@@ -28,7 +28,18 @@ Copyright (c) 2008-2009 Tobias Lütke & Jaded Pixel, Inc. Released under the MIT
     "LICENSE",
     "README.rdoc"
   ]
-  s.files = Dir['lib/**/*.rb'] + [
+  s.files = [
+    "lib/asset_cloud/asset.rb",
+    "lib/asset_cloud/base.rb",
+    "lib/asset_cloud/blackhole_bucket.rb",
+    "lib/asset_cloud/bucket.rb",
+    "lib/asset_cloud/callbacks.rb",
+    "lib/asset_cloud/file_system_bucket.rb",
+    "lib/asset_cloud/free_key_locator.rb",
+    "lib/asset_cloud/invalid_bucket.rb",
+    "lib/asset_cloud/memory_bucket.rb",
+    "lib/asset_cloud/metadata.rb",
+    "lib/asset_cloud.rb",
     ".document",
     "CHANGELOG",
     "LICENSE",
