@@ -48,5 +48,16 @@ describe BasicCloud do
   it "should compute complete urls to assets" do    
     @fs.url_for('products/key.txt').should == 'http://assets/files/products/key.txt'    
   end                                               
+  
+  describe "#find" do
+    it "should return the appropriate asset when one exists" do
+      asset = @fs.find('products/key.txt')
+      asset.key.should == 'products/key.txt'
+      asset.value.should == 'value'
+    end
+    it "should raise AssetNotFoundError when the asset doesn't exist" do
+      lambda { @fs.find('products/not-there.txt') }.should raise_error(AssetCloud::AssetNotFoundError)
+    end
+  end
                 
 end

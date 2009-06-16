@@ -58,6 +58,12 @@ module AssetCloud
       root
     end
     
+    def find(key)
+      returning asset_at(key) do |asset|
+        asset.value
+      end
+    end
+    
     def asset_at(key)
       check_key_for_errors(key)
       
