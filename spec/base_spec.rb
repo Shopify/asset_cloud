@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
-                                                    
+
+class SpecialAsset < AssetCloud::Asset
+end
+
 class BasicCloud < AssetCloud::Base
+  bucket :special, AssetCloud::MemoryBucket, :asset_class => SpecialAsset
 end
 
 
@@ -57,6 +61,16 @@ describe BasicCloud do
     end
     it "should raise AssetNotFoundError when the asset doesn't exist" do
       lambda { @fs.find('products/not-there.txt') }.should raise_error(AssetCloud::AssetNotFoundError)
+    end
+  end
+  
+  describe "#bucket" do
+    it "should allow specifying a class to use for assets in this bucket" do
+      @fs['assets/rails_logo.gif'].should be_instance_of(AssetCloud::Asset)
+      @fs['special/fancy.txt'].should be_instance_of(SpecialAsset)
+      
+      @fs.build('assets/foo').should be_instance_of(AssetCloud::Asset)
+      @fs.build('special/foo').should be_instance_of(SpecialAsset)
     end
   end
                 

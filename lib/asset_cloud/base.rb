@@ -11,30 +11,39 @@ module AssetCloud
   
     attr_accessor :url, :root        
     
-    class_inheritable_accessor :root_bucket
-    self.root_bucket = FileSystemBucket
-      
+    class_inheritable_accessor :root_bucket_class
+    self.root_bucket_class = FileSystemBucket
+    class_inheritable_accessor :root_asset_class
+    self.root_asset_class  = Asset
     
-    class_inheritable_hash :buckets
-    self.buckets = {}
+    class_inheritable_hash :bucket_classes
+    self.bucket_classes = {}
+    class_inheritable_hash :asset_classes
+    self.asset_classes = {}
     
     def self.bucket(*args)      
+      asset_class = if args.last.is_a? Hash
+        args.pop[:asset_class]
+      end
+      
       if args.last.is_a? Class
-        klass       = args.pop
+        bucket_class = args.pop
       else
-        raise ArgumentError, 'require a bucket class as last parameter'
+        raise ArgumentError, 'requires a bucket class'
       end
 
       if bucket_name = args.first
-        self.buckets[bucket_name.to_sym] = klass
+        self.bucket_classes[bucket_name.to_sym] = bucket_class
+        self.asset_classes[bucket_name.to_sym]  = asset_class if asset_class
       else
-        self.root_bucket = klass
+        self.root_bucket_class = bucket_class
+        self.root_asset_class  = asset_class if asset_class
       end
     end    
 
     def buckets
       @buckets ||= Hash.new do |hash, key|
-        if klass = self.class.buckets[key] 
+        if klass = self.class.bucket_classes[key] 
           hash[key] = klass.new(self, key)
         else       
           hash[key] = nil
@@ -67,7 +76,7 @@ module AssetCloud
     def asset_at(key)
       check_key_for_errors(key)
       
-      Asset.at(self, key)        
+      asset_class_for(key).at(self, key)        
     end            
   
     def move(source, destination)
@@ -88,7 +97,7 @@ module AssetCloud
   
     def build(key, value = nil, &block)   
       logger.info { "  [#{self.class.name}] Building asset #{key}" } if logger
-      Asset.new(self, key, value, Metadata.non_existing, &block)        
+      asset_class_for(key).new(self, key, value, Metadata.non_existing, &block)        
     end            
     
     def write(key, value)
@@ -131,7 +140,7 @@ module AssetCloud
     end
 
     def bucket_for(key)     
-      bucket = buckets[$1.to_sym] if key =~ /^(\w+)(\/|$)/
+      bucket = buckets[bucket_symbol_for_key(key)]
       bucket ? bucket : root_bucket  
     end
                       
@@ -143,10 +152,18 @@ module AssetCloud
       asset_at(key)
     end
        
-    protected                    
+    protected
+    
+    def asset_class_for(key)
+      self.class.asset_classes[bucket_symbol_for_key(key)] || self.class.root_asset_class
+    end
+    
+    def bucket_symbol_for_key(key)
+      $1.to_sym if key =~ /^(\w+)(\/|$)/
+    end
     
     def root_bucket
-      @default_bucket ||= self.class.root_bucket.new(self, '')
+      @default_bucket ||= self.class.root_bucket_class.new(self, '')
     end
     
     def check_key_for_errors(key)
