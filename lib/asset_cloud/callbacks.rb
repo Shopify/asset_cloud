@@ -2,11 +2,9 @@ module AssetCloud
   
   module Callbacks
     
-    CALLBACKS = [:delete, :write]
-    
     def self.included(base)
            
-      CALLBACKS.each do |method|
+      base::CALLBACK_METHODS.each do |method|
          code = <<-"end_eval"
         
          def self.before_#{method}(*callbacks, &block)

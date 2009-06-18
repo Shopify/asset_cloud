@@ -7,6 +7,7 @@ module AssetCloud
   end
 
   class Asset    
+    CALLBACK_METHODS = [:store, :delete]
     include Comparable
     attr_accessor :key, :value, :cloud, :metadata
     attr_accessor :new_asset

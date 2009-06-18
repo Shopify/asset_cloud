@@ -1,9 +1,17 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+class CallbackAsset < AssetCloud::Asset
+  before_store :callback_before_store
+  after_delete :callback_after_delete
+end
+
+class BasicCloud < AssetCloud::Base
+  bucket :callback_assets, AssetCloud::MemoryBucket, :asset_class => CallbackAsset
+end
+
 class CallbackCloud < AssetCloud::Base
   bucket :tmp, AssetCloud::MemoryBucket
   
-
   after_delete :callback_after_delete
   before_delete :callback_before_delete
    
@@ -74,5 +82,27 @@ describe MethodRecordingCloud do
   it 'should record event when assignment operator is used' do
     @fs['tmp/file.txt'] = 'random data'
     @fs.run_callbacks.should == [:callback_before_write, :callback_before_write]
+  end
+end
+
+describe CallbackAsset do
+  before(:each) do
+    @fs = BasicCloud.new(File.dirname(__FILE__) + '/files', 'http://assets/')
+    @fs.write('callback_assets/foo', 'bar')
+    @asset = @fs.asset_at('callback_assets/foo')
+  end
+  
+  it "should run its before_store callback before store is called" do
+    @asset.should_receive(:callback_before_store).and_return(true)
+    @asset.should_not_receive(:callback_after_delete)
+    
+    @asset.store
+  end
+  
+  it "should run its after_delete callback after delete is called" do
+    @asset.should_not_receive(:callback_before_store)
+    @asset.should_receive(:callback_after_delete).and_return(true)
+    
+    @asset.delete
   end
 end

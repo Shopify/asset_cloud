@@ -17,7 +17,11 @@ require File.dirname(__FILE__) + '/asset_cloud/callbacks'
 
 
 AssetCloud::Base.class_eval do
-  include AssetCloud::FreeKeyLocator                                
-  include AssetCloud::Callbacks                                
+  include AssetCloud::FreeKeyLocator
+  include AssetCloud::Callbacks
+end
+
+AssetCloud::Asset.class_eval do
+  include AssetCloud::Callbacks
 end
 
