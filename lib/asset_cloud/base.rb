@@ -73,10 +73,10 @@ module AssetCloud
       end
     end
     
-    def asset_at(key)
-      check_key_for_errors(key)
+    def asset_at(*args)
+      check_key_for_errors(args.first)
       
-      asset_class_for(key).at(self, key)        
+      asset_class_for(args.first).at(self, *args)        
     end            
   
     def move(source, destination)
