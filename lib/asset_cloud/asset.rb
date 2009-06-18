@@ -6,8 +6,7 @@ module AssetCloud
   class AssetNotSaved < AssetError
   end
 
-  class Asset    
-    CALLBACK_METHODS = [:store, :delete]
+  class Asset
     include Comparable
     attr_accessor :key, :value, :cloud, :metadata
     attr_accessor :new_asset

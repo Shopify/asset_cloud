@@ -3,34 +3,39 @@ module AssetCloud
   module Callbacks
     
     def self.included(base)
-           
-      base::CALLBACK_METHODS.each do |method|
-         code = <<-"end_eval"
+      base.extend ClassMethods
+    end
+    
+    module ClassMethods
+      def callback_methods(*symbols)
+        symbols.each do |method|
+          code = <<-"end_eval"
         
-         def self.before_#{method}(*callbacks, &block)
-           callbacks << block if block_given?
-           write_inheritable_array(:before_#{method}, callbacks)
-         end          
+           def self.before_#{method}(*callbacks, &block)
+             callbacks << block if block_given?
+             write_inheritable_array(:before_#{method}, callbacks)
+           end          
         
-         def self.after_#{method}(*callbacks, &block)
-           callbacks << block if block_given?
-           write_inheritable_array(:after_#{method}, callbacks)
-         end          
+           def self.after_#{method}(*callbacks, &block)
+             callbacks << block if block_given?
+             write_inheritable_array(:after_#{method}, callbacks)
+           end          
         
          
-         def #{method}_with_callbacks(*args)
-           if execute_callbacks(:before_#{method}, args)
-             result = #{method}_without_callbacks(*args)
-             execute_callbacks(:after_#{method}, args)         
-           end
-           result
-         end    
+           def #{method}_with_callbacks(*args)
+             if execute_callbacks(:before_#{method}, args)
+               result = #{method}_without_callbacks(*args)
+               execute_callbacks(:after_#{method}, args)         
+             end
+             result
+           end    
 
-         alias_method_chain :#{method}, 'callbacks'         
-        end_eval
+           alias_method_chain :#{method}, 'callbacks'         
+          end_eval
                         
-        base.class_eval code, __FILE__, __LINE__        
-      end      
+          self.class_eval code, __FILE__, __LINE__        
+        end      
+      end
     end
     
     def execute_callbacks(symbol, args)

@@ -5,9 +5,8 @@ module AssetCloud
   end
 
   class Base    
-    cattr_accessor :logger       
+    cattr_accessor :logger
     
-    CALLBACK_METHODS = [:delete, :write]
     VALID_PATHS = /^[a-z0-9][a-z0-9_\-\/]+([a-z0-9][\w\-\ \.]*\.\w{2,6})?$/i
   
     attr_accessor :url, :root        

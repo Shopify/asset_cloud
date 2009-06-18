@@ -14,14 +14,19 @@ require File.dirname(__FILE__) + '/asset_cloud/base'
 # Extensions
 require File.dirname(__FILE__) + '/asset_cloud/free_key_locator'
 require File.dirname(__FILE__) + '/asset_cloud/callbacks'
+require File.dirname(__FILE__) + '/asset_cloud/validations'
 
 
 AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
   include AssetCloud::Callbacks
+  callback_methods :write, :delete
 end
 
 AssetCloud::Asset.class_eval do
   include AssetCloud::Callbacks
+  callback_methods :store, :delete
+  
+  include AssetCloud::Validations
 end
 
