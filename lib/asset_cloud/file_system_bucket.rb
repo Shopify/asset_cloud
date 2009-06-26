@@ -8,7 +8,7 @@ module AssetCloud
 
       Dir.glob(base_path).each do |f| 
         next unless File.file?(f)
-        objects.push Asset.at(cloud, relative_path_for(f) )
+        objects.push cloud[relative_path_for(f)]
       end                                  
       objects
     end
