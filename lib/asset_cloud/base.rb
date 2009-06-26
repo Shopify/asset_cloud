@@ -145,7 +145,9 @@ module AssetCloud
     end
                       
     def []=(key, value)
-      write(key, value)
+      asset = self[key]
+      asset.value = value
+      asset.store
     end
 
     def [](key)

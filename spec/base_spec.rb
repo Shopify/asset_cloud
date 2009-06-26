@@ -64,6 +64,27 @@ describe BasicCloud do
     end
   end
   
+  describe "#[]" do
+    it "should return the appropriate asset when one exists" do
+      asset = @fs['products/key.txt']
+      asset.key.should == 'products/key.txt'
+      asset.value.should == 'value'
+    end
+    it "should not raise any errors when the asset doesn't exist" do
+      lambda { @fs['products/not-there.txt'] }.should_not raise_error
+    end
+  end
+  
+  describe "#[]=" do
+    it "should write through the Asset object (and thus run any callbacks on the asset)" do
+      special_asset = mock(:special_asset)
+      special_asset.should_receive(:value=).with('fancy fancy!')
+      special_asset.should_receive(:store)
+      SpecialAsset.should_receive(:at).and_return(special_asset)
+      @fs['special/fancy.txt'] = 'fancy fancy!'
+    end
+  end
+  
   describe "#bucket" do
     it "should allow specifying a class to use for assets in this bucket" do
       @fs['assets/rails_logo.gif'].should be_instance_of(AssetCloud::Asset)
