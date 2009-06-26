@@ -6,11 +6,13 @@ module AssetCloud
       super
       @memory = {}
     end
-
-    def ls(key = nil)
-      @memory.find_all do |key, value|
-        key.left(key.size) == namespace
+    
+    def ls(prefix=nil)
+      results = []
+      @memory.each do |k,v|
+        results.push(cloud[k]) if prefix.nil? || k.starts_with?(prefix)
       end
+      results
     end
 
     def read(key)  
@@ -31,7 +33,7 @@ module AssetCloud
     def stat(key)
       return Metadata.non_existing unless @memory.has_key?(key)
           
-      Metadata.new(true, @memory[key].size)
+      Metadata.new(true, read(key).size)
     end 
 
   end

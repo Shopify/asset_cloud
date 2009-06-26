@@ -153,6 +153,18 @@ module AssetCloud
     def [](key)
       asset_at(key)
     end
+    
+    # versioning
+    
+    def read_version(key, version)
+      logger.info { "  [#{self.class.name}] Reading from #{key} at version #{version}" } if logger      
+      bucket_for(key).read_version(key, version)
+    end
+    
+    def versions(key)
+      logger.info { "  [#{self.class.name}] Getting all versions for #{key}" } if logger      
+      bucket_for(key).versions(key)
+    end
        
     protected
     

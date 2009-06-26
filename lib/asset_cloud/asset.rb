@@ -115,5 +115,16 @@ module AssetCloud
     def inspect
       "#<#{self.class.name}: #{key}>"
     end  
+    
+    # versioning
+    
+    def rollback(version)
+      self.value = cloud.read_version(key, version)
+      self
+    end
+    
+    def versions
+      cloud.versions(key)
+    end
   end
 end

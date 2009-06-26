@@ -4,6 +4,10 @@ class ChainedCloud < AssetCloud::Base
   bucket :stuff, AssetCloud::BucketChain.chain( AssetCloud::MemoryBucket,
                                                 AssetCloud::MemoryBucket,
                                                 AssetCloud::FileSystemBucket )
+  
+  bucket :versioned_stuff, AssetCloud::BucketChain.chain( AssetCloud::FileSystemBucket,
+                                                          AssetCloud::VersionedMemoryBucket,
+                                                          AssetCloud::MemoryBucket )
 end
 
 describe AssetCloud::BucketChain do    
@@ -14,6 +18,8 @@ describe AssetCloud::BucketChain do
     @bucket_chain = @cloud.buckets[:stuff]
     @chained_buckets = @bucket_chain.chained_buckets
     @chained_buckets.each {|b| b.ls('stuff').each {|asset| asset.delete}}
+    
+    @versioned_stuff = @cloud.buckets[:versioned_stuff]
   end
   
   describe ".chain" do
@@ -93,6 +99,44 @@ describe AssetCloud::BucketChain do
       @bucket_chain.read('stuff/foo').should == 'bar'
       @bucket_chain.ls.should == :some_assets
       @bucket_chain.stat.should == :metadata
+    end
+  end
+  
+    
+  describe "#read_version" do
+    it 'should read from only the first available sub-bucket' do
+      buckets = @versioned_stuff.chained_buckets
+      
+      buckets[1].should_receive(:read_version).with('stuff/foo',3).and_return('bar')
+      buckets.last.should_not_receive(:read_version)
+      
+      @versioned_stuff.read_version('stuff/foo', 3).should == 'bar'
+    end
+  end
+  
+  describe "#versions" do
+    it 'should read from only the first available sub-bucket' do
+      buckets = @versioned_stuff.chained_buckets
+      
+      buckets[1].should_receive(:versions).with('versioned_stuff/foo').and_return([1,2,3])
+      buckets.last.should_not_receive(:versions)
+      
+      @versioned_stuff.versions('versioned_stuff/foo').should == [1,2,3]
+    end
+  end
+  
+  describe "with versioned buckets" do
+    it 'store and retrieve versions seamlessly' do
+      %w{one two three}.each do |content|
+        @cloud['versioned_stuff/foo'] = content
+      end
+      asset = @cloud['versioned_stuff/foo']
+      asset.value.should == 'three'
+      asset.rollback(1).value.should == 'one'
+      asset.versions.should == [1,2,3]
+      asset.value = 'four'
+      asset.store
+      asset.versions.should == [1,2,3,4]
     end
   end
 end

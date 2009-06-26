@@ -22,6 +22,14 @@ module AssetCloud
     def stat(key=nil)
       first_possible_bucket {|b| b.stat(key)}
     end
+    def read_version(key, version)
+      first_possible_bucket {|b| b.read_version(key, version)}
+    end
+    def versions(key)
+      first_possible_bucket {|b| b.versions(key)}
+    end
+    
+    
     def write(key, data)
       every_bucket_with_transaction_on_key(key) {|b| b.write(key, data)}
     end

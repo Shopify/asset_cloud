@@ -1,8 +1,8 @@
                                                                                            
 module AssetCloud
   class AssetNotFoundError < StandardError
-    def initialize(key_or_message, message=false)
-      super(message ? key_or_message : "Could not find asset #{key_or_message.to_s.inspect}")
+    def initialize(key, version=nil)
+      super(version ? "Could not find version #{version} of asset #{key}" : "Could not find asset #{key}")
     end
   end
   
@@ -27,6 +27,16 @@ module AssetCloud
     end   
 
     def delete(key)
+      raise NotImplementedError
+    end
+    
+    # versioning
+    
+    def read_version(key, version)
+      raise NotImplementedError
+    end
+    
+    def versions(key)
       raise NotImplementedError
     end
   end

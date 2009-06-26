@@ -8,6 +8,7 @@ require File.dirname(__FILE__) + '/asset_cloud/bucket_chain'
 require File.dirname(__FILE__) + '/asset_cloud/invalid_bucket'
 require File.dirname(__FILE__) + '/asset_cloud/blackhole_bucket'
 require File.dirname(__FILE__) + '/asset_cloud/memory_bucket'
+require File.dirname(__FILE__) + '/asset_cloud/versioned_memory_bucket'
 require File.dirname(__FILE__) + '/asset_cloud/file_system_bucket'
 require File.dirname(__FILE__) + '/asset_cloud/base'   
 
