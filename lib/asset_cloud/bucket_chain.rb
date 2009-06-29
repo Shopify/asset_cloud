@@ -37,6 +37,13 @@ module AssetCloud
       every_bucket_with_transaction_on_key(key) {|b| b.delete(key)}
     end
     
+    def respond_to?(sym)
+      @chained_buckets.any? {|b| b.respond_to?(sym)}
+    end
+    def method_missing(sym, *args)
+      first_possible_bucket {|b| b.send(sym, *args)}
+    end
+    
     private
     
     def first_possible_bucket(&block)

@@ -126,7 +126,7 @@ describe AssetCloud::BucketChain do
   end
   
   describe "with versioned buckets" do
-    it 'store and retrieve versions seamlessly' do
+    it 'should store and retrieve versions seamlessly' do
       %w{one two three}.each do |content|
         @cloud['versioned_stuff/foo'] = content
       end
@@ -137,6 +137,22 @@ describe AssetCloud::BucketChain do
       asset.value = 'four'
       asset.store
       asset.versions.should == [1,2,3,4]
+    end
+  end
+  
+  describe '#respond_to?' do
+    it 'should return true if any chained buckets respond to the given method' do
+      @bucket_chain.respond_to?(:foo).should == false
+      @chained_buckets[1].should_receive(:respond_to?).with(:bar).and_return(true)
+      @bucket_chain.respond_to?(:bar).should == true
+    end
+  end
+  
+  describe '#method_missing' do
+    it 'should try each bucket' do
+      @chained_buckets[1].should_receive(:buzz).and_return(true)
+      @chained_buckets[2].should_not_receive(:buzz)
+      @bucket_chain.buzz.should == true
     end
   end
 end
