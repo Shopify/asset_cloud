@@ -37,6 +37,10 @@ describe "Asset" do
     it "should have an ext" do
       @asset.extname.should == '.txt'
     end                                   
+    
+    it "should have a bucket_name" do    
+      @asset.bucket_name.should == 'products'
+    end
    
     
     it "should store data to the bucket" do

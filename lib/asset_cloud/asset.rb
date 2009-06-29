@@ -110,7 +110,10 @@ module AssetCloud
     def url    
       cloud.url_for key
     end                   
-      
+    
+    def bucket_name
+      @key.split('/').first
+    end
   
     def inspect
       "#<#{self.class.name}: #{key}>"
