@@ -29,12 +29,12 @@ describe AssetCloud::BucketChain do
   end
   
   describe "#write" do
-    it 'should write to each sub-bucket when everything is kosher' do
+    it 'should write to each sub-bucket when everything is kosher and return the result of the first write' do
       @chained_buckets.each do |bucket|
-        bucket.should_receive(:write).with('stuff/foo', 'successful creation').and_return(true)
+        bucket.should_receive(:write).with('stuff/foo', 'successful creation').and_return('successful creation')
       end
       
-      @bucket_chain.write('stuff/foo', 'successful creation')
+      @bucket_chain.write('stuff/foo', 'successful creation').should == 'successful creation'
     end
     it 'should roll back creation-writes and re-raise an error when a bucket raises one' do
       @chained_buckets.last.should_receive(:write).with('stuff/foo', 'unsuccessful creation').and_raise('hell')

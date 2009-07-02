@@ -64,10 +64,11 @@ module AssetCloud
       rescue AssetCloud::AssetNotFoundError
         nil
       end
-      yield(bucket)
+      result = yield(bucket)
       
       begin
         every_bucket_with_transaction_on_key(key, i+1, &block)
+        return result
       rescue StandardError => e
         if old_value
           bucket.write(key, old_value)
