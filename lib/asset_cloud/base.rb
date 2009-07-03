@@ -23,11 +23,11 @@ module AssetCloud
     
     def self.bucket(*args)      
       asset_class = if args.last.is_a? Hash
-        args.pop[:asset_class]
+        args.pop[:asset_class].name
       end
       
       if args.last.is_a? Class
-        bucket_class = args.pop
+        bucket_class = args.pop.name
       else
         raise ArgumentError, 'requires a bucket class'
       end
@@ -43,7 +43,7 @@ module AssetCloud
 
     def buckets
       @buckets ||= Hash.new do |hash, key|
-        if klass = self.class.bucket_classes[key] 
+        if klass = self.class.bucket_classes[key].constantize
           hash[key] = klass.new(self, key)
         else       
           hash[key] = nil
@@ -169,7 +169,7 @@ module AssetCloud
     protected
     
     def asset_class_for(key)
-      self.class.asset_classes[bucket_symbol_for_key(key)] || self.class.root_asset_class
+      self.class.asset_classes[bucket_symbol_for_key(key)].constantize || self.class.root_asset_class.constantize
     end
     
     def bucket_symbol_for_key(key)
