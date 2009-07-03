@@ -65,6 +65,10 @@ module AssetCloud
     
     def created_at
       metadata.created_at
+    end
+    
+    def updated_at
+      metadata.updated_at
     end    
             
     def delete
