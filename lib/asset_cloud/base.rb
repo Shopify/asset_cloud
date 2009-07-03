@@ -12,26 +12,26 @@ module AssetCloud
     attr_accessor :url, :root        
     
     class_inheritable_accessor :root_bucket_class
-    self.root_bucket_class = FileSystemBucket
+    self.root_bucket_class = 'AssetCloud::FileSystemBucket'
     class_inheritable_accessor :root_asset_class
-    self.root_asset_class  = Asset
+    self.root_asset_class  = 'AssetCloud::Asset'
     
     class_inheritable_hash :bucket_classes
     self.bucket_classes = {}
     class_inheritable_hash :asset_classes
     self.asset_classes = {}
     
-    def self.bucket(*args)      
+    def self.bucket(*args)
       asset_class = if args.last.is_a? Hash
-        args.pop[:asset_class].name
+        convert_to_class_name_if_possible(args.pop[:asset_class])
       end
       
-      if args.last.is_a? Class
-        bucket_class = args.pop.name
+      bucket_class = if args.last.is_a? Class
+        convert_to_class_name_if_possible(args.pop)
       else
         raise ArgumentError, 'requires a bucket class'
       end
-
+      
       if bucket_name = args.first
         self.bucket_classes[bucket_name.to_sym] = bucket_class
         self.asset_classes[bucket_name.to_sym]  = asset_class if asset_class
@@ -43,8 +43,8 @@ module AssetCloud
 
     def buckets
       @buckets ||= Hash.new do |hash, key|
-        if klass = self.class.bucket_classes[key].constantize
-          hash[key] = klass.new(self, key)
+        if klass = self.class.bucket_classes[key]
+          hash[key] = constantize_if_necessary(klass).new(self, key)
         else       
           hash[key] = nil
         end
@@ -169,7 +169,8 @@ module AssetCloud
     protected
     
     def asset_class_for(key)
-      self.class.asset_classes[bucket_symbol_for_key(key)].constantize || self.class.root_asset_class.constantize
+      klass = self.class.asset_classes[bucket_symbol_for_key(key)] || self.class.root_asset_class
+      constantize_if_necessary(klass)
     end
     
     def bucket_symbol_for_key(key)
@@ -177,7 +178,19 @@ module AssetCloud
     end
     
     def root_bucket
-      @default_bucket ||= self.class.root_bucket_class.new(self, '')
+      @default_bucket ||= constantize_if_necessary(self.class.root_bucket_class).new(self, '')
+    end
+    
+    def constantize_if_necessary(klass)
+      klass.is_a?(Class) ? klass : klass.constantize
+    end
+    
+    def self.convert_to_class_name_if_possible(klass)
+      if klass.is_a?(Class) && klass.name.present?
+        klass.name
+      else
+        klass
+      end
     end
     
     def check_key_for_errors(key)
