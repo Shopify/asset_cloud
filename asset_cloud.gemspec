@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{asset_cloud}
-  s.version = "0.5.2"
+  s.version = "0.5.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Shopify"]
-  s.date = %q{2009-07-03}
+  s.date = %q{2009-07-06}
   s.description = %q{An abstraction layer around arbitrary and diverse asset stores.}
   s.email = %q{developers@shopify.com}
   s.extra_rdoc_files = [
