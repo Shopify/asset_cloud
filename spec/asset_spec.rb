@@ -5,7 +5,7 @@ describe "Asset" do
   include AssetCloud
   
   before do
-    @cloud = mock('Bucket')
+    @cloud = mock('Cloud')
   end               
   
   describe "when first created (without a value)" do    
@@ -41,7 +41,11 @@ describe "Asset" do
     it "should have a bucket_name" do    
       @asset.bucket_name.should == 'products'
     end
-   
+    
+    it "should have a bucket" do    
+      @cloud.should_receive(:buckets).and_return(:products => :products_bucket)
+      @asset.bucket.should == :products_bucket
+    end
     
     it "should store data to the bucket" do
       @cloud.should_receive(:write).with("products/key.txt", 'value')
@@ -132,6 +136,14 @@ describe "Asset" do
       @cloud.should_receive(:url_for).with('products/key.txt').and_return('http://assets/products/key.txt')
       
       @asset.url.should == 'http://assets/products/key.txt'
+    end
+    
+    it "should ask the bucket whether or not it is versioned" do
+      bucket = mock('Bucket')
+      @cloud.should_receive(:buckets).and_return(:products => bucket)
+      bucket.should_receive(:versioned?).and_return(true)
+      
+      @asset.versioned?.should == true
     end
   end
    

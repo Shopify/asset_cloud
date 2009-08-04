@@ -14,6 +14,12 @@ describe AssetCloud::VersionedMemoryBucket do
     end
   end
   
+  describe '#versioned?' do
+    it "should return true" do
+      @fs.buckets[:memory].versioned?.should == true
+    end
+  end
+  
   describe '#read_version' do
     it "should return the appropriate data when given a key and version" do
       @fs.read_version('memory/foo', 1).should == 'one'

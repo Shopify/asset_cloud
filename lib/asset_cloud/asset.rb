@@ -118,12 +118,20 @@ module AssetCloud
     def bucket_name
       @key.split('/').first
     end
+    
+    def bucket
+      cloud.buckets[bucket_name.to_sym]
+    end
   
     def inspect
       "#<#{self.class.name}: #{key}>"
     end  
     
     # versioning
+    
+    def versioned?
+      bucket.versioned?
+    end
     
     def rollback(version)
       self.value = cloud.read_version(key, version)

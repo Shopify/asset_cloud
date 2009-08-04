@@ -25,6 +25,12 @@ describe AssetCloud::MemoryBucket do
     
   end
   
+  describe "#versioned?" do
+    it "should return false" do
+      @fs.buckets[:memory].versioned?.should == false
+    end
+  end
+  
   describe '#ls' do
     before do
       %w{a b}.each do |letter|
