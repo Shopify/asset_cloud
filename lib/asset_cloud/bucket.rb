@@ -31,13 +31,10 @@ module AssetCloud
     end
     
     # versioning
-    
-    def read_version(key, version)
-      raise NotImplementedError
-    end
-    
-    def versions(key)
-      raise NotImplementedError
+    # 
+    # implement #read_version(key, version) and #versions(key) in subclasses
+    def versioned?
+      respond_to?(:read_version)
     end
   end
 end
