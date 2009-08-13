@@ -74,10 +74,13 @@ module AssetCloud
     end
     
     def asset_at(*args)
+      asset_class_for(args.first).at(self, *args)
+    end
+    
+    def asset_at!(*args)
       check_key_for_errors(args.first)
-      
-      asset_class_for(args.first).at(self, *args)        
-    end            
+      asset_at(*args)
+    end
   
     def move(source, destination)
       return if source == destination                   
@@ -151,7 +154,7 @@ module AssetCloud
     end
 
     def [](key)
-      asset_at(key)
+      asset_at!(key)
     end
     
     # versioning
@@ -165,13 +168,13 @@ module AssetCloud
       logger.info { "  [#{self.class.name}] Getting all versions for #{key}" } if logger      
       bucket_for(key).versions(key)
     end
-       
-    protected
     
     def asset_class_for(key)
       klass = self.class.asset_classes[bucket_symbol_for_key(key)] || self.class.root_asset_class
       constantize_if_necessary(klass)
     end
+       
+    protected
     
     def bucket_symbol_for_key(key)
       $1.to_sym if key =~ /^(\w+)(\/|$)/
