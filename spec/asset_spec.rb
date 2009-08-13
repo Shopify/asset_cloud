@@ -145,6 +145,13 @@ describe "Asset" do
       
       @asset.versioned?.should == true
     end
+    
+    it "should validate its key" do
+      asset = AssetCloud::Asset.new(@cloud, "products/foo, bar.txt", "data")
+      asset.store.should == false
+      asset.errors.length.should == 1
+      asset.errors.first.should =~ /illegal characters/
+    end
   end
    
   

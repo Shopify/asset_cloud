@@ -31,5 +31,16 @@ AssetCloud::Asset.class_eval do
   callback_methods :store, :delete
   
   include AssetCloud::Validations
+  validate :valid_key
+  
+  private
+  
+  def valid_key
+    if key.blank?
+      add_error "key cannot be empty"
+    elsif key !~ AssetCloud::Base::VALID_PATHS
+      add_error "#{key.inspect} contains illegal characters"
+    end
+  end
 end
 
