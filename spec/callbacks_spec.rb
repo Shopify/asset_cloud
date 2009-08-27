@@ -3,6 +3,21 @@ require File.dirname(__FILE__) + '/spec_helper'
 class CallbackAsset < AssetCloud::Asset
   before_store :callback_before_store
   after_delete :callback_after_delete
+  before_validate :make_value_valid
+  after_validate :add_spice
+  validate :valid_value
+  
+  private
+  def make_value_valid
+    self.value = 'valid'
+  end
+  def add_spice
+    self.value += ' spice'
+  end
+  
+  def valid_value
+    add_error 'value is not "valid"' unless value == 'valid'
+  end
 end
 
 class BasicCloud < AssetCloud::Base
@@ -92,11 +107,13 @@ describe CallbackAsset do
     @asset = @fs.asset_at('callback_assets/foo')
   end
   
-  it "should run its before_store callback before store is called" do
+  it "should run before_validate, then validate, then after validate, then before_store, then store" do
     @asset.should_receive(:callback_before_store).and_return(true)
     @asset.should_not_receive(:callback_after_delete)
     
-    @asset.store
+    @asset.value = 'foo'
+    @asset.store.should == true
+    @asset.value.should == 'valid spice'
   end
   
   it "should run its after_delete callback after delete is called" do

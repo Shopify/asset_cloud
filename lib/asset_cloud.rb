@@ -31,6 +31,7 @@ AssetCloud::Asset.class_eval do
   callback_methods :store, :delete
   
   include AssetCloud::Validations
+  callback_methods :validate
   validate :valid_key
   
   private
