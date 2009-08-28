@@ -5,7 +5,7 @@ describe "Asset" do
   include AssetCloud
   
   before do
-    @cloud = mock('Cloud')
+    @cloud = mock('Cloud', :asset_extension_classes_for_bucket => [])
   end               
   
   describe "when first created (without a value)" do    

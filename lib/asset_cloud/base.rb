@@ -20,6 +20,8 @@ module AssetCloud
     self.bucket_classes = {}
     class_inheritable_hash :asset_classes
     self.asset_classes = {}
+    class_inheritable_hash :asset_extension_classes
+    self.asset_extension_classes = {}
     
     def self.bucket(*args)
       asset_class = if args.last.is_a? Hash
@@ -40,6 +42,18 @@ module AssetCloud
         self.root_asset_class  = asset_class if asset_class
       end
     end    
+    
+    def self.asset_extensions(*args)
+      opts = args.last.is_a?(Hash) ? args.pop.slice(:only, :except) : {}
+      opts.each do |k,v|
+        opts[k] = [v].flatten.map(&:to_sym)
+      end
+      
+      args.each do |klass|
+        klass = convert_to_class_name_if_possible(klass)
+        self.asset_extension_classes[klass] = opts
+      end
+    end
 
     def buckets
       @buckets ||= Hash.new do |hash, key|
@@ -172,6 +186,17 @@ module AssetCloud
     def asset_class_for(key)
       klass = self.class.asset_classes[bucket_symbol_for_key(key)] || self.class.root_asset_class
       constantize_if_necessary(klass)
+    end
+    
+    def asset_extension_classes_for_bucket(bucket)
+      bucket = bucket.to_sym
+      extensions = self.class.asset_extension_classes
+      klasses = extensions.keys.select do |ext|
+        opts = extensions[ext]
+        (opts.key?(:only) ? opts[:only].include?(bucket) : true) &&
+        (opts.key?(:except) ? !opts[:except].include?(bucket) : true)
+      end
+      klasses.map {|klass| constantize_if_necessary(klass)}
     end
        
     protected

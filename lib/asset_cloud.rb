@@ -19,6 +19,8 @@ require File.dirname(__FILE__) + '/asset_cloud/free_key_locator'
 require File.dirname(__FILE__) + '/asset_cloud/callbacks'
 require File.dirname(__FILE__) + '/asset_cloud/validations'
 
+require File.dirname(__FILE__) + '/asset_cloud/asset_extension'
+
 
 AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
@@ -33,6 +35,11 @@ AssetCloud::Asset.class_eval do
   include AssetCloud::Validations
   callback_methods :validate
   validate :valid_key
+  
+  def execute_callbacks(symbol, args)
+    super
+    @extensions.each {|ext| ext.execute_callbacks(symbol, args)}
+  end
   
   private
   
