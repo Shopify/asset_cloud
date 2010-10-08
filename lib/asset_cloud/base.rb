@@ -82,9 +82,9 @@ module AssetCloud
     end
     
     def find(key)
-      returning asset_at(key) do |asset|
-        asset.value
-      end
+      asset = asset_at(key)
+      asset.value
+      asset
     end
     
     def asset_at(*args)
