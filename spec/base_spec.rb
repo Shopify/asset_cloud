@@ -50,7 +50,7 @@ describe BasicCloud do
   end
   
   it "should compute complete urls to assets" do    
-    @fs.url_for('products/key.txt').should == 'http://assets/files/products/key.txt'    
+    @fs.url_for('products/key with spaces.txt').should == 'http://assets/files/products/key%20with%20spaces.txt'
   end                                               
   
   describe "#find" do

@@ -1,4 +1,5 @@
 require 'active_support'
+require 'uri'
 
 # Core
 require File.dirname(__FILE__) + '/asset_cloud/asset'

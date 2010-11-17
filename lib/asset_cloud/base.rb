@@ -70,7 +70,7 @@ module AssetCloud
     end             
   
     def url_for(key, secure = false)
-      File.join(@url, key)
+      File.join(@url, URI.encode(key))
     end                         
 
     def path_for(key)
