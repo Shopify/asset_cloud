@@ -60,7 +60,7 @@ describe "FreeFilenameLocator", 'when asked to return a free key such as the one
     FindFreeKey.should_receive(:exist?).with('free_9.txt').and_return(true)
     FindFreeKey.should_receive(:exist?).with('free_10.txt').and_return(true)
                              
-    lambda { FindFreeKey.find_free_key_like('free.txt').should == 'file10.txt' }.should raise_error(Spec::Mocks::MockExpectationError)
+    lambda { FindFreeKey.find_free_key_like('free.txt').should == 'file10.txt' }.should raise_error(RSpec::Mocks::MockExpectationError)
   end
     
 end
