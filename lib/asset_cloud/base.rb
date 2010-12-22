@@ -1,3 +1,4 @@
+require 'uri'
 
 module AssetCloud
   
