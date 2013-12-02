@@ -95,4 +95,20 @@ describe BasicCloud do
     end
   end
 
+  describe "MATCH_BUCKET" do
+    it "should match following stuff " do
+
+      'products/key.txt' =~ AssetCloud::Base::MATCH_BUCKET
+      $1.should == 'products'
+
+      'products/subpath/key.txt' =~ AssetCloud::Base::MATCH_BUCKET
+      $1.should == 'products'
+
+      'key.txt' =~ AssetCloud::Base::MATCH_BUCKET
+      $1.should == nil
+
+      'products' =~ AssetCloud::Base::MATCH_BUCKET
+      $1.should == 'products'
+    end
+  end
 end
