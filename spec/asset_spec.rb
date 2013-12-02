@@ -153,7 +153,7 @@ describe "Asset" do
     end
 
     it "should ask the bucket to create a full url" do
-      @cloud.should_receive(:url_for).with('products/key.txt').and_return('http://assets/products/key.txt')
+      @cloud.should_receive(:url_for).with('products/key.txt', {}).and_return('http://assets/products/key.txt')
 
       @asset.url.should == 'http://assets/products/key.txt'
     end

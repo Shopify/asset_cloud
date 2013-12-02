@@ -71,7 +71,7 @@ module AssetCloud
       @root, @url = root, url
     end
 
-    def url_for(key, secure = false)
+    def url_for(key, options={})
       File.join(@url, URI.encode(key))
     end
 
