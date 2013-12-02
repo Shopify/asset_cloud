@@ -2,3 +2,4 @@
 *.orig
 .dotest
 .rvmrc
+*.gem
