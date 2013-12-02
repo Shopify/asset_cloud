@@ -1,4 +1,3 @@
-
 module AssetCloud
   class BlackholeBucket < Bucket
     def ls(namespace = nil)

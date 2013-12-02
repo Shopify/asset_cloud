@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require 'spec_helper'
 
 class CallbackAsset < AssetCloud::Asset
   before_store :callback_before_store

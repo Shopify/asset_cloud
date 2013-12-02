@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require 'spec_helper'
 
 class ChainedCloud < AssetCloud::Base
   bucket :stuff, AssetCloud::BucketChain.chain( AssetCloud::MemoryBucket,

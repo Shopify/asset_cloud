@@ -1,4 +1,3 @@
-
 module AssetCloud
   class AssetNotFoundError < StandardError
     def initialize(key, version=nil)

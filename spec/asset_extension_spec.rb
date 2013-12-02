@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require 'spec_helper'
 
 class NoCatsAsset < AssetCloud::Asset
   validate :no_cats
