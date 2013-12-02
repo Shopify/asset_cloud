@@ -10,6 +10,7 @@ module AssetCloud
     cattr_accessor :logger
 
     VALID_PATHS = /\A[a-z0-9][a-z0-9_\-\/]+([a-z0-9][\w\-\ \.\@]*\.\w{2,6})?\z/i
+    MATCH_BUCKET = /^(\w+)(\/|$)/
 
     attr_accessor :url, :root
 
@@ -215,7 +216,7 @@ module AssetCloud
     protected
 
     def bucket_symbol_for_key(key)
-      $1.to_sym if key =~ /^(\w+)(\/|$)/
+      $1.to_sym if key =~ MATCH_BUCKET
     end
 
     def root_bucket
