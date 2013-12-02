@@ -31,18 +31,18 @@ end
 AssetCloud::Asset.class_eval do
   include AssetCloud::Callbacks
   callback_methods :store, :delete
-  
+
   include AssetCloud::Validations
   callback_methods :validate
   validate :valid_key
-  
+
   def execute_callbacks(symbol, args)
     super
     @extensions.each {|ext| ext.execute_callbacks(symbol, args)}
   end
-  
+
   private
-  
+
   def valid_key
     if key.blank?
       add_error "key cannot be empty"
