@@ -1,79 +1,79 @@
 module AssetCloud
-   
+
   class FileSystemBucket < Bucket
 
     def ls(key = nil)
       objects = []
       base_path = File.join(path_for(key), '*')
 
-      Dir.glob(base_path).each do |f| 
+      Dir.glob(base_path).each do |f|
         next unless File.file?(f)
         objects.push cloud[relative_path_for(f)]
-      end                                  
+      end
       objects
     end
 
-    def read(key)                  
+    def read(key)
       File.read(path_for(key))
     rescue Errno::ENOENT => e
       raise AssetCloud::AssetNotFoundError, key
-    end          
-    
-    def delete(key)      
+    end
+
+    def delete(key)
       File.delete(path_for(key))
     rescue Errno::ENOENT
-    end          
+    end
 
-    def write(key, data)            
-      full_path = path_for(key)   
-      
-      retried = false            
+    def write(key, data)
+      full_path = path_for(key)
 
-      begin   
-        File.open(full_path, "wb+") { |fp| fp << data }      
+      retried = false
+
+      begin
+        File.open(full_path, "wb+") { |fp| fp << data }
         true
-      rescue Errno::ENOENT => e 
-        if retried == false 
+      rescue Errno::ENOENT => e
+        if retried == false
           directory = File.dirname(full_path)
-          FileUtils.mkdir_p(File.dirname(full_path))                  
+          FileUtils.mkdir_p(File.dirname(full_path))
           retried = true
-          retry 
+          retry
         else
           raise
-        end 
+        end
         false
       end
     end
 
-    def stat(key)           
-      begin 
+    def stat(key)
+      begin
         stat = File.stat(path_for(key))
         Metadata.new(true, stat.size, stat.ctime, stat.mtime)
-      rescue Errno::ENOENT => e   
+      rescue Errno::ENOENT => e
         Metadata.new(false)
       end
-    end 
+    end
 
     protected
-    
+
     def path_for(key)
       cloud.path_for(key)
-    end                 
-    
+    end
+
     def path
       cloud.path
     end
-    
+
     private
 
     def remove_full_path_regexp
       @regexp ||= /^#{path}\//
     end
 
-    def relative_path_for(f)  
+    def relative_path_for(f)
       f.sub(remove_full_path_regexp, '')
     end
   end
-  
-  
+
+
 end

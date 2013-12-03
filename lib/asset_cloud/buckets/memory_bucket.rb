@@ -1,12 +1,12 @@
 module AssetCloud
-   
+
   class MemoryBucket < Bucket
-    
+
     def initialize(*args)
       super
       @memory = {}
     end
-    
+
     def ls(prefix=nil)
       results = []
       @memory.each do |k,v|
@@ -15,16 +15,16 @@ module AssetCloud
       results
     end
 
-    def read(key)  
+    def read(key)
       raise AssetCloud::AssetNotFoundError, key unless @memory.has_key?(key)
       @memory[key]
-    end          
-    
+    end
+
     def delete(key)
       @memory.delete(key)
-    end          
+    end
 
-    def write(key, data)    
+    def write(key, data)
       @memory[key] = data
 
       true
@@ -32,11 +32,11 @@ module AssetCloud
 
     def stat(key)
       return Metadata.non_existing unless @memory.has_key?(key)
-          
+
       Metadata.new(true, read(key).size)
-    end 
+    end
 
   end
-  
-  
+
+
 end

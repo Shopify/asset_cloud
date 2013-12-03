@@ -1,26 +1,26 @@
 module AssetCloud
   class InvalidBucketError < StandardError
   end
-  
-  class InvalidBucket < Bucket  
+
+  class InvalidBucket < Bucket
     Error = "No such namespace: %s".freeze
-    
-    def ls(namespace)     
-      raise InvalidBucketError, Error % key
-    end                               
 
-    def read(key)  
+    def ls(namespace)
       raise InvalidBucketError, Error % key
-    end          
+    end
 
-    def write(key, data)       
+    def read(key)
       raise InvalidBucketError, Error % key
-    end   
+    end
+
+    def write(key, data)
+      raise InvalidBucketError, Error % key
+    end
 
     def delete(key)
       raise InvalidBucketError, Error % key
-    end           
-    
+    end
+
     def stat(key)
       raise InvalidBucketError, Error % key
     end

@@ -6,12 +6,8 @@ An abstraction layer around arbitrary and diverse asset stores.
 
 === as a Gem
 
-    gem install Shopify-asset_cloud -s http://gems.github.com
-
-=== as a Rails plugin
-
-    script/plugin install git://github.com/Shopify/asset_cloud.git
+    gem install asset_cloud
 
 == Copyright
 
-Copyright (c) 2008-2009 Tobias Lütke & Jaded Pixel, Inc. Released under the MIT license (see LICENSE for details).
+Copyright (c) 2008-2013 Tobias Lütke & Shopify, Inc. Released under the MIT license (see LICENSE for details).

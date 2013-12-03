@@ -1,22 +1,21 @@
-                                                                                                                                                                                                        
 module AssetCloud
   class BlackholeBucket < Bucket
-    def ls(namespace = nil)     
+    def ls(namespace = nil)
       []
-    end                               
+    end
 
-    def read(key)  
+    def read(key)
       nil
-    end          
+    end
 
-    def write(key, data)       
+    def write(key, data)
       nil
-    end   
+    end
 
     def delete(key)
       nil
-    end           
-    
+    end
+
     def stat(key)
       Metadata.new(false)
     end
