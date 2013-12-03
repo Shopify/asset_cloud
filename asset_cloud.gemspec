@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{asset_cloud}
-  s.version = "1.0.0"
+  s.version = "1.0.1"
 
   s.authors = %w(Shopify)
   s.date = %q{2009-08-04}
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split($/)
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
-  s.add_dependency 'active_support'
+  s.add_dependency 'activesupport', '3.2.15'
   s.add_dependency 'class_inheritable_attributes'
 
   s.add_development_dependency 'rspec'
