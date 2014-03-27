@@ -8,10 +8,9 @@ module AssetCloud
       # Check weather the suggested key name is free. If so we
       # simply return it.
 
-      if not exist?(key)
+      if !exist?(key) && !options[:force_uuid]
         key
       else
-
         ext         = File.extname(key)
         dirname     = File.dirname(key)
         base        = dirname == '.' ? File.basename(key, ext) : File.join(File.dirname(key), File.basename(key, ext))
