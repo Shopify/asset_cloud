@@ -12,4 +12,4 @@ An abstraction layer around arbitrary and diverse asset stores.
 
 == Copyright
 
-Copyright (c) 2008-2013 Tobias Lütke & Shopify, Inc. Released under the MIT license (see LICENSE for details).
+Copyright (c) 2008-2014 Tobias Lütke & Shopify, Inc. Released under the MIT license (see LICENSE for details).
