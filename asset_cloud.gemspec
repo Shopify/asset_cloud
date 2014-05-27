@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{asset_cloud}
-  s.version = "1.1.0"
+  s.version = "1.1.1"
 
   s.authors = %w(Shopify)
   s.date = %q{2009-08-04}
