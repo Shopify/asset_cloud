@@ -1,3 +1,5 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gemspec
+gem 'github-pages'
+gem 'compass', '0.12.5'
+gem 'jekyll-sitemap'
