@@ -1,3 +1,7 @@
+---
+layout: index
+---
+
 {<img src="https://travis-ci.org/Shopify/asset_cloud.png?branch=master" alt="Build Status" />}[https://travis-ci.org/Shopify/asset_cloud]
 
 = AssetCloud
