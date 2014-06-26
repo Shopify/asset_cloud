@@ -2,18 +2,14 @@
 layout: index
 ---
 
-{<img src="https://travis-ci.org/Shopify/asset_cloud.png?branch=master" alt="Build Status" />}[https://travis-ci.org/Shopify/asset_cloud]
-
-= AssetCloud
+[![Build Status](https://travis-ci.org/Shopify/asset_cloud.png?branch=master)](https://travis-ci.org/Shopify/asset_cloud)
 
 An abstraction layer around arbitrary and diverse asset stores.
 
-== Installation
-
-=== as a Gem
+## Installation
 
     gem install asset_cloud
 
-== Copyright
+## License
 
-Copyright (c) 2008-2014 Tobias Lütke & Shopify, Inc. Released under the MIT license (see LICENSE for details).
+Copyright (c) 2008-2014 Tobias Lütke & Shopify, Inc. Released under the [MIT license](http://opensource.org/licenses/MIT).
