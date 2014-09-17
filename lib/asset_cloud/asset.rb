@@ -165,14 +165,15 @@ module AssetCloud
     end
 
     def method_missing(method, *args)
-      @extensions.each do |ext|
-        begin
-          return ext.send(method, *args)
-        rescue NoMethodError, NotImplementedError => e
-          nil
-        end
+      if extension = @extensions.find { |e| e.respond_to?(method) }
+        extension.public_send(method, *args)
+      else
+        super
       end
-      super
+    end
+
+    def respond_to_missing?(method, include_all)
+      @extensions.any? { |extension| extension.respond_to?(method, include_all) } || super
     end
 
     private

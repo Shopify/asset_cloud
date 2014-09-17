@@ -98,6 +98,17 @@ describe "AssetExtension" do
       asset.turn_into_xml
       asset.value.should == '<xml>dogs</xml>'
     end
+
+    it "does not swallow NotImplementedError" do
+      XmlAssetExtension.send(:define_method, :my_unimplemented_extension) do
+        raise NotImplementedError
+      end
+
+      asset = @cloud['dog_pound/dogs.xml']
+
+      expect(asset).to respond_to(:my_unimplemented_extension)
+      expect { asset.my_unimplemented_extension }.to raise_error(NotImplementedError)
+    end
   end
 
 end
