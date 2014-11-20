@@ -45,6 +45,12 @@ module AssetCloud
       end
     end
 
+    def bucket_io(key)
+      full_path = path_for(key)
+
+      AssetCloud::FileBucketIO.new(File.open(full_path, "wb+"))
+    end
+
     def stat(key)
       begin
         stat = File.stat(path_for(key))

@@ -29,6 +29,10 @@ module AssetCloud
       raise NotImplementedError
     end
 
+    def bucketio(key)
+      raise NotImplementedError
+    end
+
     # versioning
     #
     # implement #read_version(key, version) and #versions(key) in subclasses

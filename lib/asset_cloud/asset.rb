@@ -109,6 +109,12 @@ module AssetCloud
       end
     end
 
+    def bucket_io
+      @new_asset = false
+      @metadata = nil
+      cloud.bucket_io(key)
+    end
+
     def store
       unless @value.nil?
         @new_asset = false

@@ -24,7 +24,7 @@ describe FileSystemCloud do
     @fs.bucket_for('does-not-exist/file.txt').should be_an_instance_of(AssetCloud::InvalidBucket)
   end
 
-  it "should use filesystem bucekt for products/ and tmp/  directories" do
+  it "should use filesystem bucket for products/ and tmp/  directories" do
     @fs.bucket_for('products/file.txt').should be_an_instance_of(AssetCloud::FileSystemBucket)
     @fs.bucket_for('tmp/file.txt').should be_an_instance_of(AssetCloud::FileSystemBucket)
   end
@@ -44,7 +44,6 @@ describe FileSystemCloud do
   end
 
   describe 'when modifying file system' do
-
     it "should call write after storing an asset" do
       @fs.buckets[:tmp].should_receive(:write).with('tmp/new_file.test', 'hello world').and_return(true)
 
@@ -69,6 +68,39 @@ describe FileSystemCloud do
       @fs['tmp/new_file.test'].exist?.should == true
       @fs['tmp/new_file.test'].value.should == 'hello world'
     end
+  end
 
+  describe 'when using bucket_io' do
+    it "should create a new file, and append after creation" do
+      key = 'tmp/new_file.test'
+      bucket_io = @fs.asset_io('tmp/new_file.test')
+      bucket_io << 'hello'
+      bucket_io << ' '
+      bucket_io << 'world'
+      bucket_io.close
+
+      @fs[key].value.should == 'hello world'
+    end
+
+    it "should destroy files on destroy" do
+      key = 'tmp/new_file.test'
+      bucket_io = @fs.asset_io('tmp/new_file.test')
+      bucket_io << 'hello'
+      bucket_io << ' '
+      bucket_io << 'world'
+      bucket_io.delete
+
+      expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
+    end
+   it "should destroy files on abort" do
+      key = 'tmp/new_file.test'
+      bucket_io = @fs.asset_io('tmp/new_file.test')
+      bucket_io << 'hello'
+      bucket_io << ' '
+      bucket_io << 'world'
+      bucket_io.abort
+
+      expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
+    end
   end
 end
