@@ -129,11 +129,11 @@ module AssetCloud
       bucket_for(key).write(key, value)
     end
 
-    def bucket_io(key)
+    def bucket_io(key, options = {})
       check_key_for_errors(key)
       logger.info { "  [#{self.class.name}] Streaming bytes to #{key}" } if logger
 
-      bucket_for(key).bucket_io(key)
+      bucket_for(key).bucket_io(key, options)
     end
 
     def read(key)
@@ -187,10 +187,11 @@ module AssetCloud
       asset_at!(key)
     end
 
-    def asset_io(key)
+    def asset_io(key, options = {})
       asset = self[key]
-      asset.bucket_io
+      asset.bucket_io(options)
     end
+
     # versioning
 
     def read_version(key, version)
