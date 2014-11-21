@@ -47,8 +47,19 @@ module AssetCloud
 
     def bucket_io(key)
       full_path = path_for(key)
-
-      AssetCloud::FileBucketIO.new(File.open(full_path, "wb+"))
+      retried = false
+      begin
+        AssetCloud::FileBucketIO.new(File.open(full_path, "wb+"))
+      rescue Errno::ENOENT => e
+        if retried == false
+          directory = File.dirname(full_path)
+          FileUtils.mkdir_p(File.dirname(full_path))
+          retried = true
+          retry
+        else
+          raise
+        end
+      end
     end
 
     def stat(key)
