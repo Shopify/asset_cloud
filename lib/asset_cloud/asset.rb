@@ -109,10 +109,10 @@ module AssetCloud
       end
     end
 
-    def bucket_io(options = {})
+    def io(options = {})
       @new_asset = false
       @metadata = nil
-      cloud.bucket_io(key, options = {})
+      cloud.io(key, options = {})
     end
 
     def store

@@ -89,16 +89,16 @@ describe BasicCloud do
     end
   end
 
-  describe "#asset_io" do
-    it "should return the appropriate bucket_io" do
+  describe "#io" do
+    it "should return the appropriate io" do
       key = 'private/foo/bar.txt'
-      bucket_io = @fs.asset_io(key)
-      bucket_io << 'value'
-      bucket_io.close
+      io = @fs.asset_io(key)
+      io << 'value'
+      io.close
       asset = @fs[key]
       asset.key.should == key
       asset.value.should == 'value'
-      bucket_io.delete
+      io.delete
       expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
     end
   end

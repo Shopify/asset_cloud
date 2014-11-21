@@ -45,7 +45,7 @@ module AssetCloud
       end
     end
 
-    def bucket_io(key, options = {})
+    def io(key, options = {})
       full_path = path_for(key)
       retried = false
       begin

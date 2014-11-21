@@ -70,35 +70,35 @@ describe FileSystemCloud do
     end
   end
 
-  describe 'when using bucket_io' do
+  describe 'when using io' do
     it "should create a new file, and append after creation" do
       key = 'tmp/new_file.test'
-      bucket_io = @fs.asset_io('tmp/new_file.test')
-      bucket_io << 'hello'
-      bucket_io << ' '
-      bucket_io << 'world'
-      bucket_io.close
+      io = @fs.asset_io('tmp/new_file.test')
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.close
 
       @fs[key].value.should == 'hello world'
     end
 
     it "should destroy files on destroy" do
       key = 'tmp/new_file.test'
-      bucket_io = @fs.asset_io('tmp/new_file.test')
-      bucket_io << 'hello'
-      bucket_io << ' '
-      bucket_io << 'world'
-      bucket_io.delete
+      io = @fs.asset_io('tmp/new_file.test')
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.delete
 
       expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
     end
    it "should destroy files on abort" do
       key = 'tmp/new_file.test'
-      bucket_io = @fs.asset_io('tmp/new_file.test')
-      bucket_io << 'hello'
-      bucket_io << ' '
-      bucket_io << 'world'
-      bucket_io.abort
+      io = @fs.asset_io('tmp/new_file.test')
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.abort
 
       expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
     end
