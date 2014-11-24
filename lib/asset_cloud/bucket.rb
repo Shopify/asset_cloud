@@ -29,7 +29,7 @@ module AssetCloud
       raise NotImplementedError
     end
 
-    def bucketio(key, options = {})
+    def io(key, options = {})
       raise NotImplementedError
     end
 

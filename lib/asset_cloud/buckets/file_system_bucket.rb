@@ -25,41 +25,14 @@ module AssetCloud
     end
 
     def write(key, data)
-      full_path = path_for(key)
-
-      retried = false
-
-      begin
-        File.open(full_path, "wb+") { |fp| fp << data }
+      full_path(key) do |path|
+        File.open(path, "wb+") { |fp| fp << data }
         true
-      rescue Errno::ENOENT => e
-        if retried == false
-          directory = File.dirname(full_path)
-          FileUtils.mkdir_p(File.dirname(full_path))
-          retried = true
-          retry
-        else
-          raise
-        end
-        false
       end
     end
 
     def io(key, options = {})
-      full_path = path_for(key)
-      retried = false
-      begin
-        AssetCloud::FileBucketIO.new(File.open(full_path, "wb+"))
-      rescue Errno::ENOENT => e
-        if retried == false
-          directory = File.dirname(full_path)
-          FileUtils.mkdir_p(File.dirname(full_path))
-          retried = true
-          retry
-        else
-          raise
-        end
-      end
+      full_path(key) { |path|  AssetCloud::FileBucketIO.new(File.open(path, "wb+")) }
     end
 
     def stat(key)
@@ -90,7 +63,22 @@ module AssetCloud
     def relative_path_for(f)
       f.sub(remove_full_path_regexp, '')
     end
+
+    def full_path(key)
+      path = path_for(key)
+
+      retried = false
+
+      begin
+        yield(path)
+      rescue Errno::ENOENT => e
+        raise if retried
+
+        directory = File.dirname(path)
+        FileUtils.mkdir_p(File.dirname(path))
+        retried = true
+        retry
+      end
+    end
   end
-
-
 end

@@ -92,7 +92,8 @@ describe FileSystemCloud do
 
       expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
     end
-   it "should destroy files on abort" do
+
+    it "should destroy files on abort" do
       key = 'tmp/new_file.test'
       io = @fs.asset_io('tmp/new_file.test')
       io << 'hello'
