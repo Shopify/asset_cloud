@@ -25,7 +25,6 @@ require 'asset_cloud/validations'
 
 require 'asset_cloud/asset_extension'
 
-
 AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
   include AssetCloud::Callbacks

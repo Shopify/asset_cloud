@@ -84,9 +84,9 @@ class MockS3Interface
     end
 
     def ensure_no_active_transaction!
-      if Sharding.exceeded_transaction_count?(1)
-        raise 'Blocking call to S3 inside a transaction!'
-      end
+   #   if Sharding.exceeded_transaction_count?(1)
+   #     raise 'Blocking call to S3 inside a transaction!'
+   #   end
     end
   end
 
