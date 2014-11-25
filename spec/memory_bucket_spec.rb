@@ -11,7 +11,6 @@ describe AssetCloud::MemoryBucket do
     @fs = MemoryCloud.new(directory , 'http://assets/files' )
   end
 
-
   describe 'modifying items in subfolder' do
 
     it "should return nil when file does not exist" do
@@ -46,7 +45,4 @@ describe AssetCloud::MemoryBucket do
       @fs.buckets[:memory].ls.size.should == 4
     end
   end
-
-
-
 end
