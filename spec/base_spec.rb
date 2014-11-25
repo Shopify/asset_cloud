@@ -92,7 +92,7 @@ describe BasicCloud do
   describe "#io" do
     it "should return the appropriate io" do
       key = 'private/foo/bar.txt'
-      io = @fs.asset_io(key)
+      io = @fs[key].io
       io << 'value'
       io.close
       asset = @fs[key]

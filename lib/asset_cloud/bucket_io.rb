@@ -4,9 +4,10 @@ module AssetCloud
       @streamable = streamable
     end
 
-    def <<(data)
+    def write(data)
       raise NotImplementedError
     end
+    alias_method :<<, :write
 
     def close
       raise NotImplementedError
@@ -15,6 +16,5 @@ module AssetCloud
     def delete
       raise NotImplementedError
     end
-    alias_method :abort, :delete
   end
 end

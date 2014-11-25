@@ -11,6 +11,5 @@ module AssetCloud
     def delete
       File.delete(@streamable.path) if File.exists?(@streamable.path)
     end
-    alias_method :abort, :delete
   end
 end

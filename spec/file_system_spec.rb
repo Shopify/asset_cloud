@@ -73,7 +73,7 @@ describe FileSystemCloud do
   describe 'when using io' do
     it "should create a new file, and append after creation" do
       key = 'tmp/new_file.test'
-      io = @fs.asset_io('tmp/new_file.test')
+      io = @fs['tmp/new_file.test'].io
       io << 'hello'
       io << ' '
       io << 'world'
@@ -84,7 +84,7 @@ describe FileSystemCloud do
 
     it "should destroy files on destroy" do
       key = 'tmp/new_file.test'
-      io = @fs.asset_io('tmp/new_file.test')
+      io = @fs['tmp/new_file.test'].io
       io << 'hello'
       io << ' '
       io << 'world'
@@ -93,13 +93,13 @@ describe FileSystemCloud do
       expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
     end
 
-    it "should destroy files on abort" do
+    it "should destroy files on delete" do
       key = 'tmp/new_file.test'
-      io = @fs.asset_io('tmp/new_file.test')
+      io = @fs['tmp/new_file.test'].io
       io << 'hello'
       io << ' '
       io << 'world'
-      io.abort
+      io.delete
 
       expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
     end

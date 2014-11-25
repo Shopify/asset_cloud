@@ -187,11 +187,6 @@ module AssetCloud
       asset_at!(key)
     end
 
-    def asset_io(key, options = {})
-      asset = self[key]
-      asset.io(options)
-    end
-
     # versioning
 
     def read_version(key, version)
