@@ -14,6 +14,7 @@ require 'asset_cloud/buckets/invalid_bucket'
 require 'asset_cloud/buckets/memory_bucket'
 require 'asset_cloud/buckets/memory_bucket_io'
 require 'asset_cloud/buckets/versioned_memory_bucket'
+require 'asset_cloud/buckets/s3_bucket'
 require 'asset_cloud/base'
 
 
