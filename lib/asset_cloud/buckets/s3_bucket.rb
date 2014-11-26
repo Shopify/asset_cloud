@@ -2,38 +2,7 @@ require 'aws'
 
 module AssetCloud
   class S3Bucket < Bucket
-
-   # s3 asset storage
-   cattr_accessor :s3_connection, :s3_bucket_name, :default_s3_bucket
-=begin
-   def self.s3_connection
-
-      AWS.eager_autoload!(AWS::S3) if Rails.application.config.eager_load
-
-      AWS.config({
-        access_key_id: config['access_key'],
-        secret_access_key: config['secret_access_key'],
-        use_ssl: true
-      })
-      AWS::S3.new(http_open_timeout: 20, http_read_timeout: 20)
-    end
-
-    def self.s3_bucket_name
-      config['bucket']
-    end
-=end
-    #TODO: Build this up
-    def self.default_s3_bucket(reload=false)
-      if @s3_bucket && !reload
-        @s3_bucket
-      else
-        @s3_bucket = s3_connection.buckets[s3_bucket_name]
-      end
-    end
-
-    def self.s3_bucket
-      @s3_bucket ||= default_s3_bucket
-    end
+    include Configuration
 
     def ls(key = nil)
       key = absolute_key(key)

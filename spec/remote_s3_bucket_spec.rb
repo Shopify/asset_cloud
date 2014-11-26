@@ -1,59 +1,57 @@
 require 'spec_helper'
-require 'mock_s3_interface'
 
 class S3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
 end
 
-describe AssetCloud::S3Bucket do
+describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
   directory = File.dirname(__FILE__) + '/files'
 
   before(:all) do
     AssetCloud::S3Bucket.configure do |config|
-      config.aws_s3_connection = MockS3Interface.new('a', 'b')
-      config.s3_bucket_name = 'asset-cloud-test'
+      config.aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
+      config.aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      config.s3_bucket_name = ENV['S3_BUCKET_NAME']
     end
 
     @cloud = S3Cloud.new(directory , 'http://assets/files' )
     @bucket = @cloud.buckets[:tmp]
-    FileUtils.mkdir_p(directory + '/tmp')
-  end
-
-  after(:each) do
-    FileUtils.rm_rf(directory + '/tmp')
   end
 
   after(:all) do
+    ls = @bucket.ls('tmp')
+    ls.each { |key| @bucket.delete(key) }
     AssetCloud::S3Bucket.reset_config
   end
 
-
   it "#ls should return assets with proper keys" do
-    collection = MockS3Interface::Collection.new(nil, ["s#{@cloud.url}/tmp/blah.gif", "s#{@cloud.url}/tmp/add_to_cart.gif"])
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:objects).and_return(collection)
+    @cloud['tmp/test1.txt'] = 'test1'
+    @cloud['tmp/test2.txt'] = 'test2'
+
     ls = @bucket.ls('tmp')
+
     ls.first.class.should == AssetCloud::Asset
-    ls.map(&:key).should == ['tmp/blah.gif', 'tmp/add_to_cart.gif']
+    keys = ls.map(&:key)
+    ['tmp/test1.txt', 'tmp/test2.txt'].all? {|key| keys.include? key }
   end
 
   it "#delete should ignore errors when deleting" do
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_raise(StandardError)
-
-    @bucket.delete('assets/fail.gif')
+    @bucket.delete('tmp/a_file_that_should_not_exist.txt')
   end
 
   it "#delete should always return true" do
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_return(nil)
+    @cloud['tmp/test1.txt'] = 'test1'
 
-    @bucket.delete('assets/fail.gif').should == true
+    @bucket.delete('tmp/test1.txt').should == true
   end
 
   it "#stat should get metadata from S3" do
+    start_time = Time.now
     value = 'hello world'
     @cloud.build('tmp/new_file.test', value).store
     metadata = @bucket.stat('tmp/new_file.test')
     metadata.size.should == value.size
-    metadata.updated_at.should == Time.parse("Mon Aug 27 17:37:51 UTC 2007")
+    metadata.updated_at.should >= start_time
   end
 
   it "#read " do
