@@ -54,4 +54,17 @@ describe AssetCloud::S3Bucket do
     data = @bucket.read(key)
     data.should == value
   end
+
+  describe 'when using io' do
+    it "should create a new file, and append after creation" do
+      key = 'tmp/new_file.test'
+      io = @cloud[key].io
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.close
+
+      @cloud[key].value.should == 'hello world'
+    end
+  end
 end
