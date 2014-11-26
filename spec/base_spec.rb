@@ -98,8 +98,7 @@ describe BasicCloud do
       asset = @fs[key]
       asset.key.should == key
       asset.value.should == 'value'
-      io.delete
-      expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
+      @fs[key].delete
     end
   end
 

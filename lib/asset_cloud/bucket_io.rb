@@ -12,9 +12,5 @@ module AssetCloud
     def close
       raise NotImplementedError
     end
-
-    def delete
-      raise NotImplementedError
-    end
   end
 end

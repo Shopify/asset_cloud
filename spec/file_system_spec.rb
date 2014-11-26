@@ -81,27 +81,5 @@ describe FileSystemCloud do
 
       @fs[key].value.should == 'hello world'
     end
-
-    it "should destroy files on destroy" do
-      key = 'tmp/new_file.test'
-      io = @fs['tmp/new_file.test'].io
-      io << 'hello'
-      io << ' '
-      io << 'world'
-      io.delete
-
-      expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
-    end
-
-    it "should destroy files on delete" do
-      key = 'tmp/new_file.test'
-      io = @fs['tmp/new_file.test'].io
-      io << 'hello'
-      io << ' '
-      io << 'world'
-      io.delete
-
-      expect {@fs[key].value }.to raise_error(AssetCloud::AssetNotFoundError)
-    end
   end
 end
