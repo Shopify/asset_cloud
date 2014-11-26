@@ -16,6 +16,14 @@ describe AssetCloud::Configuration do
      AssetCloud::S3Bucket.s3_bucket.should == mock_interface.buckets['asset-cloud-test']
     end
 
+    it "#configure autoloads S3 on demand" do
+      mock_interface = MockS3Interface.new('a', 'b')
+      expect(AWS).to receive(:eager_autoload!).with(AWS::S3)
+      AssetCloud::S3Bucket.configure do |config|
+        config.load_aws = true
+      end
+    end
+
     it "#reset configuration nulls out s3 values" do
       AssetCloud::S3Bucket.configure do |config|
         config.aws_s3_connection = MockS3Interface.new('a', 'b')

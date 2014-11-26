@@ -4,6 +4,7 @@ module AssetCloud
 
     included do
       # AWS S3
+      add_config :load_aws
       add_config :aws_s3_connection
       add_config :s3_bucket_name
       add_config :aws_access_key_id
@@ -17,22 +18,22 @@ module AssetCloud
       def add_config(name)
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def self.eager_load_aws(value)
-            AWS.eager_autoload!(AWS::S3) if eager_load_aws
+            AWS.eager_autoload!(AWS::S3) if load_aws
           end
           def self.#{name}(value=nil)
             @#{name} = value if value
-            eager_load_aws(value) if value && '#{name}' == 'secret_access_key'
+            eager_load_aws(value) if value && '#{name}' == 'load_aws'
             return @#{name} if self.object_id == #{self.object_id} || defined?(@#{name})
             name = superclass.#{name}
             return nil if name.nil? && !instance_variable_defined?("@#{name}")
             @#{name} = name && !name.is_a?(Module) && !name.is_a?(Symbol) && !name.is_a?(Numeric) && !name.is_a?(TrueClass) && !name.is_a?(FalseClass) ? name.dup : name
           end
           def self.#{name}=(value)
-            eager_load_aws(value) if '#{name}' == 'eager_load_aws'
+            eager_load_aws(value) if '#{name}' == 'load_aws'
             @#{name} = value
           end
           def #{name}=(value)
-            self.class.eager_load_aws(value) if '#{name}' == 'eager_load_aws'
+            self.class.eager_load_aws(value) if '#{name}' == 'load_aws'
             @#{name} = value
           end
           def #{name}
@@ -47,12 +48,12 @@ module AssetCloud
         RUBY
       end
 
-
       def configure
         yield self
       end
 
       def reset_config
+        self.load_aws = nil
         self.aws_s3_connection = nil
         self.s3_bucket_name = nil
         self.aws_access_key_id = nil

@@ -6,10 +6,11 @@ module AssetCloud
       @buffer = ""
     end
 
-    def <<(data)
+    def write(data)
       @buffer << data
       add_part(data)
     end
+    alias_method :<<, :write
 
     def close
       add_part(false)
