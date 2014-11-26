@@ -75,5 +75,16 @@ describe AssetCloud::S3Bucket do
 
       @cloud[key].value.should == 'hello world'
     end
+
+    it "should delete aborted files" do
+      key = 'tmp/new_file.test'
+      io = @cloud[key].io
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.abort
+
+      expect {@cloud[key].value}.to raise_error(AssetCloud::AssetNotFoundError)
+    end
   end
 end

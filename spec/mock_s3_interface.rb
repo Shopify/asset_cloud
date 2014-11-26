@@ -166,7 +166,11 @@ class MockS3Interface
       @data << data
     end
 
-    def complete(arg)
+   def abort
+      @bucket.delete(@key)
+   end
+
+   def complete(arg)
       @bucket.put(@key, @data, {})
     end
   end

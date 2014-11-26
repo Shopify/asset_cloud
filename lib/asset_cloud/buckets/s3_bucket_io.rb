@@ -17,7 +17,7 @@ module AssetCloud
       @streamable.complete(:remote_parts)
     end
 
-    def delete
+    def abort
       @streamable.abort
     end
 
