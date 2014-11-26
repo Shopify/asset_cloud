@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   s.add_dependency 'class_inheritable_attributes'
   s.add_dependency 'aws-sdk', '~> 1.34.0'
-  s.add_dependency 'mime-types', '~> 1.18.0'
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rake'
