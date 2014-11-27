@@ -5,6 +5,8 @@ class S3Cloud < AssetCloud::Base
 end
 
 describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
+  require 'aws-sdk'
+
   directory = File.dirname(__FILE__) + '/files'
 
   before(:all) do
