@@ -27,7 +27,6 @@ describe AssetCloud::S3Bucket do
     AssetCloud::S3Bucket.reset_config
   end
 
-
   it "#ls should return assets with proper keys" do
     collection = MockS3Interface::Collection.new(nil, ["s#{@cloud.url}/tmp/blah.gif", "s#{@cloud.url}/tmp/add_to_cart.gif"])
     expect_any_instance_of(MockS3Interface::Bucket).to receive(:objects).and_return(collection)

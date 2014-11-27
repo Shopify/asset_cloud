@@ -17,7 +17,6 @@ require 'asset_cloud/base'
 require 'asset_cloud/configuration'
 require 'asset_cloud/buckets/s3_bucket'
 
-
 # Extensions
 require 'asset_cloud/free_key_locator'
 require 'asset_cloud/callbacks'
