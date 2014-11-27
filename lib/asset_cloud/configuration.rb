@@ -6,6 +6,7 @@ module AssetCloud
       # AWS S3
       add_config :load_aws
       add_config :aws_s3_connection
+      add_config :aws_s3_bucket
       add_config :s3_bucket_name
       add_config :aws_access_key_id
       add_config :aws_secret_access_key
@@ -61,7 +62,7 @@ module AssetCloud
         self.use_ssl = nil
         self.aws_open_timeout = nil
         self.aws_read_timeout = nil
-        @s3_bucket = nil
+        self.aws_s3_bucket = nil
       end
 
 
@@ -80,10 +81,10 @@ module AssetCloud
       end
 
       def s3_bucket(reload = false)
-        if @s3_bucket && !reload
-          @s3_bucket
+        if aws_s3_bucket && !reload
+          aws_s3_bucket
         else
-          @s3_bucket = s3_connection.buckets[s3_bucket_name]
+          aws_s3_bucket = s3_connection.buckets[s3_bucket_name]
         end
       end
     end
