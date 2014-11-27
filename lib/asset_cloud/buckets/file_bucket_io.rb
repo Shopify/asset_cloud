@@ -3,7 +3,6 @@ module AssetCloud
     def write(data)
       @streamable.write(data)
     end
-    alias_method :<<, :write
 
     def close
       @streamable.close

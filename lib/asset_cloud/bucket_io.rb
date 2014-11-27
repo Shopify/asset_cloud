@@ -7,7 +7,10 @@ module AssetCloud
     def write(data)
       raise NotImplementedError
     end
-    alias_method :<<, :write
+
+    def <<(data)
+      write(data)
+    end
 
     def close
       raise NotImplementedError
