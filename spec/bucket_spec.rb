@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe AssetCloud::Bucket do
-
   before do
     @bucket = AssetCloud::Bucket.new(nil, nil)
   end
-
 
   describe "operations not supported" do
     it "#ls not supported" do
