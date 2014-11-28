@@ -18,13 +18,13 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
       config.s3_bucket_name = ENV['S3_BUCKET_NAME']
     end
 
-    @cloud = RemoteS3Cloud.new(directory , 'http://assets/files' )
+    @cloud = RemoteS3Cloud.new(directory , 'testing/assets/files' )
     @bucket = @cloud.buckets[:tmp]
   end
 
   after(:all) do
-    ls = @bucket.ls('tmp')
-    ls.each { |key| @bucket.delete(key) }
+    listing = @bucket.ls('tmp')
+    listing.each { |object| object.delete }
     AssetCloud::S3Bucket.reset_config
   end
 
