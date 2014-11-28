@@ -1,7 +1,9 @@
 require 'spec_helper'
 
-class S3Cloud < AssetCloud::Base
+class RemoteS3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
+
+  after_io_close :after_io_close_callback
 end
 
 describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
@@ -16,7 +18,7 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
       config.s3_bucket_name = ENV['S3_BUCKET_NAME']
     end
 
-    @cloud = S3Cloud.new(directory , 'http://assets/files' )
+    @cloud = RemoteS3Cloud.new(directory , 'http://assets/files' )
     @bucket = @cloud.buckets[:tmp]
   end
 
