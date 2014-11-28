@@ -33,6 +33,7 @@ module AssetCloud
         end
       end
 
+      # Requires call to after_#{method}
       def explicit_after_callback_methods(*symbols)
         symbols.each do |method|
           code = <<-"end_eval"

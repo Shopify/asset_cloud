@@ -141,7 +141,8 @@ module AssetCloud
     def read(key)
       logger.info { "  [#{self.class.name}] Reading from #{key}" } if logger
 
-      bucket_for(key).read(key)    end
+      bucket_for(key).read(key)
+    end
 
     def stat(key)
       logger.info { "  [#{self.class.name}] Statting #{key}" } if logger

@@ -25,14 +25,14 @@ module AssetCloud
     end
 
     def write(key, data)
-      full_path(key) do |path|
+      execute_in_full_path(key) do |path|
         File.open(path, "wb+") { |fp| fp << data }
         true
       end
     end
 
     def io(key, options = {}, &after_close_block)
-      full_path(key) { |path|  AssetCloud::FileBucketIO.new(key, File.open(path, "wb+"), &after_close_block) }
+      execute_in_full_path(key) { |path|  AssetCloud::FileBucketIO.new(key, File.open(path, "wb+"), &after_close_block) }
     end
 
     def stat(key)
@@ -64,9 +64,13 @@ module AssetCloud
       f.sub(remove_full_path_regexp, '')
     end
 
-    def full_path(key)
+    def execute_in_full_path(key, &block)
       path = path_for(key)
 
+      find_or_create_and_execute(path, &block)
+    end
+
+    def find_or_create_and_execute(path)
       retried = false
 
       begin
