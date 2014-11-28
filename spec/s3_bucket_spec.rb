@@ -3,6 +3,8 @@ require 'mock_s3_interface'
 
 class S3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
+
+  after_io_close :after_io_close_callback
 end
 
 describe AssetCloud::S3Bucket do
@@ -64,8 +66,38 @@ describe AssetCloud::S3Bucket do
   end
 
   describe 'when using io' do
+    it "#stat should get metadata from S3" do
+      key = 'tmp/new_file.test'
+      value = 'hello world'
+      @cloud.should_receive(:after_io_close_callback).with(key, an_instance_of(MockS3Interface::MockMultipartUpload)).and_return(true)
+      io = @cloud[key].io
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.close
+
+      metadata = @bucket.stat(key)
+      metadata.size.should == value.size
+      metadata.updated_at.should == Time.parse("Mon Aug 27 17:37:51 UTC 2007")
+    end
+
+    it "#read " do
+      value = 'hello world'
+      key = 'tmp/new_file.txt'
+      @cloud.should_receive(:after_io_close_callback).with(key, an_instance_of(MockS3Interface::MockMultipartUpload)).and_return(true)
+      io = @cloud[key].io
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.close
+
+      data = @bucket.read(key)
+      data.should == value
+    end
+
     it "should create a new file, and append after creation" do
       key = 'tmp/new_file.test'
+      @cloud.should_receive(:after_io_close_callback).with(key, an_instance_of(MockS3Interface::MockMultipartUpload)).and_return(true)
       io = @cloud[key].io
       io << 'hello'
       io << ' '

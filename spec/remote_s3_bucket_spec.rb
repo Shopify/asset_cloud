@@ -1,7 +1,9 @@
 require 'spec_helper'
 
-class S3Cloud < AssetCloud::Base
+class RemoteS3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
+
+  after_io_close :after_io_close_callback
 end
 
 describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
@@ -16,7 +18,7 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
       config.s3_bucket_name = ENV['S3_BUCKET_NAME']
     end
 
-    @cloud = S3Cloud.new(directory , 'http://assets/files' )
+    @cloud = RemoteS3Cloud.new(directory , 'http://assets/files' )
     @bucket = @cloud.buckets[:tmp]
   end
 
@@ -65,8 +67,39 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
   end
 
   describe 'when using io' do
+    it "#stat should get metadata from S3" do
+      start_time = Time.now
+      key = 'tmp/new_file.test'
+      value = 'hello world'
+      @cloud.should_receive(:after_io_close_callback).with(key, an_instance_of(AWS::S3::MultipartUpload)).and_return(true)
+      io = @cloud[key].io
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.close
+
+      metadata = @bucket.stat(key)
+      metadata.size.should == value.size
+      metadata.updated_at.should >= start_time
+    end
+
+    it "#read " do
+      value = 'hello world'
+      key = 'tmp/new_file.txt'
+      @cloud.should_receive(:after_io_close_callback).with(key, an_instance_of(AWS::S3::MultipartUpload)).and_return(true)
+      io = @cloud[key].io
+      io << 'hello'
+      io << ' '
+      io << 'world'
+      io.close
+
+      data = @bucket.read(key)
+      data.should == value
+    end
+
     it "should create a new file, and append after creation" do
       key = 'tmp/new_file.test'
+      @cloud.should_receive(:after_io_close_callback).with(key, an_instance_of(AWS::S3::MultipartUpload)).and_return(true)
       io = @cloud[key].io
       io << 'hello'
       io << ' '

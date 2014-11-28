@@ -1,10 +1,14 @@
 module AssetCloud
   class S3BucketIO < BucketIO
     S3_MIN_PART_SIZE = 5.megabytes
-    def initialize(streamable)
+
+    def initialize(key, streamable, &after_close_block)
+      @key = key
       @streamable = streamable
+      @after_close_block = after_close_block
       @buffer = ""
     end
+
 
     def write(data)
       @buffer << data
@@ -14,6 +18,7 @@ module AssetCloud
     def close
       add_part(false)
       @streamable.complete(:remote_parts)
+      @after_close_block.call(@key, @streamable)
     end
 
     def abort

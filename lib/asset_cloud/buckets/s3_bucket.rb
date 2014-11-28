@@ -27,9 +27,9 @@ module AssetCloud
       object.write(data, options)
     end
 
-    def io(key, options={})
+    def io(key, options = {}, &after_close_block)
       object = S3Bucket.s3_bucket.objects[absolute_key(key)]
-      S3BucketIO.new(object.multipart_upload(options))
+      S3BucketIO.new(key, object.multipart_upload(options), &after_close_block)
     end
 
     def delete(key)
