@@ -28,6 +28,10 @@ module AssetCloud
       true
     end
 
+    def io(key, options = {})
+      AssetCloud::MemoryBucketIO.new(@memory, key)
+    end
+
     def stat(key)
       return Metadata.non_existing unless @memory.has_key?(key)
 

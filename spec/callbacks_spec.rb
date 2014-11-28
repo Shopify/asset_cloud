@@ -42,7 +42,6 @@ class MethodRecordingCloud < AssetCloud::Base
   before_write :callback_before_write
   after_write :callback_before_write
 
-
   def method_missing(method, *args)
     @run_callbacks << method.to_sym
   end
@@ -52,13 +51,11 @@ describe CallbackCloud do
   before { @fs = CallbackCloud.new(File.dirname(__FILE__) + '/files', 'http://assets/') }
 
   it "should invoke callbacks after store" do
-
     @fs.should_receive(:callback_before_write).with('tmp/file.txt', 'text').and_return(true)
     @fs.should_receive(:callback_after_write).with('tmp/file.txt', 'text').and_return(true)
 
 
     @fs.write 'tmp/file.txt', 'text'
-
   end
 
   it "should invoke callbacks after delete" do
@@ -78,9 +75,7 @@ describe CallbackCloud do
     asset = @fs.build('tmp/file.txt')
     asset.value = 'hello'
     asset.store
-
   end
-
 end
 
 describe MethodRecordingCloud do

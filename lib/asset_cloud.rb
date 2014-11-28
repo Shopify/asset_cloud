@@ -12,6 +12,7 @@ require 'asset_cloud/buckets/file_system_bucket'
 require 'asset_cloud/buckets/file_bucket_io'
 require 'asset_cloud/buckets/invalid_bucket'
 require 'asset_cloud/buckets/memory_bucket'
+require 'asset_cloud/buckets/memory_bucket_io'
 require 'asset_cloud/buckets/versioned_memory_bucket'
 require 'asset_cloud/base'
 
@@ -53,4 +54,3 @@ AssetCloud::Asset.class_eval do
     end
   end
 end
-
