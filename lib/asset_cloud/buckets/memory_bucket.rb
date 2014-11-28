@@ -28,8 +28,8 @@ module AssetCloud
       true
     end
 
-    def io(key, options = {})
-      AssetCloud::MemoryBucketIO.new(@memory, key)
+    def io(key, options = {}, &after_close_block)
+      AssetCloud::MemoryBucketIO.new(key, @memory, &after_close_block)
     end
 
     def stat(key)

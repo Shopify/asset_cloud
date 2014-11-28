@@ -32,6 +32,8 @@ class CallbackCloud < AssetCloud::Base
 
   after_write :callback_after_write
   before_write :callback_before_write
+
+  after_io_close :callback_after_io_close
 end
 
 class MethodRecordingCloud < AssetCloud::Base
@@ -58,11 +60,18 @@ describe CallbackCloud do
     @fs.write 'tmp/file.txt', 'text'
   end
 
-  it "should invoke callbacks after delete" do
+  it "should invoke callbacks after io close" do
+    @fs.should_receive(:callback_after_io_close).with('tmp/file.txt', an_instance_of(StringIO)).and_return(true)
 
+    io = @fs.io('tmp/file.txt')
+    io << 'text'
+    io << ' more text'
+    io.close
+  end
+
+  it "should invoke callbacks after delete" do
     @fs.should_receive(:callback_before_delete).with('tmp/file.txt').and_return(true)
     @fs.should_receive(:callback_after_delete).with('tmp/file.txt').and_return(true)
-
 
     @fs.delete 'tmp/file.txt'
   end

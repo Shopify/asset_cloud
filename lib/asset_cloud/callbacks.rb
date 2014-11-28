@@ -32,7 +32,21 @@ module AssetCloud
           self.class_eval code, __FILE__, __LINE__
         end
       end
+
+      def explicit_after_callback_methods(*symbols)
+        symbols.each do |method|
+          code = <<-"end_eval"
+           def self.after_#{method}(*callbacks, &block)
+             callbacks << block if block_given?
+             write_inheritable_array(:after_#{method}, callbacks)
+           end
+          end_eval
+
+          self.class_eval code, __FILE__, __LINE__
+        end
+      end
     end
+
 
     def execute_callbacks(symbol, args)
       callbacks_for(symbol).each do |callback|

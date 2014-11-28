@@ -29,6 +29,7 @@ AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
   include AssetCloud::Callbacks
   callback_methods :write, :delete
+  explicit_after_callback_methods :io_close
 end
 
 AssetCloud::Asset.class_eval do

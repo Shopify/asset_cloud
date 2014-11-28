@@ -31,8 +31,8 @@ module AssetCloud
       end
     end
 
-    def io(key, options = {})
-      full_path(key) { |path|  AssetCloud::FileBucketIO.new(File.open(path, "wb+")) }
+    def io(key, options = {}, &after_close_block)
+      full_path(key) { |path|  AssetCloud::FileBucketIO.new(key, File.open(path, "wb+"), &after_close_block) }
     end
 
     def stat(key)
