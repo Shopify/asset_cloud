@@ -3,6 +3,7 @@ module AssetCloud
     class AssetMismatch < StandardError
     end
     def store; true; end
+    def io; true; end
     def delete; true; end
 
     include AssetCloud::Callbacks

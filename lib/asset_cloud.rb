@@ -4,12 +4,15 @@ require 'active_support'
 require 'asset_cloud/asset'
 require 'asset_cloud/metadata'
 require 'asset_cloud/bucket'
+require 'asset_cloud/bucket_io'
 require 'asset_cloud/buckets/active_record_bucket'
 require 'asset_cloud/buckets/blackhole_bucket'
 require 'asset_cloud/buckets/bucket_chain'
 require 'asset_cloud/buckets/file_system_bucket'
+require 'asset_cloud/buckets/file_bucket_io'
 require 'asset_cloud/buckets/invalid_bucket'
 require 'asset_cloud/buckets/memory_bucket'
+require 'asset_cloud/buckets/memory_bucket_io'
 require 'asset_cloud/buckets/versioned_memory_bucket'
 require 'asset_cloud/base'
 
@@ -26,6 +29,7 @@ AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
   include AssetCloud::Callbacks
   callback_methods :write, :delete
+  explicit_after_callback_methods :io_close
 end
 
 AssetCloud::Asset.class_eval do
@@ -51,4 +55,3 @@ AssetCloud::Asset.class_eval do
     end
   end
 end
-

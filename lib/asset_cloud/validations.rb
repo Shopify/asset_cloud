@@ -6,6 +6,7 @@ module AssetCloud
         include AssetCloud::Callbacks
 
         alias_method_chain :store, :validation
+        alias_method_chain :io, :validation
       end
     end
 
@@ -19,6 +20,11 @@ module AssetCloud
     def store_with_validation
       validate
       errors.empty? ? store_without_validation : false
+    end
+
+    def io_with_validation
+      validate
+      errors.empty? ? io_without_validation : false
     end
 
     def errors

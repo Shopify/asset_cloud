@@ -129,6 +129,15 @@ module AssetCloud
       bucket_for(key).write(key, value)
     end
 
+    def io(key, options = {})
+      check_key_for_errors(key)
+      logger.info { "  [#{self.class.name}] Streaming bytes to #{key}" } if logger
+
+      bucket_for(key).io(key, options)  do |key, streamable|
+        execute_callbacks(:after_io_close, [key, streamable])
+      end
+    end
+
     def read(key)
       logger.info { "  [#{self.class.name}] Reading from #{key}" } if logger
 
