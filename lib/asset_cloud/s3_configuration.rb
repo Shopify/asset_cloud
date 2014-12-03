@@ -1,5 +1,5 @@
 module AssetCloud
-  module Configuration
+  module S3Configuration
     extend ActiveSupport::Concern
 
     included do

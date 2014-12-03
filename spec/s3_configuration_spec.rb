@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AssetCloud::Configuration do
+describe AssetCloud::S3Configuration do
   after(:each) do
     AssetCloud::S3Bucket.reset_config
   end
