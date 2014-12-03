@@ -39,6 +39,22 @@ describe ValidatedAsset do
     end
   end
 
+  describe "#io" do
+    it "should not create an io asset unless validations pass" do
+
+      @cat.io.should == false
+      @cat.errors.should == ['no cats allowed!']
+      @dog.io.should be_an_instance_of AssetCloud::MemoryBucketIO
+    end
+
+    it "should retrieve an io with warnings and save them in the warnings array" do
+      @dog.io.should be_an_instance_of AssetCloud::MemoryBucketIO
+      @dog.warnings.should == ['bad dog!', 'wet dog smell!']
+      @cat.io.should == false
+      @cat.warnings.should == []
+    end
+  end
+
   describe "#valid?" do
     it "should clear errors, run validations, and return validity" do
       @cat.store

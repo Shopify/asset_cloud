@@ -109,6 +109,12 @@ module AssetCloud
       end
     end
 
+    def io(options = {})
+      @new_asset = false
+      @metadata = nil
+      cloud.io(key, options = {})
+    end
+
     def store
       unless @value.nil?
         @new_asset = false

@@ -1,7 +1,5 @@
 module AssetCloud
-
   class MemoryBucket < Bucket
-
     def initialize(*args)
       super
       @memory = {}
@@ -30,13 +28,14 @@ module AssetCloud
       true
     end
 
+    def io(key, options = {}, &after_close_block)
+      AssetCloud::MemoryBucketIO.new(key, @memory, &after_close_block)
+    end
+
     def stat(key)
       return Metadata.non_existing unless @memory.has_key?(key)
 
       Metadata.new(true, read(key).size)
     end
-
   end
-
-
 end

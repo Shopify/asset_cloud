@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{asset_cloud}
-  s.version = "2.0.0"
+  s.version = "2.1.0"
 
   s.authors = %w(Shopify)
   s.summary = %q{An abstraction layer around arbitrary and diverse asset stores.}
@@ -20,4 +20,9 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'mocha'
+  if RUBY_VERSION >= "2.0.0"
+    s.add_development_dependency 'pry'
+    s.add_development_dependency 'pry-byebug'
+  end
 end

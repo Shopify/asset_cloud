@@ -10,6 +10,37 @@ An abstraction layer around arbitrary and diverse asset stores.
 
     gem install asset_cloud
 
+== S3 Configuration
+
+    # minimal with a given connection
+    AssetCloud::S3Bucket.configure do |config|
+      config.aws_s3_connection
+      config.aws_s3_bucket
+    end
+
+    # minimal asset_cloud starts connection
+    AssetCloud::S3Bucket.configure do |config|
+      config.s3_bucket_name
+      config.aws_access_key_id
+      config.aws_secret_access_key
+    end
+
+    AssetCloud::S3Bucket.configure do |config|
+      config.load_aws         # eager load aws
+      config.use_ssl          # defaults to true
+      config.aws_open_timeout # defaults to 5
+      config.aws_read_timeout # defaults to 5
+    end
+
+
+== Testing
+
+   bundle exec rake spec
+
+With S3 Remote test:
+
+    AWS_ACCESS_KEY_ID="<s3_key>" AWS_SECRET_ACCESS_KEY="<s3_secret_key>" S3_BUCKET_NAME="<bucket_name>" bundle exec rake spec
+
 == Copyright
 
 Copyright (c) 2008-2014 Tobias Lütke & Shopify, Inc. Released under the MIT license (see LICENSE for details).
