@@ -14,7 +14,7 @@ require 'asset_cloud/buckets/versioned_memory_bucket'
 require 'asset_cloud/base'
 
 #S3
-require 'asset_cloud/configuration'
+require 'asset_cloud/s3_configuration'
 require 'asset_cloud/buckets/s3_bucket'
 
 # Extensions

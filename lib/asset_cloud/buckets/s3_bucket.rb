@@ -1,9 +1,9 @@
 require 'aws'
-require 'asset_cloud/configuration'
+require 'asset_cloud/s3_configuration'
 
 module AssetCloud
   class S3Bucket < Bucket
-    include Configuration
+    include S3Configuration
 
     def ls(key = nil)
       key = absolute_key(key)

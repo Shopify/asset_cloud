@@ -3,8 +3,6 @@ require 'mock_s3_interface'
 
 class S3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
-
-  after_io_close :after_io_close_callback
 end
 
 describe AssetCloud::S3Bucket do

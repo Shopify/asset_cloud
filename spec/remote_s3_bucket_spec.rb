@@ -2,8 +2,6 @@ require 'spec_helper'
 
 class RemoteS3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
-
-  after_io_close :after_io_close_callback
 end
 
 describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
