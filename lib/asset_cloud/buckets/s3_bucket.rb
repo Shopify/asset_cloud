@@ -1,4 +1,5 @@
 require 'aws'
+require 'asset_cloud/configuration'
 
 module AssetCloud
   class S3Bucket < Bucket
