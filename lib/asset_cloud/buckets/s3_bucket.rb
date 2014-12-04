@@ -29,7 +29,7 @@ module AssetCloud
     def delete(key)
       object = S3Bucket.s3_bucket.objects[absolute_key(key)]
 
-      object.delete rescue StandardError
+      object.delete
 
       true
     end

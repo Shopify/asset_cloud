@@ -35,10 +35,10 @@ describe AssetCloud::S3Bucket do
     ls.map(&:key).should == ['tmp/blah.gif', 'tmp/add_to_cart.gif']
   end
 
-  it "#delete should ignore errors when deleting" do
+  it "#delete should not ignore errors when deleting" do
     expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_raise(StandardError)
 
-    @bucket.delete('assets/fail.gif')
+    expect { @bucket.delete('assets/fail.gif') }.to raise_error(StandardError)
   end
 
   it "#delete should always return true" do
