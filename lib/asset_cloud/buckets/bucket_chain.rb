@@ -12,7 +12,6 @@ module AssetCloud
       end
     end
 
-
     def ls(key=nil)
       first_possible_bucket {|b| b.ls(key)}
     end
@@ -28,7 +27,6 @@ module AssetCloud
     def versions(key)
       first_possible_bucket {|b| b.versions(key)}
     end
-
 
     def write(key, data)
       every_bucket_with_transaction_on_key(key) {|b| b.write(key, data)}

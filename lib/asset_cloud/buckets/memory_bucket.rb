@@ -1,7 +1,5 @@
 module AssetCloud
-
   class MemoryBucket < Bucket
-
     def initialize(*args)
       super
       @memory = {}
@@ -35,8 +33,5 @@ module AssetCloud
 
       Metadata.new(true, read(key).size)
     end
-
   end
-
-
 end
