@@ -45,7 +45,6 @@ class MockS3Interface
     end
 
     def get(key)
-      ensure_no_active_transaction!
       if @storage.key?(key)
         @storage[key]
       else
@@ -54,7 +53,6 @@ class MockS3Interface
     end
 
     def get_options(key)
-      ensure_no_active_transaction!
       if @storage_options.key?(key)
         @storage_options[key]
       else
@@ -63,14 +61,12 @@ class MockS3Interface
     end
 
     def put(key, data, options={})
-      ensure_no_active_transaction!
       @storage[key] = data.dup.force_encoding(Encoding::BINARY)
       @storage_options[key] = options.dup
       true
     end
 
     def delete(key)
-      ensure_no_active_transaction!
       @storage.delete(key)
       true
     end
@@ -81,12 +77,6 @@ class MockS3Interface
 
     def inspect
       "#<MockS3Interface::Bucket @name=#{@name.inspect}, @storage.keys = #{@storage.keys.inspect}>"
-    end
-
-    def ensure_no_active_transaction!
-   #   if Sharding.exceeded_transaction_count?(1)
-   #     raise 'Blocking call to S3 inside a transaction!'
-   #   end
     end
   end
 

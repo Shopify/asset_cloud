@@ -1,7 +1,12 @@
 require 'spec_helper'
 
 class RemoteS3Cloud < AssetCloud::Base
+  attr_accessor :s3_connection
   bucket :tmp, AssetCloud::S3Bucket
+
+  def s3_bucket(key)
+    s3_connection.buckets[ENV['S3_BUCKET_NAME']]
+  end
 end
 
 describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
@@ -10,20 +15,18 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
   directory = File.dirname(__FILE__) + '/files'
 
   before(:all) do
-    AssetCloud::S3Bucket.configure do |config|
-      config.aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
-      config.aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-      config.s3_bucket_name = ENV['S3_BUCKET_NAME']
-    end
-
+    AWS.config({
+      access_key_id: ENV['AWS_ACCESS_KEY_ID'],
+      secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
+    })
     @cloud = RemoteS3Cloud.new(directory , 'testing/assets/files' )
+    @cloud.s3_connection = AWS::S3.new()
     @bucket = @cloud.buckets[:tmp]
   end
 
   after(:all) do
     listing = @bucket.ls('tmp')
     listing.each { |object| object.delete }
-    AssetCloud::S3Bucket.reset_config
   end
 
   it "#ls should return assets with proper keys" do

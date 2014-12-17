@@ -3,18 +3,21 @@ require 'mock_s3_interface'
 
 class S3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
+  attr_accessor :s3_connection, :s3_bucket_name
+
+  def s3_bucket(key)
+    s3_connection.buckets[s3_bucket_name]
+  end
 end
 
 describe AssetCloud::S3Bucket do
   directory = File.dirname(__FILE__) + '/files'
 
   before(:all) do
-    AssetCloud::S3Bucket.configure do |config|
-      config.aws_s3_connection = MockS3Interface.new('a', 'b')
-      config.s3_bucket_name = 'asset-cloud-test'
-    end
+    @cloud = S3Cloud.new(directory , 'http://assets/files')
+    @cloud.s3_connection = MockS3Interface.new('a', 'b')
+    @cloud.s3_bucket_name = 'asset-cloud-test'
 
-    @cloud = S3Cloud.new(directory , 'http://assets/files' )
     @bucket = @cloud.buckets[:tmp]
     FileUtils.mkdir_p(directory + '/tmp')
   end
@@ -23,12 +26,8 @@ describe AssetCloud::S3Bucket do
     FileUtils.rm_rf(directory + '/tmp')
   end
 
-  after(:all) do
-    AssetCloud::S3Bucket.reset_config
-  end
-
   it "#ls should return assets with proper keys" do
-    collection = MockS3Interface::Collection.new(nil, ["s#{@cloud.url}/tmp/blah.gif", "s#{@cloud.url}/tmp/add_to_cart.gif"])
+    collection = MockS3Interface::Collection.new(nil, ["#{@cloud.url}/tmp/blah.gif", "#{@cloud.url}/tmp/add_to_cart.gif"])
     expect_any_instance_of(MockS3Interface::Bucket).to receive(:objects).and_return(collection)
     ls = @bucket.ls('tmp')
     ls.first.class.should == AssetCloud::Asset
