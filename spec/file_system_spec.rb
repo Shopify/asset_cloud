@@ -24,7 +24,7 @@ describe FileSystemCloud do
     @fs.bucket_for('does-not-exist/file.txt').should be_an_instance_of(AssetCloud::InvalidBucket)
   end
 
-  it "should use filesystem bucekt for products/ and tmp/  directories" do
+  it "should use filesystem bucket for products/ and tmp/  directories" do
     @fs.bucket_for('products/file.txt').should be_an_instance_of(AssetCloud::FileSystemBucket)
     @fs.bucket_for('tmp/file.txt').should be_an_instance_of(AssetCloud::FileSystemBucket)
   end
@@ -44,7 +44,6 @@ describe FileSystemCloud do
   end
 
   describe 'when modifying file system' do
-
     it "should call write after storing an asset" do
       @fs.buckets[:tmp].should_receive(:write).with('tmp/new_file.test', 'hello world').and_return(true)
 

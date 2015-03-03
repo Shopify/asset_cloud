@@ -1,5 +1,4 @@
 module AssetCloud
-
   class VersionedMemoryBucket < MemoryBucket
 
     def read(key)
@@ -26,8 +25,5 @@ module AssetCloud
     def latest_version(key)
       @memory[key].size
     end
-
   end
-
-
 end

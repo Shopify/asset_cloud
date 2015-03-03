@@ -75,6 +75,20 @@ describe BasicCloud do
     end
   end
 
+  describe "#move" do
+    it "should return move a resource" do
+      asset = @fs['products/key.txt']
+      asset.key.should == 'products/key.txt'
+      asset.value.should == 'value'
+      @fs.move('products/key.txt', 'products/key2.txt')
+      new_asset = @fs['products/key2.txt']
+      new_asset.key.should == 'products/key2.txt'
+      new_asset.value.should == 'value'
+      expect {@fs['products/key.txt'].value }.to raise_error(AssetCloud::AssetNotFoundError)
+      @fs.move('products/key2.txt', 'products/key.txt')
+    end
+  end
+
   describe "#[]=" do
     it "should write through the Asset object (and thus run any callbacks on the asset)" do
       special_asset = double(:special_asset)

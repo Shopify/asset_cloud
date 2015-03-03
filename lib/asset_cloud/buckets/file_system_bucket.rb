@@ -25,23 +25,9 @@ module AssetCloud
     end
 
     def write(key, data)
-      full_path = path_for(key)
-
-      retried = false
-
-      begin
-        File.open(full_path, "wb+") { |fp| fp << data }
+      execute_in_full_path(key) do |path|
+        File.open(path, "wb+") { |fp| fp << data }
         true
-      rescue Errno::ENOENT => e
-        if retried == false
-          directory = File.dirname(full_path)
-          FileUtils.mkdir_p(File.dirname(full_path))
-          retried = true
-          retry
-        else
-          raise
-        end
-        false
       end
     end
 
@@ -73,7 +59,26 @@ module AssetCloud
     def relative_path_for(f)
       f.sub(remove_full_path_regexp, '')
     end
+
+    def execute_in_full_path(key, &block)
+      path = path_for(key)
+
+      find_or_create_and_execute(path, &block)
+    end
+
+    def find_or_create_and_execute(path)
+      retried = false
+
+      begin
+        yield(path)
+      rescue Errno::ENOENT => e
+        raise if retried
+
+        directory = File.dirname(path)
+        FileUtils.mkdir_p(File.dirname(path))
+        retried = true
+        retry
+      end
+    end
   end
-
-
 end

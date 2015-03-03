@@ -4,3 +4,4 @@ Gemfile.lock
 .dotest
 .rvmrc
 *.gem
+tags
