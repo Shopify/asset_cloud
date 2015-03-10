@@ -43,7 +43,17 @@ describe BasicCloud do
   end
 
   it "should raise error when using with minus relative even after another directory" do
+    lambda { @fs['test/../test']   }.should raise_error(AssetCloud::IllegalPath)
     lambda { @fs['test/../../test']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/../../../test']   }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should raise an error when using names with bizarre combinations of '.' and ' '" do
+    lambda { @fs['test. . . .. ... .. . ']   }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should not raise an error when using directory names with spaces" do
+    @fs['files/ass ets/.DS_Store']
   end
 
   it "should not raise_error when using unusual but valid filenames" do
@@ -51,10 +61,12 @@ describe BasicCloud do
     @fs['photograph.g']
     @fs['assets/.DS_Store']
     @fs['assets/photograph.g']
+    @fs['a']
   end
 
   it "should allow sensible relative filenames" do
     @fs['assets/rails_logo.gif']
+    @fs['assets/rails_logo']
     @fs['assets/rails-2.gif']
     @fs['assets/223434.gif']
     @fs['files/1.JPG']
