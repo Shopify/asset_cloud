@@ -9,7 +9,7 @@ module AssetCloud
   class Base
     cattr_accessor :logger
 
-    VALID_PATHS = /\A[a-z0-9][a-z0-9_\-\/]+([a-z0-9][\w\-\ \.\@]*\.\w{2,6})?\z/i
+    VALID_PATHS = /\A([.]?[a-z0-9]|[a-z0=9])[a-z0-9_\-\/]+([a-z0-9_\.][\w\-\ \.\@]*(\.\w{1,6})*)?\z/i
     MATCH_BUCKET = /^(\w+)(\/|$)/
 
     attr_accessor :url, :root

@@ -42,6 +42,17 @@ describe BasicCloud do
     lambda { @fs['./test']   }.should raise_error(AssetCloud::IllegalPath)
   end
 
+  it "should raise error when using with minus relative even after another directory" do
+    lambda { @fs['test/../../test']   }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should not raise_error when using unusual but valid filenames" do
+    @fs['.DS_Store']
+    @fs['photograph.g']
+    @fs['assets/.DS_Store']
+    @fs['assets/photograph.g']
+  end
+
   it "should allow sensible relative filenames" do
     @fs['assets/rails_logo.gif']
     @fs['assets/rails-2.gif']
