@@ -8,7 +8,6 @@ module AssetCloud
 
   class Base
     cattr_accessor :logger
-    #\A(([a-z0-9])|((\.[a-z0-9]|[\w\-\@])([\w\-\@]|[\ ][\w\-\@]|[\/][\w\-\@\.]|[\.][\w\-\@]+)*[\w\-]?))\z
     VALID_PATHS = /\A(([a-z0-9])|((\.?[\w\-\@])([\w\-\@]|[\ ][\w\-\@]|[\/][\w\-\@\.]|[\.][\w\-\@]+)*))\z/i
     MATCH_BUCKET = /^(\w+)(\/|$)/
 
