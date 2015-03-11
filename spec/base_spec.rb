@@ -42,10 +42,16 @@ describe BasicCloud do
     lambda { @fs['./test']   }.should raise_error(AssetCloud::IllegalPath)
   end
 
+  it "should raise error when filename has trailing period" do
+    lambda { @fs['test.']           }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['/test/testfile.'] }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory/.']}.should raise_error(AssetCloud::IllegalPath)
+  end
+
   it "should raise error when using with minus relative even after another directory" do
-    lambda { @fs['test/../test']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/../test']      }.should raise_error(AssetCloud::IllegalPath)
     lambda { @fs['test/../../test']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/../../../test']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/../../../test']}.should raise_error(AssetCloud::IllegalPath)
   end
 
   it "should raise an error when using names with bizarre combinations of '.' and ' '" do
