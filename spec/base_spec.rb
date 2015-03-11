@@ -65,8 +65,10 @@ describe BasicCloud do
   it "should not raise_error when using unusual but valid filenames" do
     @fs['.DS_Store']
     @fs['photograph.g']
+    @fs['_testfilename']
     @fs['assets/.DS_Store']
     @fs['assets/photograph.g']
+    @fs['a/_testfilename']
     @fs['a']
   end
 
