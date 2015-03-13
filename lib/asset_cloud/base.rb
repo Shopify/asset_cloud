@@ -9,7 +9,25 @@ module AssetCloud
   class Base
     cattr_accessor :logger
 
-    VALID_PATHS = /\A[a-z0-9][a-z0-9_\-\/]+([a-z0-9][\w\-\ \.\@]*\.\w{2,6})?\z/i
+    VALID_PATHS = /\A
+      (
+        ([\w])                #Filename can be a single letter or underscore
+        |                     #OR it is many and follows the below rules
+        (
+          (\.?[\w\-\@])       #It can start with a dot but it must have a following character
+          (
+            [\w\-\@]          #You can have a letter without any following conditions
+            |
+            [\ ][\w\-\@]      #If there is a space you need to have a normal letter afterward
+            |
+            [\/][\w\-\@]      #If there is a slash you need to have a normal letter afterward
+            |
+            [\/][\.][\w\-\@]  #Though a slash could be followed by a dot so long as there is a normal letter afterward
+            |
+            [\.][\w\-\@]+     #A dot must be followed by one (or more) normal letters
+          )*                  #Zero to many of these combinations.
+        )
+      )\z/x
     MATCH_BUCKET = /^(\w+)(\/|$)/
 
     attr_accessor :url, :root
