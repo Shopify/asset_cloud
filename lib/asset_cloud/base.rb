@@ -11,20 +11,20 @@ module AssetCloud
 
     VALID_PATHS = /\A
       (
-        ([\w])                #Filename can be a single letter or underscore
+        (\w)                #Filename can be a single letter or underscore
         |                     #OR it is many and follows the below rules
         (
-          (\.?[\w\-\@])       #It can start with a dot but it must have a following character
+          (\.?[\w\[\]\(\)\-\@])       #It can start with a dot but it must have a following character
           (
-            [\w\-\@]          #You can have a letter without any following conditions
+            [\w\[\]\(\)\-\@]          #You can have a letter without any following conditions
             |
-            [\ ][\w\-\@]      #If there is a space you need to have a normal letter afterward
+            [\ ][\w\[\]\(\)\-\@\.]      #If there is a space you need to have a normal letter afterward or a dot
             |
-            [\/][\w\-\@]      #If there is a slash you need to have a normal letter afterward
+            [\/][\w\[\]\(\)\-\@]      #If there is a slash you need to have a normal letter afterward
             |
-            [\/][\.][\w\-\@]  #Though a slash could be followed by a dot so long as there is a normal letter afterward
+            [\/][\.][\w\[\]\(\)\-\@]  #Though a slash could be followed by a dot so long as there is a normal letter afterward
             |
-            [\.][\w\-\@]+     #A dot must be followed by one (or more) normal letters
+            [\.]+[\w\[\]\(\)\-\@]+     #One or more dots must be followed by one (or more) normal letters
           )*                  #Zero to many of these combinations.
         )
       )\z/x
