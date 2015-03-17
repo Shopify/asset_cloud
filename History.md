@@ -1,5 +1,9 @@
 # Asset Cloud Version History
 
+## Version 2.2.0, 2015-03-17
+
+* Reduce the limitations on filenames so as not to catch valid filenames. (https://github.com/Shopify/asset_cloud/pull/12)
+
 ## Version 2.1.0, 2015-03-03
 
 * Add support for S3 assests https://github.com/Shopify/asset_cloud/pull/7
