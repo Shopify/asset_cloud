@@ -42,8 +42,78 @@ describe BasicCloud do
     lambda { @fs['./test']   }.should raise_error(AssetCloud::IllegalPath)
   end
 
+  it "should raise error when filename has trailing period" do
+    lambda { @fs['test.']             }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['/test/testfile.']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory/.']  }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['/test/testfile .']  }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory /.'] }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should raise error when filename ends with space" do
+    lambda { @fs['test ']             }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['/test/testfile ']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory/ ']  }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test. ']            }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['/test/testfile. ']  }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory/. '] }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should raise error when filename ends with slash" do
+    lambda { @fs['test/']             }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory/']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test /']            }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['/test/testfile /']  }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/directory//']  }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should raise error when using with minus relative even after another directory" do
+    lambda { @fs['test/../test']      }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/../../test']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test/../../../test']}.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should raise an error when using names with combinations of '.' and ' '" do
+    lambda { @fs['test. . . .. ... .. . ']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test. .']   }.should raise_error(AssetCloud::IllegalPath)
+    lambda { @fs['test.   .test2']   }.should raise_error(AssetCloud::IllegalPath)
+  end
+
+  it "should allow filenames with repeating dots" do
+    @fs['test..jpg']
+    @fs['assets/T.T..jpg']
+    @fs['test/assets/1234123412341234_obj_description..14...58......v8...._2134123412341234.jpg']
+  end
+
+  it "should allow filenames with repeating underscores" do
+    @fs['test__jpg']
+    @fs['assets/T__T..jpg']
+    @fs['test/assets/1234123412341234_obj_description..14...58......v8...__2134123412341234.jpg']
+  end
+
+  it "should allow filenames with various bracket arragements" do
+    @fs['test[1].jpg']
+    @fs['test[1]']
+    @fs['[test].jpg']
+  end
+
+  it "should not raise an error when using directory names with spaces" do
+    @fs['files/ass ets/.DS_Store']
+  end
+
+  it "should not raise_error when using unusual but valid filenames" do
+    @fs['.DS_Store']
+    @fs['photograph.g']
+    @fs['_testfilename']
+    @fs['assets/.DS_Store']
+    @fs['assets/photograph.g']
+    @fs['a/_testfilename']
+    @fs['a']
+  end
+
   it "should allow sensible relative filenames" do
     @fs['assets/rails_logo.gif']
+    @fs['assets/rails_logo']
     @fs['assets/rails-2.gif']
     @fs['assets/223434.gif']
     @fs['files/1.JPG']
