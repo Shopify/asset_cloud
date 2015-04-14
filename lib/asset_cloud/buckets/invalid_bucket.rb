@@ -6,7 +6,7 @@ module AssetCloud
     Error = "No such namespace: %s".freeze
 
     def ls(namespace)
-      raise InvalidBucketError, Error % key
+      raise InvalidBucketError, Error % namespace
     end
 
     def read(key)
