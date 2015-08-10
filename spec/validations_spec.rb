@@ -27,27 +27,27 @@ describe ValidatedAsset do
 
       @cat.store
       @cat.store.should == false
-      @cat.errors.should == ['no cats allowed!']
+      @cat.errors.to_a.should == ['no cats allowed!']
       @dog.store.should == true
     end
 
     it "should store asset with warnings and save them in the warnings array" do
       @dog.store.should == true
-      @dog.warnings.should == ['bad dog!', 'wet dog smell!']
+      @dog.warnings.to_a.should == ['bad dog!', 'wet dog smell!']
       @cat.store.should == false
-      @cat.warnings.should == []
+      @cat.warnings.to_a.should == []
     end
   end
 
   describe "#valid?" do
     it "should clear errors, run validations, and return validity" do
       @cat.store
-      @cat.errors.should == ['no cats allowed!']
+      @cat.errors.to_a.should == ['no cats allowed!']
       @cat.valid?.should == false
-      @cat.errors.should == ['no cats allowed!']
+      @cat.errors.to_a.should == ['no cats allowed!']
       @cat.value = 'disguised feline'
       @cat.valid?.should == true
-      @cat.errors.should be_empty
+      @cat.errors.to_a.should be_empty
     end
   end
 end

@@ -169,7 +169,7 @@ describe "Asset" do
       asset = AssetCloud::Asset.new(@cloud, "products/foo, bar.txt", "data")
       asset.store.should == false
       asset.errors.size.should == 1
-      asset.errors.first.should =~ /illegal characters/
+      asset.errors.to_a.first.should =~ /illegal characters/
     end
   end
 

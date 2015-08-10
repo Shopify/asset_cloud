@@ -64,14 +64,14 @@ describe "AssetExtension" do
       asset = @cloud['cat_pen/cats.css']
       asset.value = 'foo'
       asset.store.should == false
-      asset.errors.should == ["not enough curly brackets!"]
+      asset.errors.to_a.should == ["not enough curly brackets!"]
     end
 
     it "should not squash existing validations on the asset" do
       asset = @cloud['dog_pound/cats.xml']
       asset.value = 'cats!'
       asset.store.should == false
-      asset.errors.should == ['no cats allowed!', "not enough angle brackets!"]
+      asset.errors.to_a.should == ['no cats allowed!', "not enough angle brackets!"]
     end
 
     it "should not apply to non-matching assets or those in exempted buckets" do

@@ -1,3 +1,5 @@
+require 'active_model/errors'
+
 module AssetCloud
   module Validations
     def self.included(base)
@@ -17,16 +19,15 @@ module AssetCloud
     end
 
     def store_with_validation
-      validate
-      errors.empty? ? store_without_validation : false
+      valid? ? store_without_validation : false
     end
 
     def errors
-      @errors ||= []
+      @errors ||= ActiveModel::Errors.new(self)
     end
 
     def warnings
-      @warnings ||= []
+      @warnings ||= ActiveModel::Errors.new(self)
     end
 
     def valid?
@@ -35,12 +36,13 @@ module AssetCloud
     end
 
     def add_error(msg)
-      errors << msg
-      errors.uniq!
+      errors.add(:base, msg)
     end
 
     def add_warning(*msgs)
-      warnings.concat(msgs)
+      msgs.each do |msg|
+        warnings.add(:base, msg)
+      end
     end
 
     def validate

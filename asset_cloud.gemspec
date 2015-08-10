@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   s.add_dependency 'activesupport'
+  s.add_dependency 'activemodel'
   s.add_dependency 'class_inheritable_attributes'
 
   s.add_development_dependency 'rspec'
