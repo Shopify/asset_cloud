@@ -39,6 +39,16 @@ describe ValidatedAsset do
     end
   end
 
+  describe "#store!" do
+    it "should raise AssetNotFound with error message when validation fails" do
+      expect { @cat.store! }.to raise_error(AssetCloud::AssetNotSaved, "Validation failed: no cats allowed!")
+    end
+
+    it "should return true when validations pass" do
+      @dog.store!.should == true
+    end
+  end
+
   describe "#valid?" do
     it "should clear errors, run validations, and return validity" do
       @cat.store
