@@ -1,5 +1,9 @@
 # Asset Cloud Version History
 
+## Version 2.2.2, 2016-02-11
+
+* Allow asset_class to be a proc which determines the class to use within a bucket (https://github.com/Shopify/asset_cloud/pull/15)
+
 ## Version 2.2.0, 2015-03-17
 
 * Reduce the limitations on filenames so as not to catch valid filenames. (https://github.com/Shopify/asset_cloud/pull/12)
