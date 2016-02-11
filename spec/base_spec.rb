@@ -3,10 +3,15 @@ require 'spec_helper'
 class SpecialAsset < AssetCloud::Asset
 end
 
-class BasicCloud < AssetCloud::Base
-  bucket :special, AssetCloud::MemoryBucket, :asset_class => SpecialAsset
+class LiquidAsset < AssetCloud::Asset
 end
 
+class BasicCloud < AssetCloud::Base
+  bucket :special, AssetCloud::MemoryBucket, asset_class: SpecialAsset
+  bucket :conditional, AssetCloud::MemoryBucket, asset_class: Proc.new {|key|
+    LiquidAsset if key.ends_with?('.liquid')
+  }
+end
 
 describe BasicCloud do
   directory = File.dirname(__FILE__) + '/files'
@@ -176,6 +181,15 @@ describe BasicCloud do
 
       @fs.build('assets/foo').should be_instance_of(AssetCloud::Asset)
       @fs.build('special/foo').should be_instance_of(SpecialAsset)
+    end
+
+    it "should allow specifying a proc that determines the class to use, using the default bucket when returning nil" do
+      @fs.build('conditional/default.js').should be_instance_of(AssetCloud::Asset)
+      @fs.build('conditional/better.liquid').should be_instance_of(LiquidAsset)
+    end
+
+    it "should raise " do
+      expect { BasicCloud.bucket(AssetCloud::MemoryBucket, asset_class: Proc.new {}) }.to(raise_error(ArgumentError))
     end
   end
 
