@@ -45,7 +45,7 @@ AssetCloud::Asset.class_eval do
   protected
 
   def valid_key_path?(key)
-    key !~ AssetCloud::Base::VALID_PATHS
+    key =~ AssetCloud::Base::VALID_PATHS
   end
 
   private
@@ -53,7 +53,7 @@ AssetCloud::Asset.class_eval do
   def valid_key
     if key.blank?
       add_error "key cannot be empty"
-    elsif valid_key_path?(key)
+    elsif !valid_key_path?(key)
       add_error "#{key.inspect} contains illegal characters"
     end
   end
