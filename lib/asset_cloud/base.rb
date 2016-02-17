@@ -60,7 +60,10 @@ module AssetCloud
         self.asset_classes[bucket_name.to_sym]  = asset_class if asset_class
       else
         self.root_bucket_class = bucket_class
-        self.root_asset_class  = asset_class if asset_class
+        if asset_class
+          raise ArgumentError, 'asset_class on the root bucket cannot be a proc' if asset_class.is_a?(Proc)
+          self.root_asset_class  = asset_class
+        end
       end
     end
 
@@ -216,7 +219,10 @@ module AssetCloud
     end
 
     def asset_class_for(key)
-      klass = self.class.asset_classes[bucket_symbol_for_key(key)] || self.class.root_asset_class
+      klass = self.class.asset_classes[bucket_symbol_for_key(key)]
+      klass = klass.call(key) if klass.is_a?(Proc)
+      klass ||= self.class.root_asset_class
+
       constantize_if_necessary(klass)
     end
 

@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{asset_cloud}
-  s.version = "2.2.0"
+  s.version = "2.2.4"
 
   s.authors = %w(Shopify)
   s.summary = %q{An abstraction layer around arbitrary and diverse asset stores.}

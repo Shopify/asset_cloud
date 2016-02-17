@@ -118,7 +118,7 @@ module AssetCloud
     end
 
     def store!
-      store or raise AssetNotSaved
+      store or raise(AssetNotSaved, "Validation failed: #{errors.join(', ')}")
     end
 
     def to_param

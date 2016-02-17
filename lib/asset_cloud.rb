@@ -42,12 +42,18 @@ AssetCloud::Asset.class_eval do
     @extensions.each {|ext| ext.execute_callbacks(symbol, args)}
   end
 
+  protected
+
+  def valid_key_path?(key)
+    key =~ AssetCloud::Base::VALID_PATHS
+  end
+
   private
 
   def valid_key
     if key.blank?
       add_error "key cannot be empty"
-    elsif key !~ AssetCloud::Base::VALID_PATHS
+    elsif !valid_key_path?(key)
       add_error "#{key.inspect} contains illegal characters"
     end
   end
