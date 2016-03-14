@@ -11,8 +11,8 @@ module AssetCloud
       objects.map { |o| cloud[relative_key(o.key)] }
     end
 
-    def read(key)
-      cloud.s3_bucket(key).objects[absolute_key(key)].read
+    def read(key, options = {})
+      cloud.s3_bucket(key).objects[absolute_key(key)].read(options)
     rescue ::AWS::Errors::Base
       raise AssetCloud::AssetNotFoundError, key
     end

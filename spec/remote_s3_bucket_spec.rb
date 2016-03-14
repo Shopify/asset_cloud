@@ -66,4 +66,13 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
     data = @bucket.read(key)
     data.should == value
   end
+
+  it "#reads first bytes when passed options" do
+    value = 'hello world'
+    key = 'tmp/new_file.txt'
+    options = {range: 0...5}
+    @bucket.write(key, value)
+    data = @bucket.read(key, options)
+    data.should == 'hello'
+  end
 end
