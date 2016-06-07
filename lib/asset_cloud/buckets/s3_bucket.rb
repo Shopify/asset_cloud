@@ -1,4 +1,4 @@
-require 'aws'
+require 'aws-sdk'
 
 module AssetCloud
   class S3Bucket < Bucket
