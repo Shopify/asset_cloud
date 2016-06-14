@@ -5,7 +5,7 @@ class RemoteS3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
 
   def s3_bucket(key)
-    s3_connection.buckets[ENV['S3_BUCKET_NAME']]
+    Aws::S3::Bucket.new(ENV['S3_BUCKET_NAME'], client: s3_connection)
   end
 end
 
@@ -15,12 +15,12 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
   directory = File.dirname(__FILE__) + '/files'
 
   before(:all) do
-    AWS.config({
+    Aws.config.update(
       access_key_id: ENV['AWS_ACCESS_KEY_ID'],
       secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
-    })
+    )
     @cloud = RemoteS3Cloud.new(directory , 'testing/assets/files' )
-    @cloud.s3_connection = AWS::S3.new()
+    @cloud.s3_connection = Aws::S3::Client.new()
     @bucket = @cloud.buckets[:tmp]
   end
 
@@ -70,7 +70,7 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
   it "#reads first bytes when passed options" do
     value = 'hello world'
     key = 'tmp/new_file.txt'
-    options = {range: 0...5}
+    options = {range: 'bytes=0-4'}
     @bucket.write(key, value)
     data = @bucket.read(key, options)
     data.should == 'hello'

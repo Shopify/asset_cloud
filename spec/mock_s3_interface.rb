@@ -48,7 +48,7 @@ class MockS3Interface
       if @storage.key?(key)
         @storage[key]
       else
-        raise AWS::S3::Errors::NoSuchKey.new(nil, nil)
+        raise Aws::S3::Errors::NoSuchKey.new(nil, nil)
       end
     end
 
@@ -56,7 +56,7 @@ class MockS3Interface
       if @storage_options.key?(key)
         @storage_options[key]
       else
-        raise AWS::S3::Errors::NoSuchKey.new(nil, nil)
+        raise Aws::S3::Errors::NoSuchKey.new(nil, nil)
       end
     end
 
