@@ -16,6 +16,20 @@ class MockS3Interface
   class Client
   end
 
+  class S3MockResponse
+    def initialize(data)
+      @data = data.merge(body: StringIO.new(data[:body].dup.force_encoding(Encoding::BINARY)))
+    end
+
+    def body
+      @data[:body]
+    end
+
+    def size
+      @data[:body].size
+    end
+  end
+
   class BucketCollection
     def initialize(interface)
       @interface = interface
@@ -40,8 +54,8 @@ class MockS3Interface
       keys.map {|k,v| S3Object.new(self, k, v)}
     end
 
-    def objects
-      Collection.new(self, @storage.keys)
+    def object(key)
+      S3Object.new(self, key)
     end
 
     def get(key)
@@ -61,7 +75,7 @@ class MockS3Interface
     end
 
     def put(key, data, options={})
-      @storage[key] = data.dup.force_encoding(Encoding::BINARY)
+      @storage[key] = S3MockResponse.new(data)
       @storage_options[key] = options.dup
       true
     end
@@ -113,7 +127,7 @@ class MockS3Interface
       @bucket.delete(@key)
     end
 
-    def read(headers={})
+    def get(headers={})
       @bucket.get(@key)
     end
 
@@ -121,7 +135,7 @@ class MockS3Interface
       @bucket.get_options(@key)
     end
 
-    def write(data, options={})
+    def put(data, options={})
       @bucket.put(@key, data, options)
     end
 
@@ -137,11 +151,12 @@ class MockS3Interface
       end
     end
 
-    def head
-      {
-        content_length: read.size,
-        last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007")
-      }
+    def content_length
+      get.size
+    end
+
+    def last_modified
+      Time.parse("Mon Aug 27 17:37:51 UTC 2007")
     end
   end
 
