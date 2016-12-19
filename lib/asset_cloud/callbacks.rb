@@ -7,29 +7,41 @@ module AssetCloud
     module ClassMethods
       def callback_methods(*symbols)
         symbols.each do |method|
-          code = <<-"end_eval"
-           def self.before_#{method}(*callbacks, &block)
-             callbacks << block if block_given?
-             write_inheritable_array(:before_#{method}, callbacks)
-           end
+          define_callbacks(method)
+        end
+      end
 
-           def self.after_#{method}(*callbacks, &block)
-             callbacks << block if block_given?
-             write_inheritable_array(:after_#{method}, callbacks)
-           end
+      def define_callbacks(method)
+        before = :"before_#{method}"
+        after = :"after_#{method}"
+        extension_module.send(:define_method, method) do |*args, &block|
+          result = nil
+          if execute_callbacks(before, args)
+            result = super(*args, &block)
+            execute_callbacks(after, args)
+          end
+          result
+        end
 
-           def #{method}_with_callbacks(*args)
-             if execute_callbacks(:before_#{method}, args)
-               result = #{method}_without_callbacks(*args)
-               execute_callbacks(:after_#{method}, args)
-             end
-             result
-           end
+        define_singleton_method(before) do |*callbacks, &block|
+          callbacks << block if block_given?
+          write_inheritable_array(before, callbacks)
+        end
 
-           alias_method_chain :#{method}, 'callbacks'
-          end_eval
+        define_singleton_method(after) do |*callbacks, &block|
+          callbacks << block if block_given?
+          write_inheritable_array(after, callbacks)
+        end
+      end
 
-          self.class_eval code, __FILE__, __LINE__
+      private
+
+      def extension_module
+        @extension_module ||= begin
+          mod = Module.new
+          self.const_set(:AssetCloudCallbacks, mod)
+          prepend(mod)
+          mod
         end
       end
     end

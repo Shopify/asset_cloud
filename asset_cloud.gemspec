@@ -8,6 +8,8 @@ Gem::Specification.new do |s|
   s.summary = %q{An abstraction layer around arbitrary and diverse asset stores.}
   s.description = %q{An abstraction layer around arbitrary and diverse asset stores.}
 
+  s.required_ruby_version = '>= 2.2.0'
+
   s.email = %q{developers@shopify.com}
   s.homepage = %q{http://github.com/Shopify/asset_cloud}
   s.require_paths = %w(lib)
@@ -21,8 +23,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'mocha'
-  if RUBY_VERSION >= "2.0.0"
-    s.add_development_dependency 'pry'
-    s.add_development_dependency 'pry-byebug'
-  end
+  s.add_development_dependency 'pry'
+  s.add_development_dependency 'pry-byebug'
 end
