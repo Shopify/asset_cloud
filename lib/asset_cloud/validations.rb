@@ -1,8 +1,9 @@
 module AssetCloud
   module Validations
     def self.included(base)
-      base.extend ClassMethods
-      base.prepend PrependedMethods
+      base.send(:alias_method, :store_without_validation, :store)
+      base.extend(ClassMethods)
+      base.prepend(PrependedMethods)
     end
 
     module PrependedMethods
