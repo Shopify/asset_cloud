@@ -1,28 +1,42 @@
+require 'ostruct'
+
 class MockS3Interface
   attr_reader :bucket_storage
 
-  def initialize(aws_access_key_id=nil, aws_secret_access_key=nil, params={})
-    @bucket_storage = {}
+  def initialize(aws_access_key_id = nil, aws_secret_access_key = nil, params = {})
+    @buckets = {}
   end
 
-  def buckets
-    @bucket_collection ||= BucketCollection.new(self)
+  def buckets(**options)
+    buckets = @buckets.values
+    buckets = buckets.select { |v| v.start_with?(options[:prefix]) } if options[:prefix]
+    buckets
+  end
+
+  def bucket(name)
+    @buckets[name] ||= Bucket.new(name)
   end
 
   def client
-    @client ||= Client.new
+    @client ||= Client.new(self)
   end
 
   class Client
-  end
+    attr_reader :interface
 
-  class BucketCollection
     def initialize(interface)
       @interface = interface
     end
 
-    def [](name)
-      @interface.bucket_storage[name] ||= Bucket.new(name)
+    def head_object(options = {})
+      options = interface
+        .bucket(options[:bucket])
+        .object(options[:key]).get()
+
+      {
+        content_length: options.body.size,
+        last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007")
+      }
     end
   end
 
@@ -31,38 +45,25 @@ class MockS3Interface
     def initialize(name)
       @name = name
       @storage = {}
-      @storage_options = {}
     end
 
-    def with_prefix(prefix)
-      keys = @storage
-      keys = keys.select {|k,v| k.starts_with?(prefix)}
-      keys.map {|k,v| S3Object.new(self, k, v)}
+    def objects(**options)
+      objects = @storage.values
+      objects = objects.select { |v| v.start_with?(options[:prefix]) } if options[:prefix]
+      objects
     end
 
-    def objects
-      Collection.new(self, @storage.keys)
+    def object(name)
+      @storage[name] ||= S3Object.new(self, name)
     end
 
-    def get(key)
-      if @storage.key?(key)
-        @storage[key]
-      else
-        raise AWS::S3::Errors::NoSuchKey.new(nil, nil)
-      end
-    end
+    def put_object(options = {})
+      options = options.dup
+      options[:body] = StringIO.new(options[:body].force_encoding(Encoding::BINARY))
 
-    def get_options(key)
-      if @storage_options.key?(key)
-        @storage_options[key]
-      else
-        raise AWS::S3::Errors::NoSuchKey.new(nil, nil)
-      end
-    end
+      key = options.delete(:key)
 
-    def put(key, data, options={})
-      @storage[key] = data.dup.force_encoding(Encoding::BINARY)
-      @storage_options[key] = options.dup
+      @storage[key] = S3Object.new(self, key, options)
       true
     end
 
@@ -80,88 +81,25 @@ class MockS3Interface
     end
   end
 
-  class Collection
-    include Enumerable
-
-    def initialize(bucket, objects)
-      @bucket = bucket
-      @objects = objects
-    end
-
-    def with_prefix(prefix)
-      self.class.new(@bucket, @objects.select {|k| k.start_with?(prefix)})
-    end
-
-    def [](name)
-      S3Object.new(@bucket, name)
-    end
-
-    def each
-      @objects.each { |e| yield S3Object.new(@bucket, e) }
-    end
-  end
-
   class S3Object
-    attr_reader :key
+    attr_reader :key, :options
 
-    def initialize(bucket, key, data=nil)
+    def initialize(bucket, key, options = {})
       @bucket = bucket
       @key = key
+      @options = options
     end
 
     def delete
       @bucket.delete(@key)
     end
 
-    def read(headers={})
-      @bucket.get(@key)
+    def get(*)
+      OpenStruct.new(options)
     end
 
-    def options()
-      @bucket.get_options(@key)
-    end
-
-    def write(data, options={})
-      @bucket.put(@key, data, options)
-    end
-
-    def multipart_upload(options = {})
-      MockMultipartUpload.new(@bucket, @key)
-    end
-
-    def url_for(permission, options={})
-      if options[:secure]
-        URI.parse("https://www.youtube.com/watch?v=oHg5SJYRHA0")
-      else
-        URI.parse("http://www.youtube.com/watch?v=oHg5SJYRHA0")
-      end
-    end
-
-    def head
-      {
-        content_length: read.size,
-        last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007")
-      }
-    end
-  end
-
-  class MockMultipartUpload
-    def initialize(bucket, key)
-      @bucket =bucket
-      @key = key
-      @data = ""
-    end
-
-    def add_part(data)
-      @data << data
-    end
-
-   def abort
-      @bucket.delete(@key)
-   end
-
-   def complete(arg)
-      @bucket.put(@key, @data, {})
+    def put(options = {})
+      @bucket.put_object(options.merge(key: @key))
     end
   end
 end
