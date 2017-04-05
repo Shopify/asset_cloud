@@ -17,7 +17,9 @@ module AssetCloud
 
       object = cloud.s3_bucket(key)
         .object(absolute_key(key))
-        .get(options).body.read
+        .get(options)
+
+      object.body.respond_to?(:read) ? object.body.read : object.body
     rescue ::Aws::Errors::ServiceError
       raise AssetCloud::AssetNotFoundError, key
     end

@@ -31,7 +31,8 @@ class MockS3Interface
     def head_object(options = {})
       options = interface
         .bucket(options[:bucket])
-        .object(options[:key]).get()
+        .object(options[:key])
+        .get
 
       {
         content_length: options.body.size,
@@ -59,7 +60,7 @@ class MockS3Interface
 
     def put_object(options = {})
       options = options.dup
-      options[:body] = StringIO.new(options[:body].force_encoding(Encoding::BINARY))
+      options[:body] = options[:body].force_encoding(Encoding::BINARY)
 
       key = options.delete(:key)
 
