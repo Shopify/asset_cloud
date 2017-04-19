@@ -72,12 +72,22 @@ describe 'Remote test for AssetCloud::S3Bucket', if: ENV['AWS_ACCESS_KEY_ID'] &&
     metadata.updated_at.should >= start_time
   end
 
+  it "#stat a missing asset" do
+    metadata = @bucket.stat('i_do_not_exist_and_never_will.test')
+    expect(metadata).to be_an(AssetCloud::Metadata)
+    expect(metadata.exist).to be false
+  end
+
   it "#read " do
     value = 'hello world'
     key = 'tmp/new_file.txt'
     @bucket.write(key, value)
     data = @bucket.read(key)
     data.should == value
+  end
+
+  it "#read a missing asset" do
+    expect { @bucket.read("i_do_not_exist_and_never_will.test") }.to raise_error(AssetCloud::AssetNotFoundError)
   end
 
   it "#reads first bytes when passed options" do

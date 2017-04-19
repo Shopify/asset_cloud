@@ -54,8 +54,8 @@ class MockS3Interface
       objects
     end
 
-    def object(name)
-      @storage[name] ||= S3Object.new(self, name)
+    def object(key)
+      @storage[key] ||= NullS3Object.new(self, key)
     end
 
     def put_object(options = {})
@@ -68,17 +68,31 @@ class MockS3Interface
       true
     end
 
-    def delete(key)
-      @storage.delete(key)
-      true
-    end
-
     def clear
       @storage = {}
     end
 
     def inspect
       "#<MockS3Interface::Bucket @name=#{@name.inspect}, @storage.keys = #{@storage.keys.inspect}>"
+    end
+  end
+
+  class NullS3Object
+    attr_reader :key
+    def initialize(bucket, key)
+      @bucket = bucket
+      @key = key
+    end
+
+    def get(*)
+      raise Aws::S3::Errors::NoSuchKey(nil, nil)
+    end
+
+    def delete(*)
+    end
+
+    def put(options = {})
+      @bucket.put_object(options.merge(key: @key))
     end
   end
 
@@ -93,6 +107,7 @@ class MockS3Interface
 
     def delete
       @bucket.delete(@key)
+      true
     end
 
     def get(*)

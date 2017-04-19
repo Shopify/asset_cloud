@@ -40,7 +40,7 @@ module AssetCloud
       metadata = s3_client.head_object(bucket: bucket_name, key: absolute_key(key))
 
       AssetCloud::Metadata.new(true, metadata[:content_length], nil, metadata[:last_modified])
-    rescue Aws::S3::Errors::NoSuchKey
+    rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
       AssetCloud::Metadata.new(false)
     end
 

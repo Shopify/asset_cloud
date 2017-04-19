@@ -39,13 +39,13 @@ describe AssetCloud::S3Bucket do
   end
 
   it "#delete should not ignore errors when deleting" do
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_raise(StandardError)
+    expect_any_instance_of(MockS3Interface::NullS3Object).to receive(:delete).and_raise(StandardError)
 
     expect { @bucket.delete('assets/fail.gif') }.to raise_error(StandardError)
   end
 
   it "#delete should always return true" do
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_return(nil)
+    expect_any_instance_of(MockS3Interface::NullS3Object).to receive(:delete).and_return(nil)
 
     @bucket.delete('assets/fail.gif').should == true
   end
