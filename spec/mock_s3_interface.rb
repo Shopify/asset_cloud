@@ -14,36 +14,28 @@ class MockS3Interface
   end
 
   def bucket(name)
-    @buckets[name] ||= Bucket.new(name)
+    @buckets[name] ||= Bucket.new(self, name)
   end
 
   def client
-    @client ||= Client.new(self)
+    self
   end
 
-  class Client
-    attr_reader :interface
+  def head_object(options = {})
+    options = bucket(options[:bucket])
+      .object(options[:key])
+      .get
 
-    def initialize(interface)
-      @interface = interface
-    end
-
-    def head_object(options = {})
-      options = interface
-        .bucket(options[:bucket])
-        .object(options[:key])
-        .get
-
-      {
-        content_length: options.body.size,
-        last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007")
-      }
-    end
+    {
+      content_length: options.body.size,
+      last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007")
+    }
   end
 
   class Bucket
-    attr_reader :name
-    def initialize(name)
+    attr_reader :name, :client
+    def initialize(client, name)
+      @client = client
       @name = name
       @storage = {}
     end
@@ -85,7 +77,7 @@ class MockS3Interface
     end
 
     def get(*)
-      raise Aws::S3::Errors::NoSuchKey(nil, nil)
+      raise Aws::S3::Errors::NoSuchKey.new(nil, nil)
     end
 
     def delete(*)

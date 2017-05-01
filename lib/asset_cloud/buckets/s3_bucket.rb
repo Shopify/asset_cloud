@@ -36,8 +36,8 @@ module AssetCloud
     end
 
     def stat(key)
-      bucket_name = cloud.s3_bucket(key).name
-      metadata = s3_client.head_object(bucket: bucket_name, key: absolute_key(key))
+      bucket = cloud.s3_bucket(key)
+      metadata = bucket.client.head_object(bucket: bucket.name, key: absolute_key(key))
 
       AssetCloud::Metadata.new(true, metadata[:content_length], nil, metadata[:last_modified])
     rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
@@ -68,10 +68,6 @@ module AssetCloud
       # follows https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
       return "bytes=#{[range.begin, range.max].join('-')}" if range.is_a?(Range)
       range
-    end
-
-    def s3_client
-      cloud.s3_connection.client
     end
   end
 end
