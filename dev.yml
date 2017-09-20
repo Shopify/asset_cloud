@@ -1,0 +1,11 @@
+name: asset-cloud
+
+up:
+  - ruby:
+      version: 2.3.3
+  - bundler
+
+commands:
+  test:
+    desc: "run test suite"
+    run: bundle exec rake spec
