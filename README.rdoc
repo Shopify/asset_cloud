@@ -12,7 +12,7 @@ An abstraction layer around arbitrary and diverse asset stores.
 
 == Testing
 
-   bundle exec rake spec
+   dev test
 
 With S3 Remote test:
 
