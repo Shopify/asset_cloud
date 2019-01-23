@@ -128,6 +128,10 @@ describe BasicCloud do
     @fs.url_for('products/key with spaces.txt').should == 'http://assets/files/products/key%20with%20spaces.txt'
   end
 
+  it 'escapes square brackets in asset urls' do
+    @fs.url_for('hello[world]').should == 'http://assets/files/hello%5Bworld%5D'
+  end
+
   describe "#find" do
     it "should return the appropriate asset when one exists" do
       asset = @fs.find('products/key.txt')

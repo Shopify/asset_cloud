@@ -1,4 +1,6 @@
-require 'uri'
+# frozen_string_literal: true
+
+require 'addressable/uri'
 require 'class_inheritable_attributes'
 
 module AssetCloud
@@ -94,7 +96,7 @@ module AssetCloud
     end
 
     def url_for(key, options={})
-      File.join(@url, URI.encode(key))
+      File.join(@url, Addressable::URI.encode(key))
     end
 
     def path_for(key)
