@@ -1,3 +1,0 @@
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*'

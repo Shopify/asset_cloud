@@ -5,4 +5,3 @@ require 'active_support/all'
 $:<< File.dirname(__FILE__) + "/../lib"
 require 'asset_cloud'
 require 'asset_cloud/buckets/s3_bucket'
-require 'asset_cloud/buckets/gcs_bucket'
