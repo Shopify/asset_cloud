@@ -38,7 +38,8 @@ AssetCloud::Asset.class_eval do
   validate :valid_key
 
   def execute_callbacks(symbol, args)
-    super
+    result = super
+    return result if result == false
     @extensions.each {|ext| ext.execute_callbacks(symbol, args)}
   end
 
