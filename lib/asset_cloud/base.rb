@@ -1,5 +1,4 @@
 require 'uri'
-require 'class_inheritable_attributes'
 
 module AssetCloud
 
@@ -33,16 +32,16 @@ module AssetCloud
     attr_accessor :url, :root
 
     class_attribute :root_bucket_class
-    self.root_bucket_class = 'AssetCloud::FileSystemBucket'
+    self.root_bucket_class = 'AssetCloud::FileSystemBucket'.freeze
     class_attribute :root_asset_class
-    self.root_asset_class  = 'AssetCloud::Asset'
+    self.root_asset_class  = 'AssetCloud::Asset'.freeze
 
-    class_inheritable_hash :bucket_classes
-    self.bucket_classes = {}
-    class_inheritable_hash :asset_classes
-    self.asset_classes = {}
-    class_inheritable_hash :asset_extension_classes
-    self.asset_extension_classes = {}
+    class_attribute :bucket_classes
+    self.bucket_classes = {}.freeze
+    class_attribute :asset_classes
+    self.asset_classes = {}.freeze
+    class_attribute :asset_extension_classes
+    self.asset_extension_classes = {}.freeze
 
     def self.bucket(*args)
       asset_class = if args.last.is_a? Hash
@@ -56,8 +55,8 @@ module AssetCloud
       end
 
       if bucket_name = args.first
-        self.bucket_classes[bucket_name.to_sym] = bucket_class
-        self.asset_classes[bucket_name.to_sym]  = asset_class if asset_class
+        self.bucket_classes = bucket_classes.merge(bucket_name.to_sym => bucket_class).freeze
+        self.asset_classes = asset_classes.merge(bucket_name.to_sym => asset_class).freeze if asset_class
       else
         self.root_bucket_class = bucket_class
         if asset_class
@@ -75,7 +74,7 @@ module AssetCloud
 
       args.each do |klass|
         klass = convert_to_class_name_if_possible(klass)
-        self.asset_extension_classes[klass] = opts
+        self.asset_extension_classes = asset_extension_classes.merge(klass => opts).freeze
       end
     end
 
