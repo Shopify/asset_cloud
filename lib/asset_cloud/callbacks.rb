@@ -1,5 +1,3 @@
-require 'class_inheritable_attributes'
-
 module AssetCloud
   module Callbacks
     extend ActiveSupport::Concern
