@@ -14,9 +14,12 @@ module AssetCloud
     end
 
     module ClassMethods
-      def validate(*validations, &block)
+      def validate(*extra_validations, &block)
+        validations = self._callbacks[:validate] || []
+        validations += extra_validations
         validations << block if block_given?
-        write_inheritable_array(:validate, validations)
+
+        self._callbacks = _callbacks.merge(validate: validations.freeze).freeze
       end
     end
 
