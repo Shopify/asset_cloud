@@ -3,6 +3,17 @@ module AssetCloud
     extend ActiveSupport::Concern
 
     module ClassMethods
+      attr_writer :_callbacks
+
+      def inherited(child)
+        super if defined? super
+        child._callbacks = _callbacks.deep_dup.freeze
+      end
+
+      def _callbacks
+        @_callbacks ||= {}.freeze
+      end
+
       def callback_methods(*symbols)
         symbols.each do |method|
           define_callbacks(method)
@@ -23,12 +34,14 @@ module AssetCloud
 
         define_singleton_method(before) do |*callbacks, &block|
           callbacks << block if block_given?
-          write_inheritable_array(before, callbacks)
+          callbacks = (_callbacks[before] || []) + callbacks
+          self._callbacks = _callbacks.merge(before => callbacks).freeze
         end
 
         define_singleton_method(after) do |*callbacks, &block|
           callbacks << block if block_given?
-          write_inheritable_array(after, callbacks)
+          callbacks = (_callbacks[after] || []) + callbacks
+          self._callbacks = _callbacks.merge(after => callbacks).freeze
         end
       end
 
@@ -49,7 +62,7 @@ module AssetCloud
 
         result = case callback
         when Symbol
-          self.send(callback, *args)
+          send(callback, *args)
         when Proc, Method
           callback.call(self, *args)
         else
@@ -65,7 +78,7 @@ module AssetCloud
     end
 
     def callbacks_for(symbol)
-      self.class.send(symbol) || []
+      self.class._callbacks[symbol] || []
     end
   end
 end
