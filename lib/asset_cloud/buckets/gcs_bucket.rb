@@ -14,7 +14,7 @@ module AssetCloud
     end
 
     def write(key, data)
-      bucket.create_file(data, full_path(key))
+      bucket.create_file(data, absolute_key(key))
     end
 
     def delete(key)
@@ -41,12 +41,22 @@ module AssetCloud
       @bucket ||= cloud.gcs_bucket
     end
 
-    def full_path(key)
-      "s#{cloud.url}/#{key}"
+    def absolute_key(key = nil)
+      if key.to_s.starts_with?(path_prefix)
+        return key
+      else
+        args = [path_prefix]
+        args << key.to_s if key
+        args.join('/')
+      end
+    end
+
+    def path_prefix
+      @path_prefix ||= "s#{@cloud.url}"
     end
 
     def find_by_key!(key)
-      file = bucket.file(full_path(key))
+      file = bucket.file(absolute_key(key))
 
       raise AssetCloud::AssetNotFoundError, key unless file
 
