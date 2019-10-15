@@ -13,8 +13,14 @@ module AssetCloud
       downloaded.read
     end
 
-    def write(key, data)
-      bucket.create_file(data, absolute_key(key))
+    def write(key, data, acl: :private)
+      file = bucket.create_file(data, absolute_key(key))
+      case acl
+      when :public
+        file.acl.public!
+      when :private
+        file.acl.private!
+      end
     end
 
     def delete(key)
