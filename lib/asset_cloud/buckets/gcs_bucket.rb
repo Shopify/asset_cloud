@@ -13,8 +13,12 @@ module AssetCloud
       downloaded.read
     end
 
-    def write(key, data)
-      bucket.create_file(data, absolute_key(key))
+    def write(key, data, options = {})
+      bucket.create_file(
+        data,
+        absolute_key(key),
+        options
+      )
     end
 
     def delete(key)
