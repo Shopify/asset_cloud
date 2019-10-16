@@ -54,6 +54,35 @@ describe AssetCloud::GCSBucket, if: ENV['GCS_PROJECT_ID'] && ENV['GCS_KEY_FILEPA
     @bucket.write(key, local_path)
   end
 
+  it "#write writes a file into the bucket with metadata" do
+    local_path = "#{directory}/products/key.txt"
+    key = 'test/key.txt'
+    metadata = {
+      "X-Robots-Tag" => "none"
+    }
+
+    file = @bucket.write(key, local_path, metadata: metadata)
+    expect(file.metadata).to eq(metadata)
+  end
+
+  it "#write writes a file into the bucket with acl" do
+    local_path = "#{directory}/products/key.txt"
+    key = 'test/key.txt'
+    acl = 'public'
+
+    file = @bucket.write(key, local_path, acl: acl)
+    expect(file.acl).to be_truthy
+  end
+
+  it "#write writes a file into the bucket with content_disposition" do
+    local_path = "#{directory}/products/key.txt"
+    key = 'test/key.txt'
+    content_disposition = 'attachment'
+
+    file = @bucket.write(key, local_path, content_disposition: content_disposition)
+    expect(file.content_disposition).to eq(content_disposition)
+  end
+
   it "#delete removes the file from the bucket" do
     key = 'test/key.txt'
 
