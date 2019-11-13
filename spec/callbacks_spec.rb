@@ -2,6 +2,8 @@ require 'spec_helper'
 
 class CallbackAsset < AssetCloud::Asset
   before_store :callback_before_store
+  after_store :callback_after_store
+  before_delete :callback_before_delete
   after_delete :callback_after_delete
   before_validate :make_value_valid
   after_validate :add_spice
@@ -100,8 +102,9 @@ describe CallbackAsset do
     @asset = @fs.asset_at('callback_assets/foo')
   end
 
-  it "should run before_validate, then validate, then after validate, then before_store, then store" do
+  it "should run before_validate, then validate, then after validate, then before_store, then store, then after_store" do
     @asset.should_receive(:callback_before_store).and_return(true)
+    @asset.should_receive(:callback_after_store).and_return(true)
     @asset.should_not_receive(:callback_after_delete)
 
     @asset.value = 'foo'
@@ -110,9 +113,26 @@ describe CallbackAsset do
   end
 
   it "should run its after_delete callback after delete is called" do
+    @asset.should_receive(:callback_before_delete)
     @asset.should_not_receive(:callback_before_store)
     @asset.should_receive(:callback_after_delete).and_return(true)
 
     @asset.delete
+  end
+
+  it "should not continue with a delete if before_delete callback returns false" do
+    @asset.should_receive(:callback_before_delete).and_return(false)
+    @asset.should_not_receive(:callback_after_delete)
+
+    @asset.delete
+    @asset.value.should == 'bar'
+  end
+
+  it "should not continue with a store if before_store callback returns false" do
+    @asset.should_receive(:callback_before_store).and_return(false)
+    @asset.should_not_receive(:callback_after_store)
+
+    @asset.value = 'foo'
+    @asset.store.should == nil
   end
 end
