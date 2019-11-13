@@ -27,7 +27,7 @@ module AssetCloud
           result = nil
           if execute_callbacks(before, args)
             result = super(*args, &block)
-            execute_callbacks(after, args)
+            execute_callbacks(after, args) if result
           end
           result
         end

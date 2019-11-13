@@ -2,15 +2,20 @@ require 'spec_helper'
 
 class CallbackAsset < AssetCloud::Asset
   before_store :callback_before_store
+  before_delete :callback_before_delete
   after_delete :callback_after_delete
   before_validate :make_value_valid
   after_validate :add_spice
   validate :valid_value
 
   private
+
+  def callback_before_delete(*args); end
+
   def make_value_valid
     self.value = 'valid'
   end
+
   def add_spice
     self.value += ' spice'
   end
@@ -72,6 +77,15 @@ describe CallbackCloud do
     @fs.delete('tmp/file.txt').should == 'foo'
   end
 
+  it "should not invoke other callbacks when a before_ filter returns false" do
+    @fs.should_receive(:callback_before_delete)
+      .with('tmp/file.txt')
+      .and_return(false)
+    @fs.should_not_receive(:callback_after_delete)
+
+    @fs.delete('tmp/file.txt').should == nil
+  end
+
   it "should invoke callbacks even when constructing a new asset" do
     @fs.should_receive(:callback_before_write).with('tmp/file.txt', 'hello').and_return(true)
     @fs.should_receive(:callback_after_write).with('tmp/file.txt', 'hello').and_return(true)
@@ -120,6 +134,13 @@ describe CallbackAsset do
     @asset.should_not_receive(:callback_before_store)
     @asset.should_receive(:callback_after_delete).and_return(true)
 
-    @asset.delete
+    @asset.delete.should == 'bar'
+  end
+
+  it "not invoke other callbacks when a before_ filter returns false" do
+    @asset.should_receive(:callback_before_delete).and_return(false)
+    @asset.should_not_receive(:callback_after_delete)
+
+    @asset.delete.should == nil
   end
 end
