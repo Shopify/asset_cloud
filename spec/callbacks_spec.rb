@@ -32,6 +32,9 @@ class CallbackCloud < AssetCloud::Base
 
   after_write :callback_after_write
   before_write :callback_before_write
+
+  def callback_before_write(*args); end
+  def callback_after_write(*args); end
 end
 
 class MethodRecordingCloud < AssetCloud::Base
@@ -48,21 +51,25 @@ class MethodRecordingCloud < AssetCloud::Base
 end
 
 describe CallbackCloud do
-  before { @fs = CallbackCloud.new(File.dirname(__FILE__) + '/files', 'http://assets/') }
+  before do
+    @fs = CallbackCloud.new(File.dirname(__FILE__) + '/files', 'http://assets/')
+    @fs.write('tmp/file.txt', 'foo')
+  end
 
   it "should invoke callbacks after store" do
     @fs.should_receive(:callback_before_write).with('tmp/file.txt', 'text').and_return(true)
     @fs.should_receive(:callback_after_write).with('tmp/file.txt', 'text').and_return(true)
 
 
-    @fs.write 'tmp/file.txt', 'text'
+    @fs.write('tmp/file.txt', 'text').should == true
+    @fs.read('tmp/file.txt').should == 'text'
   end
 
   it "should invoke callbacks after delete" do
     @fs.should_receive(:callback_before_delete).with('tmp/file.txt').and_return(true)
     @fs.should_receive(:callback_after_delete).with('tmp/file.txt').and_return(true)
 
-    @fs.delete 'tmp/file.txt'
+    @fs.delete('tmp/file.txt').should == 'foo'
   end
 
   it "should invoke callbacks even when constructing a new asset" do
@@ -72,7 +79,7 @@ describe CallbackCloud do
 
     asset = @fs.build('tmp/file.txt')
     asset.value = 'hello'
-    asset.store
+    asset.store.should == true
   end
 end
 
