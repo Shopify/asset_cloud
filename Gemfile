@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'aws-sdk', '~> 1.34.0', :require => nil
+gem 'aws-sdk-s3', '~> 1.60', require: false
 gem 'google-cloud-storage'
 
 gemspec

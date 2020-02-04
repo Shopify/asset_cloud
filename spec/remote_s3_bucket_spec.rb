@@ -5,22 +5,24 @@ class RemoteS3Cloud < AssetCloud::Base
   bucket :tmp, AssetCloud::S3Bucket
 
   def s3_bucket(key)
-    s3_connection.buckets[ENV['S3_BUCKET_NAME']]
+    s3_connection.bucket(ENV['S3_BUCKET_NAME'])
   end
 end
 
-describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
-  require 'aws-sdk'
-
+describe 'Remote test for AssetCloud::S3Bucket', if: ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['S3_BUCKET_NAME'] do
   directory = File.dirname(__FILE__) + '/files'
 
   before(:all) do
-    AWS.config({
-      access_key_id: ENV['AWS_ACCESS_KEY_ID'],
-      secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
-    })
+    Aws.config = {
+      region: ENV.fetch('AWS_REGION', 'us-east-1'),
+      credentials: Aws::Credentials.new(
+        ENV['AWS_ACCESS_KEY_ID'],
+        ENV['AWS_SECRET_ACCESS_KEY'],
+      ),
+    }
+
     @cloud = RemoteS3Cloud.new(directory , 'testing/assets/files' )
-    @cloud.s3_connection = AWS::S3.new()
+    @cloud.s3_connection = Aws::S3::Resource.new
     @bucket = @cloud.buckets[:tmp]
   end
 
@@ -35,9 +37,18 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
 
     ls = @bucket.ls('tmp')
 
-    ls.first.class.should == AssetCloud::Asset
-    keys = ls.map(&:key)
-    ['tmp/test1.txt', 'tmp/test2.txt'].all? {|key| keys.include? key }
+    expect(ls).to all(be_an(AssetCloud::Asset))
+    expect(ls.map(&:key) - ['tmp/test1.txt', 'tmp/test2.txt']).to be_empty
+  end
+
+  it "#ls returns all assets" do
+    @cloud['tmp/test1.txt'] = 'test1'
+    @cloud['tmp/test2.txt'] = 'test2'
+
+    ls = @bucket.ls
+
+    expect(ls).to all(be_an(AssetCloud::Asset))
+    expect(ls.map(&:key) - ['tmp/test1.txt', 'tmp/test2.txt']).to be_empty
   end
 
   it "#delete should ignore errors when deleting" do
@@ -59,12 +70,22 @@ describe 'Remote test for AssetCloud::S3Bucket', if:  ENV['AWS_ACCESS_KEY_ID'] &
     metadata.updated_at.should >= start_time
   end
 
+  it "#stat a missing asset" do
+    metadata = @bucket.stat('i_do_not_exist_and_never_will.test')
+    expect(metadata).to be_an(AssetCloud::Metadata)
+    expect(metadata.exist).to be false
+  end
+
   it "#read " do
     value = 'hello world'
     key = 'tmp/new_file.txt'
     @bucket.write(key, value)
     data = @bucket.read(key)
     data.should == value
+  end
+
+  it "#read a missing asset" do
+    expect { @bucket.read("i_do_not_exist_and_never_will.test") }.to raise_error(AssetCloud::AssetNotFoundError)
   end
 
   it "#reads first bytes when passed options" do
