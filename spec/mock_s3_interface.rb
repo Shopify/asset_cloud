@@ -1,6 +1,10 @@
 require 'ostruct'
 
 class MockS3Interface
+  VALID_ACLS = %w(
+    private public-read public-read-write authenticated-read aws-exec-read bucket-owner-read bucket-owner-full-control
+  )
+
   attr_reader :bucket_storage
 
   def initialize(aws_access_key_id = nil, aws_secret_access_key = nil, params = {})
@@ -52,6 +56,11 @@ class MockS3Interface
 
     def put_object(options = {})
       options = options.dup
+
+      if options[:acl] && !VALID_ACLS.include?(options[:acl])
+        raise "Invalid ACL `#{options[:acl].inspect}`, must be one of: #{VALID_ACLS.inspect}"
+      end
+      
       options[:body] = options[:body].force_encoding(Encoding::BINARY)
 
       key = options.delete(:key)
@@ -107,6 +116,10 @@ class MockS3Interface
     end
 
     def put(options = {})
+      if options[:acl] && !VALID_ACLS.include?(options[:acl])
+        raise "Invalid ACL `#{options[:acl].inspect}`, must be one of: #{VALID_ACLS.inspect}"
+      end
+
       @bucket.put_object(options.merge(key: @key))
     end
   end
