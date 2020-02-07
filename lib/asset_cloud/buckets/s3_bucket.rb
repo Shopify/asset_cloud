@@ -13,11 +13,16 @@ module AssetCloud
     end
 
     def read(key, options = {})
+      options = options.dup
+
       options[:range] = http_byte_range(options[:range]) if options[:range]
 
-      object = cloud.s3_bucket(key)
-        .object(absolute_key(key))
-        .get(options)
+      bucket = cloud.s3_bucket(key)
+      if encryption_key = options.delete(:encryption_key)
+        bucket = encrypted_bucket(bucket, encryption_key)
+      end
+
+      object = bucket.object(absolute_key(key)).get(options)
 
       object.body.respond_to?(:read) ? object.body.read : object.body
     rescue ::Aws::Errors::ServiceError
@@ -25,7 +30,14 @@ module AssetCloud
     end
 
     def write(key, data, options = {})
-      object = cloud.s3_bucket(key).object(absolute_key(key))
+      options = options.dup
+
+      bucket = cloud.s3_bucket(key)
+      if encryption_key = options.delete(:encryption_key)
+        bucket = encrypted_bucket(bucket, encryption_key)
+      end
+
+      object = bucket.object(absolute_key(key))
       object.put(options.merge(body: data))
     end
 
@@ -45,6 +57,22 @@ module AssetCloud
     end
 
     private
+
+    class EncryptionClient < Aws::S3::Encryption::Client
+      # See: https://github.com/aws/aws-sdk-ruby/pull/2221
+      def config
+        @client.config
+      end
+    end
+
+    def encrypted_bucket(source_bucket, key)
+      Aws::S3::Resource.new(
+        client: EncryptionClient.new(
+          client: source_bucket.client,
+          encryption_key: key,
+        )
+      ).bucket(source_bucket.name)
+    end
 
     def path_prefix
       @path_prefix ||= @cloud.url
