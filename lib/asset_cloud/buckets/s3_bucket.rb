@@ -58,16 +58,9 @@ module AssetCloud
 
     private
 
-    class EncryptionClient < Aws::S3::Encryption::Client
-      # See: https://github.com/aws/aws-sdk-ruby/pull/2221
-      def config
-        @client.config
-      end
-    end
-
     def encrypted_bucket(source_bucket, key)
       Aws::S3::Resource.new(
-        client: EncryptionClient.new(
+        client: Aws::S3::Encryption::Client.new(
           client: source_bucket.client,
           encryption_key: key,
         )
