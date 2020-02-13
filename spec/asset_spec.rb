@@ -173,5 +173,43 @@ describe "Asset" do
     end
   end
 
+  describe "comparable" do
+    before do
+      @key = "products/key.txt"
+      @asset = AssetCloud::Asset.new(@cloud, @key)
+    end
 
+    context "comparing to instance of Asset class" do
+      it "is equal if cloud and key of both assets are equal" do
+        other_asset = AssetCloud::Asset.new(@cloud, @key)
+
+        expect(@asset == other_asset).to eq(true)
+      end
+
+      it "is not equal if cloud of both assets are not equal" do
+        other_cloud = double('Cloud2', :asset_extension_classes_for_bucket => [], :object_id => 999)
+        other_asset = AssetCloud::Asset.new(other_cloud, @key)
+
+        expect(@asset == other_asset).to eq(false)
+      end
+
+      it "is not equal if key of both assets are not equal" do
+        other_key = "products/other_key.txt"
+        other_asset = AssetCloud::Asset.new(@cloud, other_key)
+
+        expect(@asset == other_asset).to eq(false)
+      end
+    end
+
+    context "comparing to instance of non-Asset class" do
+      it "is not equal to a non-Asset object" do
+        AssetCloud::Asset.new(@cloud, "products/foo, bar.txt", "data")
+
+        expect(@asset == "some_string").to eq(false)
+        expect(@asset == :some_symbol).to eq(false)
+        expect(@asset == []).to eq(false)
+        expect(@asset == nil).to eq(false)
+      end
+    end
+  end
 end
