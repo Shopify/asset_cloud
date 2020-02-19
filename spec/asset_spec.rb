@@ -202,6 +202,11 @@ describe "Asset" do
         expect(@asset == :some_symbol).to eq(false)
         expect(@asset == []).to eq(false)
         expect(@asset == nil).to eq(false)
+
+        expect(@asset <=> "some_string").to eq(nil)
+        expect(@asset <=> :some_symbol).to eq(nil)
+        expect(@asset <=> []).to eq(nil)
+        expect(@asset <=> nil).to eq(nil)
       end
     end
   end

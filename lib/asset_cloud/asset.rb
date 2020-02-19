@@ -34,8 +34,7 @@ module AssetCloud
     end
 
     def <=>(other)
-      return 1 unless other.respond_to?(:key)
-      key <=> other.key
+      key <=> other.try(:key)
     end
 
     def new_asset?
