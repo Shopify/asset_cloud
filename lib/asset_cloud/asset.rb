@@ -34,7 +34,7 @@ module AssetCloud
     end
 
     def <=>(other)
-      return 1 unless other.is_a?(Asset)
+      return 1 unless other.respond_to?(:key)
       key <=> other.key
     end
 
