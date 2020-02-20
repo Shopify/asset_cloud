@@ -186,13 +186,6 @@ describe "Asset" do
         expect(@asset == other_asset).to eq(true)
       end
 
-      it "is not equal if cloud of both assets are not equal" do
-        other_cloud = double('Cloud2', :asset_extension_classes_for_bucket => [], :object_id => 999)
-        other_asset = AssetCloud::Asset.new(other_cloud, @key)
-
-        expect(@asset == other_asset).to eq(false)
-      end
-
       it "is not equal if key of both assets are not equal" do
         other_key = "products/other_key.txt"
         other_asset = AssetCloud::Asset.new(@cloud, other_key)
@@ -209,6 +202,11 @@ describe "Asset" do
         expect(@asset == :some_symbol).to eq(false)
         expect(@asset == []).to eq(false)
         expect(@asset == nil).to eq(false)
+
+        expect(@asset <=> "some_string").to eq(nil)
+        expect(@asset <=> :some_symbol).to eq(nil)
+        expect(@asset <=> []).to eq(nil)
+        expect(@asset <=> nil).to eq(nil)
       end
     end
   end

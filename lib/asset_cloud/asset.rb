@@ -34,13 +34,7 @@ module AssetCloud
     end
 
     def <=>(other)
-      return 1 unless other.is_a?(Asset)
-      compare_cloud = cloud.object_id <=> other.cloud.object_id
-      if compare_cloud == 0
-        key <=> other.key
-      else
-        compare_cloud
-      end
+      key <=> other.try(:key)
     end
 
     def new_asset?
