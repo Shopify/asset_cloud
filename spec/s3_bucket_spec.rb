@@ -6,7 +6,7 @@ class S3Cloud < AssetCloud::Base
   attr_accessor :s3_connection, :s3_bucket_name
 
   def s3_bucket(key)
-    s3_connection.buckets[s3_bucket_name]
+    s3_connection.bucket(s3_bucket_name)
   end
 end
 
@@ -27,21 +27,25 @@ describe AssetCloud::S3Bucket do
   end
 
   it "#ls should return assets with proper keys" do
-    collection = MockS3Interface::Collection.new(nil, ["#{@cloud.url}/tmp/blah.gif", "#{@cloud.url}/tmp/add_to_cart.gif"])
+    collection = ["#{@cloud.url}/tmp/blah.gif", "#{@cloud.url}/tmp/add_to_cart.gif"].map do |key|
+      MockS3Interface::S3Object.new(nil, key)
+    end
     expect_any_instance_of(MockS3Interface::Bucket).to receive(:objects).and_return(collection)
+
     ls = @bucket.ls('tmp')
-    ls.first.class.should == AssetCloud::Asset
-    ls.map(&:key).should == ['tmp/blah.gif', 'tmp/add_to_cart.gif']
+
+    expect(ls).to all(be_an(AssetCloud::Asset))
+    expect(ls.map(&:key) - ['tmp/blah.gif', 'tmp/add_to_cart.gif']).to be_empty
   end
 
   it "#delete should not ignore errors when deleting" do
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_raise(StandardError)
+    expect_any_instance_of(MockS3Interface::NullS3Object).to receive(:delete).and_raise(StandardError)
 
     expect { @bucket.delete('assets/fail.gif') }.to raise_error(StandardError)
   end
 
   it "#delete should always return true" do
-    expect_any_instance_of(MockS3Interface::Bucket).to receive(:delete).and_return(nil)
+    expect_any_instance_of(MockS3Interface::NullS3Object).to receive(:delete).and_return(nil)
 
     @bucket.delete('assets/fail.gif').should == true
   end
