@@ -29,6 +29,7 @@ require 'asset_cloud/asset_extension'
 AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
   include AssetCloud::Callbacks
+  # Callbacks
   callback_methods :write, :delete
 end
 
