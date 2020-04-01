@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.summary = %q{An abstraction layer around arbitrary and diverse asset stores.}
   s.description = %q{An abstraction layer around arbitrary and diverse asset stores.}
 
-  s.required_ruby_version = '>= 2.2.0'
+  s.required_ruby_version = '>= 2.5.0'
 
   s.email = %q{developers@shopify.com}
   s.homepage = %q{http://github.com/Shopify/asset_cloud}
