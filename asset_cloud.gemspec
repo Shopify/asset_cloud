@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{asset_cloud}
-  s.version = "2.4.0"
+  s.version = "2.5.0"
 
   s.authors = %w(Shopify)
   s.summary = %q{An abstraction layer around arbitrary and diverse asset stores.}
@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   s.add_dependency 'activesupport'
+
+  s.metadata['allowed_push_host'] = "https://rubygems.org"
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rake'
