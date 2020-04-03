@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   s.add_dependency 'activesupport'
+  s.add_dependency 'addressable'
 
   s.metadata['allowed_push_host'] = "https://rubygems.org"
 

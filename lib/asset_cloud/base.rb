@@ -1,5 +1,3 @@
-require 'uri'
-
 module AssetCloud
 
   class IllegalPath < StandardError
@@ -93,7 +91,7 @@ module AssetCloud
     end
 
     def url_for(key, options={})
-      File.join(@url, URI.encode(key))
+      File.join(@url, Addressable::URI.encode_component(key, Addressable::URI::CharacterClasses::PATH))
     end
 
     def path_for(key)

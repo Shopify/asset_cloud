@@ -1,3 +1,4 @@
+require 'addressable'
 require 'active_support'
 
 # Core
