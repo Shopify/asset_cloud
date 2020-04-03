@@ -91,7 +91,7 @@ module AssetCloud
     end
 
     def url_for(key, options={})
-      File.join(@url, Addressable::URI.encode_component(key, Addressable::URI::CharacterClasses::PATH))
+      File.join(@url, Addressable::URI.escape(key))
     end
 
     def path_for(key)
