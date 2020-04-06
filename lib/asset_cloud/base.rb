@@ -1,3 +1,5 @@
+require 'uri/rfc2396_parser'
+
 module AssetCloud
 
   class IllegalPath < StandardError
@@ -26,6 +28,8 @@ module AssetCloud
         )
       )\z/x
     MATCH_BUCKET = /^(\w+)(\/|$)/
+
+    URI_PARSER = URI::RFC2396_Parser.new
 
     attr_accessor :url, :root
 
@@ -91,7 +95,7 @@ module AssetCloud
     end
 
     def url_for(key, options={})
-      File.join(@url, Addressable::URI.escape(key))
+      File.join(@url, URI_PARSER.escape(key))
     end
 
     def path_for(key)
