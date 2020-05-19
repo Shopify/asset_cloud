@@ -16,20 +16,20 @@ describe AssetCloud::VersionedMemoryBucket do
 
   describe '#versioned?' do
     it "should return true" do
-      @fs.buckets[:memory].versioned?.should == true
+      expect(@fs.buckets[:memory].versioned?).to eq(true)
     end
   end
 
   describe '#read_version' do
     it "should return the appropriate data when given a key and version" do
-      @fs.read_version('memory/foo', 1).should == 'one'
-      @fs.read_version('memory/foo', 3).should == 'three'
+      expect(@fs.read_version('memory/foo', 1)).to eq('one')
+      expect(@fs.read_version('memory/foo', 3)).to eq('three')
     end
   end
 
   describe '#versions' do
     it "should return a list of available version identifiers for the given key" do
-      @fs.versions('memory/foo').should == [1,2,3]
+      expect(@fs.versions('memory/foo')).to eq([1,2,3])
     end
   end
 

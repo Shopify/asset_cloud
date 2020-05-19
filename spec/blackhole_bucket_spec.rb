@@ -16,12 +16,12 @@ describe BlackholeCloud do
   end
 
   it "should return nil for non existent files" do
-    @fs['tmp/image.jpg'].exist?.should == false
+    expect(@fs['tmp/image.jpg'].exist?).to eq(false)
   end
 
   it "should still return nil, even if you wrote something there" do
     @fs['tmp/image.jpg'] = 'test'
-    @fs['tmp/image.jpg'].exist?.should == false
+    expect(@fs['tmp/image.jpg'].exist?).to eq(false)
   end
 
   describe "when using a sub path" do
@@ -30,12 +30,12 @@ describe BlackholeCloud do
     end
 
     it "should return nil for non existent files" do
-      @fs['tmp/image.jpg'].exist?.should == false
+      expect(@fs['tmp/image.jpg'].exist?).to eq(false)
     end
 
     it "should still return nil, even if you wrote something there" do
       @fs['tmp/image.jpg'] = 'test'
-      @fs['tmp/image.jpg'].exist?.should == false
+      expect(@fs['tmp/image.jpg'].exist?).to eq(false)
     end
   end
 end

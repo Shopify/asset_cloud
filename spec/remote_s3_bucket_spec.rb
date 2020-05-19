@@ -58,7 +58,7 @@ describe 'Remote test for AssetCloud::S3Bucket', if: ENV['AWS_ACCESS_KEY_ID'] &&
   it "#delete should always return true" do
     @cloud['tmp/test1.txt'] = 'test1'
 
-    @bucket.delete('tmp/test1.txt').should == true
+    expect(@bucket.delete('tmp/test1.txt')).to eq(true)
   end
 
   it "#stat should get metadata from S3" do
@@ -66,8 +66,8 @@ describe 'Remote test for AssetCloud::S3Bucket', if: ENV['AWS_ACCESS_KEY_ID'] &&
     value = 'hello world'
     @cloud.build('tmp/new_file.test', value).store
     metadata = @bucket.stat('tmp/new_file.test')
-    metadata.size.should == value.size
-    metadata.updated_at.should >= start_time
+    expect(metadata.size).to eq(value.size)
+    expect(metadata.updated_at).to be >= start_time
   end
 
   it "#stat a missing asset" do
@@ -81,7 +81,7 @@ describe 'Remote test for AssetCloud::S3Bucket', if: ENV['AWS_ACCESS_KEY_ID'] &&
     key = 'tmp/new_file.txt'
     @bucket.write(key, value)
     data = @bucket.read(key)
-    data.should == value
+    expect(data).to eq(value)
   end
 
   it "#read a missing asset" do
@@ -94,6 +94,6 @@ describe 'Remote test for AssetCloud::S3Bucket', if: ENV['AWS_ACCESS_KEY_ID'] &&
     options = {range: 0...5}
     @bucket.write(key, value)
     data = @bucket.read(key, options)
-    data.should == 'hello'
+    expect(data).to eq('hello')
   end
 end

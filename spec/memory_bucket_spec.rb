@@ -14,19 +14,19 @@ describe AssetCloud::MemoryBucket do
   describe 'modifying items in subfolder' do
 
     it "should return nil when file does not exist" do
-      @fs['memory/essay.txt'].exist?.should == false
+      expect(@fs['memory/essay.txt'].exist?).to eq(false)
     end
 
     it "should return set content when asked for the same file" do
       @fs['memory/essay.txt'] = 'text'
-      @fs['memory/essay.txt'].value.should == 'text'
+      expect(@fs['memory/essay.txt'].value).to eq('text')
     end
 
   end
 
   describe "#versioned?" do
     it "should return false" do
-      @fs.buckets[:memory].versioned?.should == false
+      expect(@fs.buckets[:memory].versioned?).to eq(false)
     end
   end
 
@@ -38,11 +38,11 @@ describe AssetCloud::MemoryBucket do
     end
 
     it "should return a list of assets which start with the given prefix" do
-      @fs.buckets[:memory].ls('memory/a').size.should == 2
+      expect(@fs.buckets[:memory].ls('memory/a').size).to eq(2)
     end
 
     it "should return a list of all assets when a prefix is not given" do
-      @fs.buckets[:memory].ls.size.should == 4
+      expect(@fs.buckets[:memory].ls.size).to eq(4)
     end
   end
 end
