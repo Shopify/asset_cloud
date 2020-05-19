@@ -21,67 +21,67 @@ describe BasicCloud do
   end
 
   it "should raise invalid bucket if none is given" do
-    @fs['image.jpg'].exist?.should == false
+    expect(@fs['image.jpg'].exist?).to eq(false)
   end
 
 
   it "should be backed by a file system bucket" do
-    @fs['products/key.txt'].exist?.should == true
+    expect(@fs['products/key.txt'].exist?).to eq(true)
   end
 
   it "should raise when listing non existing buckets" do
-    @fs.ls('products').should == [AssetCloud::Asset.new(@fs, 'products/key.txt')]
+    expect(@fs.ls('products')).to eq([AssetCloud::Asset.new(@fs, 'products/key.txt')])
   end
 
 
   it "should allow you to create new assets" do
     obj = @fs.build('new_file.test')
-    obj.should be_an_instance_of(AssetCloud::Asset)
-    obj.cloud.should be_an_instance_of(BasicCloud)
+    expect(obj).to be_an_instance_of(AssetCloud::Asset)
+    expect(obj.cloud).to be_an_instance_of(BasicCloud)
   end
 
   it "should raise error when using with minus relative or absolute paths" do
-    lambda { @fs['../test']  }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['/test']    }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['.../test'] }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['./test']   }.should raise_error(AssetCloud::IllegalPath)
+    expect { @fs['../test']  }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['/test']    }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['.../test'] }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['./test']   }.to raise_error(AssetCloud::IllegalPath)
   end
 
   it "should raise error when filename has trailing period" do
-    lambda { @fs['test.']             }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['/test/testfile.']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/directory/.']  }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['/test/testfile .']  }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/directory /.'] }.should raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test.']             }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['/test/testfile.']   }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/directory/.']  }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['/test/testfile .']  }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/directory /.'] }.to raise_error(AssetCloud::IllegalPath)
   end
 
   it "should raise error when filename ends with space" do
-    lambda { @fs['test ']             }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['/test/testfile ']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/directory/ ']  }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test. ']            }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['/test/testfile. ']  }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/directory/. '] }.should raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test ']             }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['/test/testfile ']   }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/directory/ ']  }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test. ']            }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['/test/testfile. ']  }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/directory/. '] }.to raise_error(AssetCloud::IllegalPath)
   end
 
   it "should raise error when filename ends with slash" do
-    lambda { @fs['test/']             }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/directory/']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test /']            }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['/test/testfile /']  }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/directory//']  }.should raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/']             }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/directory/']   }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test /']            }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['/test/testfile /']  }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/directory//']  }.to raise_error(AssetCloud::IllegalPath)
   end
 
   it "should raise error when using with minus relative even after another directory" do
-    lambda { @fs['test/../test']      }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/../../test']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test/../../../test']}.should raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/../test']      }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/../../test']   }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test/../../../test']}.to raise_error(AssetCloud::IllegalPath)
   end
 
   it "should raise an error when using names with combinations of '.' and ' '" do
-    lambda { @fs['test. . . .. ... .. . ']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test. .']   }.should raise_error(AssetCloud::IllegalPath)
-    lambda { @fs['test.   .test2']   }.should raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test. . . .. ... .. . ']   }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test. .']   }.to raise_error(AssetCloud::IllegalPath)
+    expect { @fs['test.   .test2']   }.to raise_error(AssetCloud::IllegalPath)
   end
 
   it "should allow filenames with repeating dots" do
@@ -125,40 +125,40 @@ describe BasicCloud do
   end
 
   it "should compute complete urls to assets" do
-    @fs.url_for('products/[key] with spaces.txt?foo=1&bar=2').should == 'http://assets/files/products/[key]%20with%20spaces.txt?foo=1&bar=2'
+    expect(@fs.url_for('products/[key] with spaces.txt?foo=1&bar=2')).to eq('http://assets/files/products/[key]%20with%20spaces.txt?foo=1&bar=2')
   end
 
   describe "#find" do
     it "should return the appropriate asset when one exists" do
       asset = @fs.find('products/key.txt')
-      asset.key.should == 'products/key.txt'
-      asset.value.should == 'value'
+      expect(asset.key).to eq('products/key.txt')
+      expect(asset.value).to eq('value')
     end
     it "should raise AssetNotFoundError when the asset doesn't exist" do
-      lambda { @fs.find('products/not-there.txt') }.should raise_error(AssetCloud::AssetNotFoundError)
+      expect { @fs.find('products/not-there.txt') }.to raise_error(AssetCloud::AssetNotFoundError)
     end
   end
 
   describe "#[]" do
     it "should return the appropriate asset when one exists" do
       asset = @fs['products/key.txt']
-      asset.key.should == 'products/key.txt'
-      asset.value.should == 'value'
+      expect(asset.key).to eq('products/key.txt')
+      expect(asset.value).to eq('value')
     end
     it "should not raise any errors when the asset doesn't exist" do
-      lambda { @fs['products/not-there.txt'] }.should_not raise_error
+      expect { @fs['products/not-there.txt'] }.not_to raise_error
     end
   end
 
   describe "#move" do
     it "should return move a resource" do
       asset = @fs['products/key.txt']
-      asset.key.should == 'products/key.txt'
-      asset.value.should == 'value'
+      expect(asset.key).to eq('products/key.txt')
+      expect(asset.value).to eq('value')
       @fs.move('products/key.txt', 'products/key2.txt')
       new_asset = @fs['products/key2.txt']
-      new_asset.key.should == 'products/key2.txt'
-      new_asset.value.should == 'value'
+      expect(new_asset.key).to eq('products/key2.txt')
+      expect(new_asset.value).to eq('value')
       expect {@fs['products/key.txt'].value }.to raise_error(AssetCloud::AssetNotFoundError)
       @fs.move('products/key2.txt', 'products/key.txt')
     end
@@ -167,25 +167,25 @@ describe BasicCloud do
   describe "#[]=" do
     it "should write through the Asset object (and thus run any callbacks on the asset)" do
       special_asset = double(:special_asset)
-      special_asset.should_receive(:value=).with('fancy fancy!')
-      special_asset.should_receive(:store)
-      SpecialAsset.should_receive(:at).and_return(special_asset)
+      expect(special_asset).to receive(:value=).with('fancy fancy!')
+      expect(special_asset).to receive(:store)
+      expect(SpecialAsset).to receive(:at).and_return(special_asset)
       @fs['special/fancy.txt'] = 'fancy fancy!'
     end
   end
 
   describe "#bucket" do
     it "should allow specifying a class to use for assets in this bucket" do
-      @fs['assets/rails_logo.gif'].should be_instance_of(AssetCloud::Asset)
-      @fs['special/fancy.txt'].should be_instance_of(SpecialAsset)
+      expect(@fs['assets/rails_logo.gif']).to be_instance_of(AssetCloud::Asset)
+      expect(@fs['special/fancy.txt']).to be_instance_of(SpecialAsset)
 
-      @fs.build('assets/foo').should be_instance_of(AssetCloud::Asset)
-      @fs.build('special/foo').should be_instance_of(SpecialAsset)
+      expect(@fs.build('assets/foo')).to be_instance_of(AssetCloud::Asset)
+      expect(@fs.build('special/foo')).to be_instance_of(SpecialAsset)
     end
 
     it "should allow specifying a proc that determines the class to use, using the default bucket when returning nil" do
-      @fs.build('conditional/default.js').should be_instance_of(AssetCloud::Asset)
-      @fs.build('conditional/better.liquid').should be_instance_of(LiquidAsset)
+      expect(@fs.build('conditional/default.js')).to be_instance_of(AssetCloud::Asset)
+      expect(@fs.build('conditional/better.liquid')).to be_instance_of(LiquidAsset)
     end
 
     it "should raise " do
@@ -197,16 +197,16 @@ describe BasicCloud do
     it "should match following stuff " do
 
       'products/key.txt' =~ AssetCloud::Base::MATCH_BUCKET
-      $1.should == 'products'
+      expect($1).to eq('products')
 
       'products/subpath/key.txt' =~ AssetCloud::Base::MATCH_BUCKET
-      $1.should == 'products'
+      expect($1).to eq('products')
 
       'key.txt' =~ AssetCloud::Base::MATCH_BUCKET
-      $1.should == nil
+      expect($1).to eq(nil)
 
       'products' =~ AssetCloud::Base::MATCH_BUCKET
-      $1.should == 'products'
+      expect($1).to eq('products')
     end
   end
 end

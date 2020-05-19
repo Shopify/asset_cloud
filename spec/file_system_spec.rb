@@ -21,31 +21,31 @@ describe FileSystemCloud do
   end
 
   it "should use invalid bucket for random directories" do
-    @fs.bucket_for('does-not-exist/file.txt').should be_an_instance_of(AssetCloud::InvalidBucket)
+    expect(@fs.bucket_for('does-not-exist/file.txt')).to be_an_instance_of(AssetCloud::InvalidBucket)
   end
 
   it "should use filesystem bucket for products/ and tmp/  directories" do
-    @fs.bucket_for('products/file.txt').should be_an_instance_of(AssetCloud::FileSystemBucket)
-    @fs.bucket_for('tmp/file.txt').should be_an_instance_of(AssetCloud::FileSystemBucket)
+    expect(@fs.bucket_for('products/file.txt')).to be_an_instance_of(AssetCloud::FileSystemBucket)
+    expect(@fs.bucket_for('tmp/file.txt')).to be_an_instance_of(AssetCloud::FileSystemBucket)
   end
 
   it "should return Asset for existing files" do
-    @fs['products/key.txt'].exist?.should == true
-    @fs['products/key.txt'].should be_an_instance_of(AssetCloud::Asset)
+    expect(@fs['products/key.txt'].exist?).to eq(true)
+    expect(@fs['products/key.txt']).to be_an_instance_of(AssetCloud::Asset)
   end
 
   it "should be able to test if a file exists or not" do
-    @fs.stat('products/key.txt').exist?.should == true
-    @fs.stat('products/key2.txt').exist?.should == false
+    expect(@fs.stat('products/key.txt').exist?).to eq(true)
+    expect(@fs.stat('products/key2.txt').exist?).to eq(false)
   end
 
   it "should be able to list files" do
-    @fs.ls('products').collect(&:key).should == ['products/key.txt']
+    expect(@fs.ls('products').collect(&:key)).to eq(['products/key.txt'])
   end
 
   describe 'when modifying file system' do
     it "should call write after storing an asset" do
-      @fs.buckets[:tmp].should_receive(:write).with('tmp/new_file.test', 'hello world').and_return(true)
+      expect(@fs.buckets[:tmp]).to receive(:write).with('tmp/new_file.test', 'hello world').and_return(true)
 
       @fs.build('tmp/new_file.test', 'hello world').store
     end
@@ -53,20 +53,20 @@ describe FileSystemCloud do
     it "should be able to create new files" do
       @fs.build('tmp/new_file.test', 'hello world').store
 
-      @fs.stat('tmp/new_file.test').exist.should == true
+      expect(@fs.stat('tmp/new_file.test').exist).to eq(true)
     end
 
     it "should be able to create new files with simple assignment" do
       @fs['tmp/new_file.test'] = 'hello world'
 
-      @fs.stat('tmp/new_file.test').exist.should == true
+      expect(@fs.stat('tmp/new_file.test').exist).to eq(true)
     end
 
     it "should create directories as needed" do
       @fs.build('tmp/new_file.test', 'hello world').store
 
-      @fs['tmp/new_file.test'].exist?.should == true
-      @fs['tmp/new_file.test'].value.should == 'hello world'
+      expect(@fs['tmp/new_file.test'].exist?).to eq(true)
+      expect(@fs['tmp/new_file.test'].value).to eq('hello world')
     end
 
   end

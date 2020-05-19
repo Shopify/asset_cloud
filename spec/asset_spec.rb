@@ -13,64 +13,64 @@ describe "Asset" do
     end
 
     it "should be return new_asset? => true" do
-      @asset.new_asset?.should == true
+      expect(@asset.new_asset?).to eq(true)
     end
 
     it "should have a key" do
-      @asset.key.should == 'products/key.txt'
+      expect(@asset.key).to eq('products/key.txt')
     end
 
     it "should have a value of nil" do
 
-      @asset.value.should == nil
+      expect(@asset.value).to eq(nil)
     end
 
     it "should have a basename" do
-      @asset.basename.should == 'key.txt'
+      expect(@asset.basename).to eq('key.txt')
     end
 
     it "should have a basename without ext (if required)" do
-      @asset.basename_without_ext.should == 'key'
+      expect(@asset.basename_without_ext).to eq('key')
     end
 
     it "should have an ext" do
-      @asset.extname.should == '.txt'
+      expect(@asset.extname).to eq('.txt')
     end
 
     it "should have a relative_key_without_ext" do
-      @asset.relative_key_without_ext.should == 'key'
+      expect(@asset.relative_key_without_ext).to eq('key')
     end
 
     it "should have a bucket_name" do
-      @asset.bucket_name.should == 'products'
+      expect(@asset.bucket_name).to eq('products')
     end
 
     it "should have a bucket" do
-      @cloud.should_receive(:buckets).and_return(:products => :products_bucket)
-      @asset.bucket.should == :products_bucket
+      expect(@cloud).to receive(:buckets).and_return(:products => :products_bucket)
+      expect(@asset.bucket).to eq(:products_bucket)
     end
 
     it "should store data to the bucket" do
-      @cloud.should_receive(:write).with("products/key.txt", 'value')
+      expect(@cloud).to receive(:write).with("products/key.txt", 'value')
 
       @asset.value = 'value'
       @asset.store
     end
 
     it "should not try to store data when it's value is nil" do
-      @cloud.should_receive(:write).never
+      expect(@cloud).to receive(:write).never
 
       @asset.store
     end
 
     it "should not try to read data from bucket if its a new_asset" do
-      @cloud.should_receive(:read).never
+      expect(@cloud).to receive(:read).never
 
-      @asset.value.should == nil
+      expect(@asset.value).to eq(nil)
     end
 
     it "should simply ignore calls to delete" do
-      @cloud.should_receive(:delete).never
+      expect(@cloud).to receive(:delete).never
 
       @asset.delete
     end
@@ -84,11 +84,11 @@ describe "Asset" do
     end
 
     it "should have a relative_key_without_ext" do
-      @asset.relative_key_without_ext.should == 'retail/key'
+      expect(@asset.relative_key_without_ext).to eq('retail/key')
     end
 
     it "should have a relative_key" do
-      @asset.relative_key.should == 'retail/key.txt'
+      expect(@asset.relative_key).to eq('retail/key.txt')
     end
   end
 
@@ -99,27 +99,27 @@ describe "Asset" do
     end
 
     it "should be return new_asset? => true" do
-      @asset.new_asset?.should == true
+      expect(@asset.new_asset?).to eq(true)
     end
 
 
     it "should have a value of 'value'" do
-      @asset.value.should == 'value'
+      expect(@asset.value).to eq('value')
     end
 
     it "should return false when asked if it exists because its still a new_asset" do
-      @asset.exist?.should == false
+      expect(@asset.exist?).to eq(false)
     end
 
 
     it "should not try to read data from bucket if its a new_asset" do
-      @cloud.should_receive(:read).never
+      expect(@cloud).to receive(:read).never
 
-      @asset.value.should == 'value'
+      expect(@asset.value).to eq('value')
     end
 
     it "should write data to the bucket" do
-      @cloud.should_receive(:write).with("products/key.txt", 'value')
+      expect(@cloud).to receive(:write).with("products/key.txt", 'value')
       @asset.store
     end
 
@@ -131,45 +131,45 @@ describe "Asset" do
     end
 
     it "should be return new_asset? => false" do
-      @asset.new_asset?.should == false
+      expect(@asset.new_asset?).to eq(false)
     end
 
     it "should indicate that it exists" do
 
-      @asset.exist?.should == true
+      expect(@asset.exist?).to eq(true)
     end
 
 
     it "should read the value from the bucket" do
-      @asset.value.should == 'value'
+      expect(@asset.value).to eq('value')
     end
 
 
     it "should simply ignore calls to delete" do
-      @cloud.should_receive(:delete).and_return(true)
+      expect(@cloud).to receive(:delete).and_return(true)
 
       @asset.delete
     end
 
     it "should ask the bucket to create a full url" do
-      @cloud.should_receive(:url_for).with('products/key.txt', {}).and_return('http://assets/products/key.txt')
+      expect(@cloud).to receive(:url_for).with('products/key.txt', {}).and_return('http://assets/products/key.txt')
 
-      @asset.url.should == 'http://assets/products/key.txt'
+      expect(@asset.url).to eq('http://assets/products/key.txt')
     end
 
     it "should ask the bucket whether or not it is versioned" do
       bucket = double('Bucket')
-      @cloud.should_receive(:buckets).and_return(:products => bucket)
-      bucket.should_receive(:versioned?).and_return(true)
+      expect(@cloud).to receive(:buckets).and_return(:products => bucket)
+      expect(bucket).to receive(:versioned?).and_return(true)
 
-      @asset.versioned?.should == true
+      expect(@asset.versioned?).to eq(true)
     end
 
     it "should validate its key" do
       asset = AssetCloud::Asset.new(@cloud, "products/foo, bar.txt", "data")
-      asset.store.should == false
-      asset.errors.size.should == 1
-      asset.errors.first.should =~ /illegal characters/
+      expect(asset.store).to eq(false)
+      expect(asset.errors.size).to eq(1)
+      expect(asset.errors.first).to match(/illegal characters/)
     end
   end
 
