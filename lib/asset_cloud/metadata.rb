@@ -1,6 +1,6 @@
 module AssetCloud
   class Metadata
-    attr_accessor :exist, :size, :created_at, :updated_at, :value_hash
+    attr_accessor :exist, :size, :created_at, :updated_at, :value_hash, :checksum
 
     def new?
       !self.exist
@@ -10,9 +10,16 @@ module AssetCloud
       self.exist
     end
 
-    def initialize(exist, size = nil, created_at = nil, updated_at = nil, value_hash = nil)
-      self.exist, self.size, self.created_at, self.updated_at, self.value_hash = exist, size, created_at, updated_at, value_hash
+    # rubocop:disable Metrics/ParameterLists
+    def initialize(exist, size = nil, created_at = nil, updated_at = nil, value_hash = nil, checksum = nil)
+      self.exist = exist
+      self.size = size
+      self.created_at = created_at
+      self.updated_at = updated_at
+      self.value_hash = value_hash
+      self.checksum = checksum
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def self.existing
       self.new(true)
