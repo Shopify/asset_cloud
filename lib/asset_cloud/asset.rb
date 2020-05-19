@@ -89,6 +89,10 @@ module AssetCloud
       metadata.value_hash
     end
 
+    def checksum
+      metadata.checksum
+    end
+
     def delete
       if new_asset?
         false
