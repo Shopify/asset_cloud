@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 class CallbackAsset < AssetCloud::Asset
@@ -21,12 +22,12 @@ class CallbackAsset < AssetCloud::Asset
   end
 
   def valid_value
-    add_error 'value is not "valid"' unless value == 'valid'
+    add_error('value is not "valid"') unless value == 'valid'
   end
 end
 
 class BasicCloud < AssetCloud::Base
-  bucket :callback_assets, AssetCloud::MemoryBucket, :asset_class => CallbackAsset
+  bucket :callback_assets, AssetCloud::MemoryBucket, asset_class: CallbackAsset
 end
 
 class CallbackCloud < AssetCloud::Base
@@ -39,6 +40,7 @@ class CallbackCloud < AssetCloud::Base
   before_write :callback_before_write
 
   def callback_before_write(*args); end
+
   def callback_after_write(*args); end
 end
 
@@ -50,7 +52,7 @@ class MethodRecordingCloud < AssetCloud::Base
   before_write :callback_before_write
   after_write :callback_before_write
 
-  def method_missing(method, *args)
+  def method_missing(method, *_args)
     @run_callbacks << method.to_sym
   end
 end
@@ -62,38 +64,36 @@ describe CallbackCloud do
   end
 
   it "should invoke callbacks after store" do
-    expect(@fs).to receive(:callback_before_write).with('tmp/file.txt', 'text').and_return(true)
-    expect(@fs).to receive(:callback_after_write).with('tmp/file.txt', 'text').and_return(true)
+    expect(@fs).to(receive(:callback_before_write).with('tmp/file.txt', 'text').and_return(true))
+    expect(@fs).to(receive(:callback_after_write).with('tmp/file.txt', 'text').and_return(true))
 
-
-    expect(@fs.write('tmp/file.txt', 'text')).to eq(true)
-    expect(@fs.read('tmp/file.txt')).to eq('text')
+    expect(@fs.write('tmp/file.txt', 'text')).to(eq(true))
+    expect(@fs.read('tmp/file.txt')).to(eq('text'))
   end
 
   it "should invoke callbacks after delete" do
-    expect(@fs).to receive(:callback_before_delete).with('tmp/file.txt').and_return(true)
-    expect(@fs).to receive(:callback_after_delete).with('tmp/file.txt').and_return(true)
+    expect(@fs).to(receive(:callback_before_delete).with('tmp/file.txt').and_return(true))
+    expect(@fs).to(receive(:callback_after_delete).with('tmp/file.txt').and_return(true))
 
-    expect(@fs.delete('tmp/file.txt')).to eq('foo')
+    expect(@fs.delete('tmp/file.txt')).to(eq('foo'))
   end
 
   it "should not invoke other callbacks when a before_ filter returns false" do
-    expect(@fs).to receive(:callback_before_delete)
+    expect(@fs).to(receive(:callback_before_delete)
       .with('tmp/file.txt')
-      .and_return(false)
-    expect(@fs).not_to receive(:callback_after_delete)
+      .and_return(false))
+    expect(@fs).not_to(receive(:callback_after_delete))
 
-    expect(@fs.delete('tmp/file.txt')).to eq(nil)
+    expect(@fs.delete('tmp/file.txt')).to(eq(nil))
   end
 
   it "should invoke callbacks even when constructing a new asset" do
-    expect(@fs).to receive(:callback_before_write).with('tmp/file.txt', 'hello').and_return(true)
-    expect(@fs).to receive(:callback_after_write).with('tmp/file.txt', 'hello').and_return(true)
-
+    expect(@fs).to(receive(:callback_before_write).with('tmp/file.txt', 'hello').and_return(true))
+    expect(@fs).to(receive(:callback_after_write).with('tmp/file.txt', 'hello').and_return(true))
 
     asset = @fs.build('tmp/file.txt')
     asset.value = 'hello'
-    expect(asset.store).to eq(true)
+    expect(asset.store).to(eq(true))
   end
 end
 
@@ -105,12 +105,12 @@ describe MethodRecordingCloud do
 
   it 'should record event when invoked' do
     @fs.write('tmp/file.txt', 'random data')
-    expect(@fs.run_callbacks).to eq([:callback_before_write, :callback_before_write])
+    expect(@fs.run_callbacks).to(eq([:callback_before_write, :callback_before_write]))
   end
 
   it 'should record event when assignment operator is used' do
     @fs['tmp/file.txt'] = 'random data'
-    expect(@fs.run_callbacks).to eq([:callback_before_write, :callback_before_write])
+    expect(@fs.run_callbacks).to(eq([:callback_before_write, :callback_before_write]))
   end
 end
 
@@ -122,25 +122,25 @@ describe CallbackAsset do
   end
 
   it "should run before_validate, then validate, then after validate, then before_store, then store" do
-    expect(@asset).to receive(:callback_before_store).and_return(true)
-    expect(@asset).not_to receive(:callback_after_delete)
+    expect(@asset).to(receive(:callback_before_store).and_return(true))
+    expect(@asset).not_to(receive(:callback_after_delete))
 
     @asset.value = 'foo'
-    expect(@asset.store).to eq(true)
-    expect(@asset.value).to eq('valid spice')
+    expect(@asset.store).to(eq(true))
+    expect(@asset.value).to(eq('valid spice'))
   end
 
   it "should run its after_delete callback after delete is called" do
-    expect(@asset).not_to receive(:callback_before_store)
-    expect(@asset).to receive(:callback_after_delete).and_return(true)
+    expect(@asset).not_to(receive(:callback_before_store))
+    expect(@asset).to(receive(:callback_after_delete).and_return(true))
 
-    expect(@asset.delete).to eq('bar')
+    expect(@asset.delete).to(eq('bar'))
   end
 
   it "not invoke other callbacks when a before_ filter returns false" do
-    expect(@asset).to receive(:callback_before_delete).and_return(false)
-    expect(@asset).not_to receive(:callback_after_delete)
+    expect(@asset).to(receive(:callback_before_delete).and_return(false))
+    expect(@asset).not_to(receive(:callback_after_delete))
 
-    expect(@asset.delete).to eq(nil)
+    expect(@asset.delete).to(eq(nil))
   end
 end

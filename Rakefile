@@ -5,9 +5,10 @@ require 'rake'
 require 'rake/testtask'
 require 'rdoc/task'
 require 'rspec/core/rake_task'
+require 'rubocop/rake_task'
 
-desc 'Default: run unit tests.'
-task :default => [:spec]
+desc 'Default: run unit tests and style checks.'
+task default: [:spec, :rubocop]
 
 desc "Run all spec examples"
 RSpec::Core::RakeTask.new do |t|
@@ -23,3 +24,5 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('README')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+RuboCop::RakeTask.new
