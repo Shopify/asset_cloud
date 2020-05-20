@@ -23,19 +23,19 @@ describe ValidatedAsset do
 
   describe "#store" do
     it "should not store the asset unless validations pass" do
-      @cloud.should_receive(:write).with('dog_pound/fido', 'dog').and_return(true)
+      expect(@cloud).to receive(:write).with('dog_pound/fido', 'dog').and_return(true)
 
       @cat.store
-      @cat.store.should == false
-      @cat.errors.should == ['no cats allowed!']
-      @dog.store.should == true
+      expect(@cat.store).to eq(false)
+      expect(@cat.errors).to eq(['no cats allowed!'])
+      expect(@dog.store).to eq(true)
     end
 
     it "should store asset with warnings and save them in the warnings array" do
-      @dog.store.should == true
-      @dog.warnings.should == ['bad dog!', 'wet dog smell!']
-      @cat.store.should == false
-      @cat.warnings.should == []
+      expect(@dog.store).to eq(true)
+      expect(@dog.warnings).to eq(['bad dog!', 'wet dog smell!'])
+      expect(@cat.store).to eq(false)
+      expect(@cat.warnings).to eq([])
     end
   end
 
@@ -45,19 +45,19 @@ describe ValidatedAsset do
     end
 
     it "should return true when validations pass" do
-      @dog.store!.should == true
+      expect(@dog.store!).to eq(true)
     end
   end
 
   describe "#valid?" do
     it "should clear errors, run validations, and return validity" do
       @cat.store
-      @cat.errors.should == ['no cats allowed!']
-      @cat.valid?.should == false
-      @cat.errors.should == ['no cats allowed!']
+      expect(@cat.errors).to eq(['no cats allowed!'])
+      expect(@cat.valid?).to eq(false)
+      expect(@cat.errors).to eq(['no cats allowed!'])
       @cat.value = 'disguised feline'
-      @cat.valid?.should == true
-      @cat.errors.should be_empty
+      expect(@cat.valid?).to eq(true)
+      expect(@cat.errors).to be_empty
     end
   end
 end

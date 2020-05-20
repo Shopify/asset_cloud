@@ -104,7 +104,7 @@ describe AssetCloud::GCSBucket, if: ENV['GCS_PROJECT_ID'] && ENV['GCS_KEY_FILEPA
     @bucket.write(key, StringIO.new(value))
 
     data = @bucket.read(key)
-    data.should == value
+    expect(data).to eq(value)
   end
 
   it "#read raises AssetCloud::AssetNotFoundError if the file is not found" do

@@ -55,7 +55,7 @@ describe "AssetExtension" do
   describe "applicability" do
     it "should work" do
       asset = @cloud['cat_pen/cats.xml']
-      XmlAssetExtension.applies_to_asset?(asset).should == true
+      expect(XmlAssetExtension.applies_to_asset?(asset)).to eq(true)
     end
   end
 
@@ -63,31 +63,31 @@ describe "AssetExtension" do
     it "should be added to assets in the right bucket with the right extension" do
       asset = @cloud['cat_pen/cats.css']
       asset.value = 'foo'
-      asset.store.should == false
-      asset.errors.should == ["not enough curly brackets!"]
+      expect(asset.store).to eq(false)
+      expect(asset.errors).to eq(["not enough curly brackets!"])
     end
 
     it "should not squash existing validations on the asset" do
       asset = @cloud['dog_pound/cats.xml']
       asset.value = 'cats!'
-      asset.store.should == false
-      asset.errors.should == ['no cats allowed!', "not enough angle brackets!"]
+      expect(asset.store).to eq(false)
+      expect(asset.errors).to eq(['no cats allowed!', "not enough angle brackets!"])
     end
 
     it "should not apply to non-matching assets or those in exempted buckets" do
       asset = @cloud['cat_pen/cats.xml']
       asset.value = "xml"
-      asset.store.should == true
+      expect(asset.store).to eq(true)
     end
   end
 
   describe "callbacks" do
     it "should run alongside the asset's callbacks" do
       asset = @cloud['dog_pound/dogs.xml']
-      asset.should_receive(:asset_callback)
-      asset.extensions.first.should_receive(:xml_callback)
+      expect(asset).to receive(:asset_callback)
+      expect(asset.extensions.first).to receive(:xml_callback)
       asset.value = '<dogs/>'
-      asset.store.should == true
+      expect(asset.store).to eq(true)
     end
   end
 
@@ -96,7 +96,7 @@ describe "AssetExtension" do
       asset = @cloud['dog_pound/dogs.xml']
       asset.value = 'dogs'
       asset.turn_into_xml
-      asset.value.should == '<xml>dogs</xml>'
+      expect(asset.value).to eq('<xml>dogs</xml>')
     end
 
     it "does not swallow NotImplementedError" do

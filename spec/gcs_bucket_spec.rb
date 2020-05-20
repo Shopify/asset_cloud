@@ -107,7 +107,7 @@ describe AssetCloud::GCSBucket do
     expect_any_instance_of(Google::Cloud::Storage::File).to receive(:download).and_return(StringIO.new(value))
 
     data = @bucket.read(key)
-    data.should == value
+    expect(data).to eq(value)
   end
 
   it "#read raises AssetCloud::AssetNotFoundError if the file is not found" do
