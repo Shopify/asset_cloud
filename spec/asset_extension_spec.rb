@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 class NoCatsAsset < AssetCloud::Asset
@@ -5,6 +6,7 @@ class NoCatsAsset < AssetCloud::Asset
   before_store :asset_callback
 
   private
+
   def no_cats
     add_error('no cats allowed!') if value =~ /cat/i
   end
@@ -16,8 +18,9 @@ class CssAssetExtension < AssetCloud::AssetExtension
   validate :valid_css
 
   private
+
   def valid_css
-    add_error "not enough curly brackets!" unless asset.value =~ /\{.*\}/
+    add_error("not enough curly brackets!") unless asset.value =~ /\{.*\}/
   end
 end
 
@@ -32,17 +35,18 @@ class XmlAssetExtension < AssetCloud::AssetExtension
   end
 
   private
+
   def valid_xml
-    add_error "not enough angle brackets!" unless asset.value =~ /\<.*\>/
+    add_error("not enough angle brackets!") unless asset.value =~ /\<.*\>/
   end
 end
 
 class CatsAndDogsCloud < AssetCloud::Base
-  bucket :dog_pound, AssetCloud::MemoryBucket, :asset_class => NoCatsAsset
+  bucket :dog_pound, AssetCloud::MemoryBucket, asset_class: NoCatsAsset
   bucket :cat_pen, AssetCloud::MemoryBucket
 
-  asset_extensions CssAssetExtension, :only => :cat_pen
-  asset_extensions XmlAssetExtension, :except => :cat_pen
+  asset_extensions CssAssetExtension, only: :cat_pen
+  asset_extensions XmlAssetExtension, except: :cat_pen
 end
 
 describe "AssetExtension" do
@@ -55,7 +59,7 @@ describe "AssetExtension" do
   describe "applicability" do
     it "should work" do
       asset = @cloud['cat_pen/cats.xml']
-      expect(XmlAssetExtension.applies_to_asset?(asset)).to eq(true)
+      expect(XmlAssetExtension.applies_to_asset?(asset)).to(eq(true))
     end
   end
 
@@ -63,31 +67,31 @@ describe "AssetExtension" do
     it "should be added to assets in the right bucket with the right extension" do
       asset = @cloud['cat_pen/cats.css']
       asset.value = 'foo'
-      expect(asset.store).to eq(false)
-      expect(asset.errors).to eq(["not enough curly brackets!"])
+      expect(asset.store).to(eq(false))
+      expect(asset.errors).to(eq(["not enough curly brackets!"]))
     end
 
     it "should not squash existing validations on the asset" do
       asset = @cloud['dog_pound/cats.xml']
       asset.value = 'cats!'
-      expect(asset.store).to eq(false)
-      expect(asset.errors).to eq(['no cats allowed!', "not enough angle brackets!"])
+      expect(asset.store).to(eq(false))
+      expect(asset.errors).to(eq(['no cats allowed!', "not enough angle brackets!"]))
     end
 
     it "should not apply to non-matching assets or those in exempted buckets" do
       asset = @cloud['cat_pen/cats.xml']
       asset.value = "xml"
-      expect(asset.store).to eq(true)
+      expect(asset.store).to(eq(true))
     end
   end
 
   describe "callbacks" do
     it "should run alongside the asset's callbacks" do
       asset = @cloud['dog_pound/dogs.xml']
-      expect(asset).to receive(:asset_callback)
-      expect(asset.extensions.first).to receive(:xml_callback)
+      expect(asset).to(receive(:asset_callback))
+      expect(asset.extensions.first).to(receive(:xml_callback))
       asset.value = '<dogs/>'
-      expect(asset.store).to eq(true)
+      expect(asset.store).to(eq(true))
     end
   end
 
@@ -96,7 +100,7 @@ describe "AssetExtension" do
       asset = @cloud['dog_pound/dogs.xml']
       asset.value = 'dogs'
       asset.turn_into_xml
-      expect(asset.value).to eq('<xml>dogs</xml>')
+      expect(asset.value).to(eq('<xml>dogs</xml>'))
     end
 
     it "does not swallow NotImplementedError" do
@@ -106,9 +110,8 @@ describe "AssetExtension" do
 
       asset = @cloud['dog_pound/dogs.xml']
 
-      expect(asset).to respond_to(:my_unimplemented_extension)
-      expect { asset.my_unimplemented_extension }.to raise_error(NotImplementedError)
+      expect(asset).to(respond_to(:my_unimplemented_extension))
+      expect { asset.my_unimplemented_extension }.to(raise_error(NotImplementedError))
     end
   end
-
 end

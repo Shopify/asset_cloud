@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ostruct'
 
 class MockS3Interface
@@ -7,7 +8,7 @@ class MockS3Interface
 
   attr_reader :bucket_storage
 
-  def initialize(aws_access_key_id = nil, aws_secret_access_key = nil, params = {})
+  def initialize(_aws_access_key_id = nil, _aws_secret_access_key = nil, _params = {})
     @buckets = {}
   end
 
@@ -32,7 +33,7 @@ class MockS3Interface
 
     {
       content_length: options.body.size,
-      last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007")
+      last_modified: Time.parse("Mon Aug 27 17:37:51 UTC 2007"),
     }
   end
 
@@ -60,7 +61,7 @@ class MockS3Interface
       if options[:acl] && !VALID_ACLS.include?(options[:acl])
         raise "Invalid ACL `#{options[:acl].inspect}`, must be one of: #{VALID_ACLS.inspect}"
       end
-      
+
       options[:body] = options[:body].force_encoding(Encoding::BINARY)
 
       key = options.delete(:key)

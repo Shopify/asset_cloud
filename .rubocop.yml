@@ -1,0 +1,3 @@
+inherit_gem:
+  rubocop-shopify: rubocop.yml
+inherit_from: .rubocop_todo.yml
