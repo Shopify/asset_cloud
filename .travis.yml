@@ -4,3 +4,9 @@ before_install:
 rvm:
   - '2.5'
   - '2.6'
+  - '2.7'
+
+matrix:
+  exclude:
+    rvm: '2.7'
+    gemfile: gemfiles/Gemfile.activerecord52

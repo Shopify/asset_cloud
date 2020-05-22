@@ -17,7 +17,7 @@ module AssetCloud
       bucket.create_file(
         data,
         absolute_key(key),
-        options
+        **options,
       )
     end
 
