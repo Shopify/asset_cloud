@@ -4,6 +4,14 @@
 
 An abstraction layer around arbitrary and diverse asset stores.
 
+== Value Hash vs Checksum
+
++value_hash+ is intended as a *private* hash/checksum, not exposed to end users. Its underlying algorithm is private, and
+could change over time so should not be relied on by clients.
+
++checksum+ is intended as a *public* hash/checksum, exposed to end users. Its underlying algorithms is documented (e.g. MD5)
+and is not expected to change.
+
 == Installation
 
 === as a Gem

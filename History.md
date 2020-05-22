@@ -1,5 +1,9 @@
 # Asset Cloud Version History
 
+## Unreleased
+
+* Add checksum to metadata (https://github.com/Shopify/asset_cloud/pull/57)
+
 ## Version 2.2.2, 2016-02-11
 
 * Allow asset_class to be a proc which determines the class to use within a bucket (https://github.com/Shopify/asset_cloud/pull/15)
