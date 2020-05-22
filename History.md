@@ -1,8 +1,10 @@
 # Asset Cloud Version History
 
-## Unreleased
+## Version 2.6.0, 2020-05-22
 
 * Add checksum to metadata (https://github.com/Shopify/asset_cloud/pull/57)
+
+**Note:** There are versions between 2.2.2 and 2.6.0 not covered by the History.
 
 ## Version 2.2.2, 2016-02-11
 
