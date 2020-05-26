@@ -38,16 +38,29 @@ describe AssetCloud::GCSBucket do
     expect(file.class).to(eq(Google::Cloud::Storage::File))
   end
 
-  it "#write writes a file into the bucket" do
-    local_path = "#{directory}/products/key.txt"
-    key = 'test/key.txt'
-    expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
-      local_path,
-      "s#{@cloud.url}/#{key}",
-      {}
-    ))
+  if RUBY_VERSION >= '2.7'
+    it "#write writes a file into the bucket" do
+      local_path = "#{directory}/products/key.txt"
+      key = 'test/key.txt'
+      expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
+        local_path,
+        "s#{@cloud.url}/#{key}",
+      ))
 
-    @bucket.write(key, local_path)
+      @bucket.write(key, local_path)
+    end
+  else
+    it "#write writes a file into the bucket" do
+      local_path = "#{directory}/products/key.txt"
+      key = 'test/key.txt'
+      expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
+        local_path,
+        "s#{@cloud.url}/#{key}",
+        {}
+      ))
+
+      @bucket.write(key, local_path)
+    end
   end
 
   it "#write writes a file into the bucket with metadata" do
