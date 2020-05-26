@@ -30,6 +30,18 @@ With GCS Remote test:
 
     GCS_PROJECT_ID="<project_id>" GCS_KEY_FILEPATH="<path_to_key>" GCS_BUCKET="<bucket_name>" bundle exec rake spec
 
+== Releasing
+
+Releasing is handled by Shopify's internal Shipit server.
+
+After merging a change, a separate PR should be opened to update `History.md` and bump the version
+(following [Semantic Versioning](https://semver.org/))
+
+When merged, the new release will be automatically tagged and deployed to rubygems.org.
+
+Note that the automatic process does not create a new [release](https://github.com/Shopify/asset_cloud/releases) on
+GitHub.
+
 == Copyright
 
 Copyright (c) 2008-2014 Tobias Lütke & Shopify, Inc. Released under the MIT license (see LICENSE for details).
