@@ -34,13 +34,12 @@ With GCS Remote test:
 
 Releasing is handled by Shopify's internal Shipit server.
 
-After merging a change, a separate PR should be opened to update `History.md` and bump the version
-(following [Semantic Versioning](https://semver.org/))
+After merging a change, a separate PR should be opened to update +History.md+ and bump the version
+(following <a href="https://semver.org">Semantic Versioning</a>).
 
 When merged, the new release will be automatically tagged and deployed to rubygems.org.
 
-Note that the automatic process does not create a new [release](https://github.com/Shopify/asset_cloud/releases) on
-GitHub.
+Note that the automatic process does not create a new <a href="https://github.com/Shopify/asset_cloud/releases">release</a> on GitHub.
 
 == Copyright
 
