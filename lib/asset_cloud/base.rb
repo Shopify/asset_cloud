@@ -151,6 +151,12 @@ module AssetCloud
       bucket_for(key).write(key, value)
     end
 
+    def write!(key, value)
+      asset = self[key]
+      asset.value = value
+      asset.store!
+    end
+
     def read(key)
       logger.info { "  [#{self.class.name}] Reading from #{key}" } if logger
 

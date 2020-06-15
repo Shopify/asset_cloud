@@ -7,11 +7,18 @@ end
 class LiquidAsset < AssetCloud::Asset
 end
 
+class BrokenBucket < AssetCloud::Bucket
+  def write(*)
+    false
+  end
+end
+
 class BasicCloud < AssetCloud::Base
   bucket :special, AssetCloud::MemoryBucket, asset_class: SpecialAsset
   bucket :conditional, AssetCloud::MemoryBucket, asset_class: proc { |key|
     LiquidAsset if key.ends_with?('.liquid')
   }
+  bucket :broken, BrokenBucket, asset_class: AssetCloud::Asset
 end
 
 describe BasicCloud do
@@ -189,6 +196,20 @@ describe BasicCloud do
 
     it "should raise " do
       expect { BasicCloud.bucket(AssetCloud::MemoryBucket, asset_class: proc {}) }.to(raise_error(ArgumentError))
+    end
+  end
+
+  describe "write!" do
+    it "should write through the Asset object (and thus run any callbacks on the asset)" do
+      special_asset = double(:special_asset)
+      expect(special_asset).to(receive(:value=).with('fancy fancy!'))
+      expect(special_asset).to(receive(:store!))
+      expect(SpecialAsset).to(receive(:at).and_return(special_asset))
+      @fs.write!('special/fancy.txt', 'fancy fancy!')
+    end
+
+    it "should raise AssetNotSaved when write fails" do
+      expect { @fs.write!('broken/file.txt', 'n/a') }.to(raise_error(AssetCloud::AssetNotSaved))
     end
   end
 
