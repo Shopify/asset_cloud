@@ -1,5 +1,9 @@
 # Asset Cloud Version History
 
+## Version 2.7.0, 2020-07-15
+
+* Add `Asset#write!` which raises on validation failure (https://github.com/Shopify/asset_cloud/pull/67)
+
 ## Version 2.6.0, 2020-05-22
 
 * Add checksum to metadata (https://github.com/Shopify/asset_cloud/pull/57)
