@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
+
+class AfterStoreCallback
+  def self.after_store(*args); end
+end
+
 class CallbackAsset < AssetCloud::Asset
   before_store :callback_before_store
   before_delete :callback_before_delete
@@ -8,6 +13,8 @@ class CallbackAsset < AssetCloud::Asset
   before_validate :make_value_valid
   after_validate :add_spice
   validate :valid_value
+
+  after_store ::AfterStoreCallback
 
   private
 
@@ -142,5 +149,16 @@ describe CallbackAsset do
     expect(@asset).not_to(receive(:callback_after_delete))
 
     expect(@asset.delete).to(eq(nil))
+  end
+
+  it "should invoke after_store callback defined in separate class" do
+    local_fs = BasicCloud.new(File.dirname(__FILE__) + '/files', 'http://assets/')
+    local_fs.write('callback_assets/foo', 'bar')
+    local_asset = local_fs.asset_at('callback_assets/foo')
+    
+    expect(local_asset).to(receive(:callback_before_store).and_return(true))
+    expect(::AfterStoreCallback).to(receive(:after_store))
+    
+    expect(local_asset.store).to(eq(true))
   end
 end
