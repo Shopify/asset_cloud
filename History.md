@@ -1,5 +1,9 @@
 # Asset Cloud Version History
 
+## Version 2.7.1, 2022-03-18
+
+* Fix incorrect invocation of callbacks defined in external classes (https://github.com/Shopify/asset_cloud/issues/71)
+
 ## Version 2.7.0, 2020-07-15
 
 * Add `Asset#write!` which raises on validation failure (https://github.com/Shopify/asset_cloud/pull/67)
