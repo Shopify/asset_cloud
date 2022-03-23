@@ -62,7 +62,7 @@ class MockS3Interface
         raise "Invalid ACL `#{options[:acl].inspect}`, must be one of: #{VALID_ACLS.inspect}"
       end
 
-      options[:body] = options[:body].force_encoding(Encoding::BINARY)
+      options[:body] = options[:body].dup.force_encoding(Encoding::BINARY)
 
       key = options.delete(:key)
 

@@ -51,7 +51,7 @@ describe AssetCloud::S3Bucket do
   end
 
   it "#stat should get metadata from S3" do
-    value = 'hello world'
+    value = 'hello world'.freeze
     @cloud.build('tmp/new_file.test', value).store
     metadata = @bucket.stat('tmp/new_file.test')
     expect(metadata.size).to(eq(value.size))
@@ -59,7 +59,7 @@ describe AssetCloud::S3Bucket do
   end
 
   it "#read " do
-    value = 'hello world'
+    value = 'hello world'.freeze
     key = 'tmp/new_file.txt'
     @bucket.write(key, value)
     data = @bucket.read(key)
