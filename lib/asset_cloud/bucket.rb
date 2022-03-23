@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module AssetCloud
   class AssetNotFoundError < StandardError
-    def initialize(key, version=nil)
+    def initialize(key, version = nil)
       super(version ? "Could not find version #{version} of asset #{key}" : "Could not find asset #{key}")
     end
   end
@@ -10,7 +12,8 @@ module AssetCloud
     attr_accessor :cloud
 
     def initialize(cloud, name)
-      @cloud, @name = cloud, name
+      @cloud = cloud
+      @name = name
     end
 
     def ls(key = nil)

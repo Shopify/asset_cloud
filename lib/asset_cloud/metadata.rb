@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 module AssetCloud
   class Metadata
     attr_accessor :exist, :size, :created_at, :updated_at, :value_hash, :checksum
 
     def new?
-      !self.exist
+      !exist
     end
 
     def exist?
-      self.exist
+      exist
     end
 
     # rubocop:disable Metrics/ParameterLists
@@ -22,11 +24,11 @@ module AssetCloud
     # rubocop:enable Metrics/ParameterLists
 
     def self.existing
-      self.new(true)
+      new(true)
     end
 
     def self.non_existing
-      self.new false
+      new(false)
     end
 
     def inspect

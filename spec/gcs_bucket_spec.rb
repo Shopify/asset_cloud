@@ -1,6 +1,7 @@
 # frozen_string_literal: true
-require 'spec_helper'
-require 'google/cloud/storage'
+
+require "spec_helper"
+require "google/cloud/storage"
 
 class GCSCloud < AssetCloud::Base
 end
@@ -17,11 +18,11 @@ class MockGCSBucket < AssetCloud::GCSBucket
 end
 
 describe AssetCloud::GCSBucket do
-  directory = File.dirname(__FILE__) + '/files'
+  directory = File.dirname(__FILE__) + "/files"
 
   before(:all) do
-    @cloud = GCSCloud.new(directory, '/assets/files')
-    @bucket = MockGCSBucket.new(@cloud, '')
+    @cloud = GCSCloud.new(directory, "/assets/files")
+    @bucket = MockGCSBucket.new(@cloud, "")
   end
 
   it "#ls with no arguments returns all files in the bucket" do
@@ -31,17 +32,17 @@ describe AssetCloud::GCSBucket do
   end
 
   it "#ls with arguments returns the file" do
-    key = 'test/ls.txt'
+    key = "test/ls.txt"
     expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
 
     file = @bucket.ls(key)
     expect(file.class).to(eq(Google::Cloud::Storage::File))
   end
 
-  if RUBY_VERSION >= '2.7'
+  if RUBY_VERSION >= "2.7"
     it "#write writes a file into the bucket" do
       local_path = "#{directory}/products/key.txt"
-      key = 'test/key.txt'
+      key = "test/key.txt"
       expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
         local_path,
         "s#{@cloud.url}/#{key}",
@@ -52,7 +53,7 @@ describe AssetCloud::GCSBucket do
   else
     it "#write writes a file into the bucket" do
       local_path = "#{directory}/products/key.txt"
-      key = 'test/key.txt'
+      key = "test/key.txt"
       expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
         local_path,
         "s#{@cloud.url}/#{key}",
@@ -65,7 +66,7 @@ describe AssetCloud::GCSBucket do
 
   it "#write writes a file into the bucket with metadata" do
     local_path = "#{directory}/products/key.txt"
-    key = 'test/key.txt'
+    key = "test/key.txt"
     metadata = {
       "X-Robots-Tag" => "none",
     }
@@ -80,8 +81,8 @@ describe AssetCloud::GCSBucket do
 
   it "#write writes a file into the bucket with acl" do
     local_path = "#{directory}/products/key.txt"
-    key = 'test/key.txt'
-    acl = 'public'
+    key = "test/key.txt"
+    acl = "public"
     expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
       local_path,
       "s#{@cloud.url}/#{key}",
@@ -93,8 +94,8 @@ describe AssetCloud::GCSBucket do
 
   it "#write writes a file into the bucket with content_disposition" do
     local_path = "#{directory}/products/key.txt"
-    key = 'test/key.txt'
-    content_disposition = 'attachment'
+    key = "test/key.txt"
+    content_disposition = "attachment"
     expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
       local_path,
       "s#{@cloud.url}/#{key}",
@@ -105,7 +106,7 @@ describe AssetCloud::GCSBucket do
   end
 
   it "#delete removes the file from the bucket" do
-    key = 'test/key.txt'
+    key = "test/key.txt"
     expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
     expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:delete).with(no_args))
 
@@ -115,8 +116,8 @@ describe AssetCloud::GCSBucket do
   end
 
   it "#read returns the data of the file" do
-    value = 'hello world'
-    key = 'tmp/new_file.txt'
+    value = "hello world"
+    key = "tmp/new_file.txt"
     expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
     expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:download).and_return(StringIO.new(value)))
 
@@ -125,7 +126,7 @@ describe AssetCloud::GCSBucket do
   end
 
   it "#read raises AssetCloud::AssetNotFoundError if the file is not found" do
-    key = 'tmp/not_found.txt'
+    key = "tmp/not_found.txt"
     expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(nil))
     expect do
       @bucket.read(key)
@@ -133,8 +134,8 @@ describe AssetCloud::GCSBucket do
   end
 
   it "#stat returns information on the asset" do
-    value = 'hello world'
-    key = 'tmp/new_file.txt'
+    value = "hello world"
+    key = "tmp/new_file.txt"
     expected_time = Time.now
     expected_size = 1
 

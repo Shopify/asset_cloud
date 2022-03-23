@@ -1,5 +1,7 @@
-require 'spec_helper'
-require 'asset_cloud/metadata'
+# frozen_string_literal: true
+
+require "spec_helper"
+require "asset_cloud/metadata"
 
 module AssetCloud
   describe Metadata do

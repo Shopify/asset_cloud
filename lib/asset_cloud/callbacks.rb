@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AssetCloud
   module Callbacks
     extend ActiveSupport::Concern
@@ -50,7 +52,7 @@ module AssetCloud
       def extension_module
         @extension_module ||= begin
           mod = Module.new
-          self.const_set(:AssetCloudCallbacks, mod)
+          const_set(:AssetCloudCallbacks, mod)
           prepend(mod)
           mod
         end
@@ -59,7 +61,6 @@ module AssetCloud
 
     def execute_callbacks(symbol, args)
       callbacks_for(symbol).each do |callback|
-        
         result = case callback
         when Symbol
           send(callback, *args)
@@ -69,7 +70,8 @@ module AssetCloud
           if callback.respond_to?(symbol)
             callback.send(symbol, self, *args)
           else
-            raise StandardError, "Callbacks must be a symbol denoting the method to call, a string to be evaluated, a block to be invoked, or an object responding to the callback method."
+            raise StandardError,
+              "Callbacks must be a symbol denoting the method to call, a string to be evaluated, a block to be invoked, or an object responding to the callback method."
           end
         end
         return false if result == false

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module AssetCloud
   class InvalidBucketError < StandardError
   end
 
   class InvalidBucket < Bucket
-    Error = "No such namespace: %s".freeze
+    Error = "No such namespace: %s"
 
     def ls(namespace)
       raise InvalidBucketError, Error % namespace

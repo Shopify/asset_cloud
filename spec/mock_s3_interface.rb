@@ -1,10 +1,10 @@
 # frozen_string_literal: true
-require 'ostruct'
+
+require "ostruct"
 
 class MockS3Interface
-  VALID_ACLS = %w(
-    private public-read public-read-write authenticated-read aws-exec-read bucket-owner-read bucket-owner-full-control
-  )
+  VALID_ACLS = ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read",
+                "bucket-owner-read", "bucket-owner-full-control",]
 
   attr_reader :bucket_storage
 
@@ -39,6 +39,7 @@ class MockS3Interface
 
   class Bucket
     attr_reader :name, :client
+
     def initialize(client, name)
       @client = client
       @name = name
@@ -81,6 +82,7 @@ class MockS3Interface
 
   class NullS3Object
     attr_reader :key
+
     def initialize(bucket, key)
       @bucket = bucket
       @key = key

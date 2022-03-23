@@ -1,5 +1,6 @@
-module AssetCloud
+# frozen_string_literal: true
 
+module AssetCloud
   class AssetError < StandardError
   end
 
@@ -28,7 +29,7 @@ module AssetCloud
     end
 
     def self.at(cloud, key, value = nil, metadata = nil, &block)
-      file = self.new(cloud, key, value, metadata,  &block)
+      file = new(cloud, key, value, metadata, &block)
       file.new_asset = false
       file
     end
@@ -42,11 +43,11 @@ module AssetCloud
     end
 
     def relative_key
-      @key.split("/",2).last
+      @key.split("/", 2).last
     end
 
     def relative_key_without_ext
-      relative_key.gsub(/\.[^.]+$/,"")
+      relative_key.gsub(/\.[^.]+$/, "")
     end
 
     def dirname
@@ -58,7 +59,7 @@ module AssetCloud
     end
 
     def format
-      extname.sub('.', '')
+      extname.sub(".", "")
     end
 
     def basename
@@ -122,7 +123,7 @@ module AssetCloud
     end
 
     def store!
-      store or raise(AssetNotSaved, "Validation failed: #{errors.join(', ')}")
+      store or raise(AssetNotSaved, "Validation failed: #{errors.join(", ")}")
     end
 
     def to_param
@@ -134,11 +135,11 @@ module AssetCloud
     end
 
     def url(options = {})
-      cloud.url_for key, options
+      cloud.url_for(key, options)
     end
 
     def bucket_name
-      @key.split('/').first
+      @key.split("/").first
     end
 
     def bucket

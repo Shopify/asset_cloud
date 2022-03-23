@@ -1,14 +1,15 @@
+# frozen_string_literal: true
+
 module AssetCloud
-
   class FileSystemBucket < Bucket
-
     def ls(key = nil)
       objects = []
-      base_path = File.join(path_for(key), '*')
+      base_path = File.join(path_for(key), "*")
 
       Dir.glob(base_path).each do |f|
         next unless File.file?(f)
-        objects.push cloud[relative_path_for(f)]
+
+        objects.push(cloud[relative_path_for(f)])
       end
       objects
     end
@@ -32,12 +33,10 @@ module AssetCloud
     end
 
     def stat(key)
-      begin
-        stat = File.stat(path_for(key))
-        Metadata.new(true, stat.size, stat.ctime, stat.mtime)
-      rescue Errno::ENOENT => e
-        Metadata.new(false)
-      end
+      stat = File.stat(path_for(key))
+      Metadata.new(true, stat.size, stat.ctime, stat.mtime)
+    rescue Errno::ENOENT => e
+      Metadata.new(false)
     end
 
     protected
@@ -53,11 +52,11 @@ module AssetCloud
     private
 
     def remove_full_path_regexp
-      @regexp ||= /^#{path}\//
+      @regexp ||= %r{^#{path}/}
     end
 
     def relative_path_for(f)
-      f.sub(remove_full_path_regexp, '')
+      f.sub(remove_full_path_regexp, "")
     end
 
     def execute_in_full_path(key, &block)
