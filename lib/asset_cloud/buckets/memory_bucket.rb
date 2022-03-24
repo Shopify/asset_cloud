@@ -16,7 +16,7 @@ module AssetCloud
     end
 
     def read(key)
-      raise AssetCloud::AssetNotFoundError, key unless @memory.has_key?(key)
+      raise AssetCloud::AssetNotFoundError, key unless @memory.key?(key)
 
       @memory[key]
     end
@@ -32,7 +32,7 @@ module AssetCloud
     end
 
     def stat(key)
-      return Metadata.non_existing unless @memory.has_key?(key)
+      return Metadata.non_existing unless @memory.key?(key)
 
       Metadata.new(true, read(key).size)
     end

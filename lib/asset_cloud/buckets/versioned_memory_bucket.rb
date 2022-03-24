@@ -3,7 +3,7 @@
 module AssetCloud
   class VersionedMemoryBucket < MemoryBucket
     def read(key)
-      raise AssetCloud::AssetNotFoundError, key unless @memory.has_key?(key)
+      raise AssetCloud::AssetNotFoundError, key unless @memory.key?(key)
 
       read_version(key, latest_version(key))
     end

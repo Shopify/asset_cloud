@@ -141,13 +141,13 @@ module AssetCloud
     end
 
     def build(key, value = nil, &block)
-      logger.info { "  [#{self.class.name}] Building asset #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Building asset #{key}" }
       asset_class_for(key).new(self, key, value, Metadata.non_existing, &block)
     end
 
     def write(key, value)
       check_key_for_errors(key)
-      logger.info { "  [#{self.class.name}] Writing #{value.size} bytes to #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Writing #{value.size} bytes to #{key}" }
 
       bucket_for(key).write(key, value)
     end
@@ -159,19 +159,19 @@ module AssetCloud
     end
 
     def read(key)
-      logger.info { "  [#{self.class.name}] Reading from #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Reading from #{key}" }
 
       bucket_for(key).read(key)
     end
 
     def stat(key)
-      logger.info { "  [#{self.class.name}] Statting #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Statting #{key}" }
 
       bucket_for(key).stat(key)
     end
 
     def ls(key)
-      logger.info { "  [#{self.class.name}] Listing objects in #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Listing objects in #{key}" }
 
       bucket_for(key).ls(key)
     end
@@ -189,7 +189,7 @@ module AssetCloud
     end
 
     def delete(key)
-      logger.info { "  [#{self.class.name}] Deleting #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Deleting #{key}" }
 
       bucket_for(key).delete(key)
     end
@@ -212,17 +212,17 @@ module AssetCloud
     # versioning
 
     def read_version(key, version)
-      logger.info { "  [#{self.class.name}] Reading from #{key} at version #{version}" } if logger
+      logger&.info { "  [#{self.class.name}] Reading from #{key} at version #{version}" }
       bucket_for(key).read_version(key, version)
     end
 
     def versions(key)
-      logger.info { "  [#{self.class.name}] Getting all versions for #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Getting all versions for #{key}" }
       bucket_for(key).versions(key)
     end
 
     def version_details(key)
-      logger.info { "  [#{self.class.name}] Getting all version details for #{key}" } if logger
+      logger&.info { "  [#{self.class.name}] Getting all version details for #{key}" }
       bucket_for(key).version_details(key)
     end
 
@@ -271,7 +271,7 @@ module AssetCloud
       raise IllegalPath, "key cannot be empty" if key.blank?
       raise IllegalPath, "#{key.inspect} contains illegal characters" unless supports?(key)
     rescue => e
-      logger.info { "  [#{self.class.name}]   bad key #{e.message}" } if logger
+      logger&.info { "  [#{self.class.name}]   bad key #{e.message}" }
       raise
     end
   end

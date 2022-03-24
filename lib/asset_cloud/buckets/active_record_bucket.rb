@@ -53,7 +53,7 @@ module AssetCloud
     end
 
     def find_record!(key)
-      find_record(key) or raise(AssetCloud::AssetNotFoundError, key)
+      find_record(key) || raise(AssetCloud::AssetNotFoundError, key)
     end
   end
 end

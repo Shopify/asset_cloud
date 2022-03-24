@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 # frozen_string_literal: true
 
+require "English"
 Gem::Specification.new do |s|
   s.name = "asset_cloud"
   s.version = "2.7.1"
@@ -15,7 +16,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/Shopify/asset_cloud"
   s.require_paths = ["lib"]
 
-  s.files = %x(git ls-files).split($/)
+  s.files = %x(git ls-files).split($INPUT_RECORD_SEPARATOR)
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   s.add_dependency("activesupport")
