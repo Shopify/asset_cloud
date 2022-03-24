@@ -43,7 +43,7 @@ module AssetCloud
       every_bucket_with_transaction_on_key(key) { |b| b.delete(key) }
     end
 
-    def respond_to?(sym)
+    def respond_to_missing?(sym, *)
       @chained_buckets.any? { |b| b.respond_to?(sym) }
     end
 
@@ -56,13 +56,13 @@ module AssetCloud
     def first_possible_bucket(&block)
       @chained_buckets.each do |bucket|
         return yield(bucket)
-      rescue NoMethodError, NotImplementedError => e
+      rescue NoMethodError, NotImplementedError
         nil
       end
     end
 
     def every_bucket_with_transaction_on_key(key, i = 0, &block)
-      return unless bucket = @chained_buckets[i]
+      return unless (bucket = @chained_buckets[i])
 
       old_value = begin
         bucket.read(key)

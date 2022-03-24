@@ -24,13 +24,13 @@ module AssetCloud
     end
 
     def delete(key)
-      if record = find_record(key)
+      if (record = find_record(key))
         record.destroy
       end
     end
 
     def stat(key)
-      if record = find_record(key)
+      if (record = find_record(key))
         AssetCloud::Metadata.new(true, record.send(value_attribute).size, record.created_at, record.updated_at)
       else
         AssetCloud::Metadata.new(false)

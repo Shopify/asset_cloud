@@ -33,7 +33,8 @@ describe AssetCloud::GCSBucket do
 
   it "#ls with arguments returns the file" do
     key = "test/ls.txt"
-    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
+    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}")
+      .and_return(Google::Cloud::Storage::File.new))
 
     file = @bucket.ls(key)
     expect(file.class).to(eq(Google::Cloud::Storage::File))
@@ -107,7 +108,8 @@ describe AssetCloud::GCSBucket do
 
   it "#delete removes the file from the bucket" do
     key = "test/key.txt"
-    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
+    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}")
+      .and_return(Google::Cloud::Storage::File.new))
     expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:delete).with(no_args))
 
     expect do
@@ -118,8 +120,10 @@ describe AssetCloud::GCSBucket do
   it "#read returns the data of the file" do
     value = "hello world"
     key = "tmp/new_file.txt"
-    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
-    expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:download).and_return(StringIO.new(value)))
+    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}")
+      .and_return(Google::Cloud::Storage::File.new))
+    expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:download)
+      .and_return(StringIO.new(value)))
 
     data = @bucket.read(key)
     expect(data).to(eq(value))
@@ -134,12 +138,12 @@ describe AssetCloud::GCSBucket do
   end
 
   it "#stat returns information on the asset" do
-    value = "hello world"
     key = "tmp/new_file.txt"
     expected_time = Time.now
     expected_size = 1
 
-    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}").and_return(Google::Cloud::Storage::File.new))
+    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}")
+      .and_return(Google::Cloud::Storage::File.new))
     expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:size).and_return(expected_size))
     expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:created_at).and_return(expected_time))
     expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:updated_at).and_return(expected_time))

@@ -16,13 +16,14 @@ module AssetCloud
 
     def read(key)
       File.read(path_for(key))
-    rescue Errno::ENOENT => e
+    rescue Errno::ENOENT
       raise AssetCloud::AssetNotFoundError, key
     end
 
     def delete(key)
       File.delete(path_for(key))
     rescue Errno::ENOENT
+      nil
     end
 
     def write(key, data)
@@ -35,7 +36,7 @@ module AssetCloud
     def stat(key)
       stat = File.stat(path_for(key))
       Metadata.new(true, stat.size, stat.ctime, stat.mtime)
-    rescue Errno::ENOENT => e
+    rescue Errno::ENOENT
       Metadata.new(false)
     end
 
@@ -70,10 +71,9 @@ module AssetCloud
 
       begin
         yield(path)
-      rescue Errno::ENOENT => e
+      rescue Errno::ENOENT
         raise if retried
 
-        directory = File.dirname(path)
         FileUtils.mkdir_p(File.dirname(path))
         retried = true
         retry

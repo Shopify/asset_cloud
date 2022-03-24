@@ -59,8 +59,8 @@ class MethodRecordingCloud < AssetCloud::Base
   before_write :callback_before_write
   after_write :callback_before_write
 
-  def method_missing(method, *_args)
-    @run_callbacks << method.to_sym
+  def callback_before_write(*)
+    @run_callbacks << __method__
   end
 end
 

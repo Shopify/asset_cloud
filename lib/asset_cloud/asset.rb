@@ -9,8 +9,9 @@ module AssetCloud
 
   class Asset
     include Comparable
-    attr_accessor :key, :value, :cloud, :metadata, :new_asset
+    attr_accessor :key, :cloud, :new_asset
     attr_reader   :extensions
+    attr_writer   :value, :metadata
 
     def initialize(cloud, key, value = nil, metadata = Metadata.non_existing)
       @new_asset = true
@@ -170,7 +171,7 @@ module AssetCloud
     end
 
     def method_missing(method, *args)
-      if extension = @extensions.find { |e| e.respond_to?(method) }
+      if (extension = @extensions.find { |e| e.respond_to?(method) })
         extension.public_send(method, *args)
       else
         super

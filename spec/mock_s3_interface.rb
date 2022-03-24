@@ -103,6 +103,8 @@ class MockS3Interface
   class S3Object
     attr_reader :key, :options
 
+    GottenObject = Struct.new(:body, keyword_init: true)
+
     def initialize(bucket, key, options = {})
       @bucket = bucket
       @key = key
@@ -115,7 +117,7 @@ class MockS3Interface
     end
 
     def get(*)
-      OpenStruct.new(options)
+      GottenObject.new(**options)
     end
 
     def put(options = {})

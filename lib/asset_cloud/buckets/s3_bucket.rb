@@ -20,7 +20,7 @@ module AssetCloud
       options[:range] = http_byte_range(options[:range]) if options[:range]
 
       bucket = cloud.s3_bucket(key)
-      if encryption_key = options.delete(:encryption_key)
+      if (encryption_key = options.delete(:encryption_key))
         bucket = encrypted_bucket(bucket, encryption_key)
       end
 
@@ -35,7 +35,7 @@ module AssetCloud
       options = options.dup
 
       bucket = cloud.s3_bucket(key)
-      if encryption_key = options.delete(:encryption_key)
+      if (encryption_key = options.delete(:encryption_key))
         bucket = encrypted_bucket(bucket, encryption_key)
       end
 

@@ -71,7 +71,9 @@ module AssetCloud
             callback.send(symbol, self, *args)
           else
             raise StandardError,
-              "Callbacks must be a symbol denoting the method to call, a string to be evaluated, a block to be invoked, or an object responding to the callback method."
+              "Callbacks must be a symbol denoting the method to call, " \
+                "a string to be evaluated, a block to be invoked, " \
+                "or an object responding to the callback method."
           end
         end
         return false if result == false

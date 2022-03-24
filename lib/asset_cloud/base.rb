@@ -11,21 +11,22 @@ module AssetCloud
 
     VALID_PATHS = %r{\A
       (
-        (\w)                #Filename can be a single letter or underscore
-        |                     #OR it is many and follows the below rules
+        (\w)                        # Filename can be a single letter or underscore
+        |                           # OR it is many and follows the below rules
         (
-          (\.?[\w\[\]\(\)\-\@])       #It can start with a dot but it must have a following character
+          (\.?[\w\[\]\(\)\-\@])     # It can start with a dot but it must have a following character
           (
-            [\w\[\]\(\)\-\@]          #You can have a letter without any following conditions
+            [\w\[\]\(\)\-\@]        # You can have a letter without any following conditions
             |
-            [\ ][\w\[\]\(\)\-\@\.]      #If there is a space you need to have a normal letter afterward or a dot
+            [\ ][\w\[\]\(\)\-\@\.]  # If there is a space you need to have a normal letter afterward or a dot
             |
-            [/][\w\[\]\(\)\-\@]      #If there is a slash you need to have a normal letter afterward
+            [/][\w\[\]\(\)\-\@]     # If there is a slash you need to have a normal letter afterward
             |
-            [/][\.][\w\[\]\(\)\-\@]  #Though a slash could be followed by a dot so long as there is a normal letter afterward
+            [/][\.][\w\[\]\(\)\-\@] # Though a slash could be followed by a dot
+                                    # so long as there is a normal letter afterward
             |
-            [\.]+[\w\[\]\(\)\-\@]+     #One or more dots must be followed by one (or more) normal letters
-          )*                  #Zero to many of these combinations.
+            [\.]+[\w\[\]\(\)\-\@]+  # One or more dots must be followed by one (or more) normal letters
+          )*                        # Zero to many of these combinations.
         )
       )\z}x
     MATCH_BUCKET = %r{^(\w+)(/|$)}
@@ -57,7 +58,7 @@ module AssetCloud
         raise ArgumentError, "requires a bucket class"
       end
 
-      if bucket_name = args.first
+      if (bucket_name = args.first)
         self.bucket_classes = bucket_classes.merge(bucket_name.to_sym => bucket_class).freeze
         self.asset_classes = asset_classes.merge(bucket_name.to_sym => asset_class).freeze if asset_class
       else
@@ -84,7 +85,7 @@ module AssetCloud
 
     def buckets
       @buckets ||= Hash.new do |hash, key|
-        hash[key] = if klass = self.class.bucket_classes[key]
+        hash[key] = if (klass = self.class.bucket_classes[key])
           constantize_if_necessary(klass).new(self, key)
         end
       end
@@ -177,7 +178,7 @@ module AssetCloud
     end
 
     def exist?(key)
-      if fp = stat(key)
+      if (fp = stat(key))
         fp.exist?
       else
         false
@@ -259,7 +260,7 @@ module AssetCloud
       klass.is_a?(Class) ? klass : klass.constantize
     end
 
-    def self.convert_to_class_name_if_possible(klass)
+    private_class_method def self.convert_to_class_name_if_possible(klass)
       if klass.is_a?(Class) && klass.name.present?
         klass.name
       else
