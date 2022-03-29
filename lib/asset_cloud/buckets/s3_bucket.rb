@@ -1,4 +1,6 @@
-require 'aws-sdk-s3'
+# frozen_string_literal: true
+
+require "aws-sdk-s3"
 
 module AssetCloud
   class S3Bucket < Bucket
@@ -18,7 +20,7 @@ module AssetCloud
       options[:range] = http_byte_range(options[:range]) if options[:range]
 
       bucket = cloud.s3_bucket(key)
-      if encryption_key = options.delete(:encryption_key)
+      if (encryption_key = options.delete(:encryption_key))
         bucket = encrypted_bucket(bucket, encryption_key)
       end
 
@@ -33,7 +35,7 @@ module AssetCloud
       options = options.dup
 
       bucket = cloud.s3_bucket(key)
-      if encryption_key = options.delete(:encryption_key)
+      if (encryption_key = options.delete(:encryption_key))
         bucket = encrypted_bucket(bucket, encryption_key)
       end
 
@@ -73,21 +75,22 @@ module AssetCloud
 
     def absolute_key(key = nil)
       if key.to_s.starts_with?(path_prefix)
-        return key
+        key
       else
         args = [path_prefix]
         args << key.to_s if key
-        args.join('/')
+        args.join("/")
       end
     end
 
     def relative_key(key)
-      key =~ /^#{path_prefix}\/(.+)/ ? $1 : key
+      key =~ %r{^#{path_prefix}/(.+)} ? Regexp.last_match(1) : key
     end
 
     def http_byte_range(range)
       # follows https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
-      return "bytes=#{[range.begin, range.max].join('-')}" if range.is_a?(Range)
+      return "bytes=#{[range.begin, range.max].join("-")}" if range.is_a?(Range)
+
       range
     end
   end

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
-require 'ostruct'
+
+require "ostruct"
 
 class MockS3Interface
-  VALID_ACLS = %w(
-    private public-read public-read-write authenticated-read aws-exec-read bucket-owner-read bucket-owner-full-control
-  )
+  VALID_ACLS = ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read",
+                "bucket-owner-read", "bucket-owner-full-control",]
 
   attr_reader :bucket_storage
 
@@ -39,6 +39,7 @@ class MockS3Interface
 
   class Bucket
     attr_reader :name, :client
+
     def initialize(client, name)
       @client = client
       @name = name
@@ -62,7 +63,7 @@ class MockS3Interface
         raise "Invalid ACL `#{options[:acl].inspect}`, must be one of: #{VALID_ACLS.inspect}"
       end
 
-      options[:body] = options[:body].force_encoding(Encoding::BINARY)
+      options[:body] = options[:body].dup.force_encoding(Encoding::BINARY)
 
       key = options.delete(:key)
 
@@ -81,6 +82,7 @@ class MockS3Interface
 
   class NullS3Object
     attr_reader :key
+
     def initialize(bucket, key)
       @bucket = bucket
       @key = key
@@ -101,6 +103,8 @@ class MockS3Interface
   class S3Object
     attr_reader :key, :options
 
+    GottenObject = Struct.new(:body, keyword_init: true)
+
     def initialize(bucket, key, options = {})
       @bucket = bucket
       @key = key
@@ -113,7 +117,7 @@ class MockS3Interface
     end
 
     def get(*)
-      OpenStruct.new(options)
+      GottenObject.new(**options)
     end
 
     def put(options = {})

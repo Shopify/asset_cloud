@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AssetCloud
   module Validations
     def self.included(base)
@@ -15,7 +17,7 @@ module AssetCloud
 
     module ClassMethods
       def validate(*extra_validations, &block)
-        validations = self._callbacks[:validate] || []
+        validations = _callbacks[:validate] || []
         validations += extra_validations
         validations << block if block_given?
 

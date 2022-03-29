@@ -1,5 +1,6 @@
-module AssetCloud
+# frozen_string_literal: true
 
+module AssetCloud
   class AssetError < StandardError
   end
 
@@ -8,8 +9,9 @@ module AssetCloud
 
   class Asset
     include Comparable
-    attr_accessor :key, :value, :cloud, :metadata, :new_asset
+    attr_accessor :key, :cloud, :new_asset
     attr_reader   :extensions
+    attr_writer   :value, :metadata
 
     def initialize(cloud, key, value = nil, metadata = Metadata.non_existing)
       @new_asset = true
@@ -28,7 +30,7 @@ module AssetCloud
     end
 
     def self.at(cloud, key, value = nil, metadata = nil, &block)
-      file = self.new(cloud, key, value, metadata,  &block)
+      file = new(cloud, key, value, metadata, &block)
       file.new_asset = false
       file
     end
@@ -42,11 +44,11 @@ module AssetCloud
     end
 
     def relative_key
-      @key.split("/",2).last
+      @key.split("/", 2).last
     end
 
     def relative_key_without_ext
-      relative_key.gsub(/\.[^.]+$/,"")
+      relative_key.gsub(/\.[^.]+$/, "")
     end
 
     def dirname
@@ -58,7 +60,7 @@ module AssetCloud
     end
 
     def format
-      extname.sub('.', '')
+      extname.sub(".", "")
     end
 
     def basename
@@ -122,7 +124,7 @@ module AssetCloud
     end
 
     def store!
-      store or raise(AssetNotSaved, "Validation failed: #{errors.join(', ')}")
+      store || raise(AssetNotSaved, "Validation failed: #{errors.join(", ")}")
     end
 
     def to_param
@@ -134,11 +136,11 @@ module AssetCloud
     end
 
     def url(options = {})
-      cloud.url_for key, options
+      cloud.url_for(key, options)
     end
 
     def bucket_name
-      @key.split('/').first
+      @key.split("/").first
     end
 
     def bucket
@@ -169,7 +171,7 @@ module AssetCloud
     end
 
     def method_missing(method, *args)
-      if extension = @extensions.find { |e| e.respond_to?(method) }
+      if (extension = @extensions.find { |e| e.respond_to?(method) })
         extension.public_send(method, *args)
       else
         super

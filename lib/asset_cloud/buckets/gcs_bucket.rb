@@ -31,12 +31,10 @@ module AssetCloud
     end
 
     def stat(key)
-      begin
-        file = find_by_key!(key)
-        Metadata.new(true, file.size, file.created_at, file.updated_at)
-      rescue AssetCloud::AssetNotFoundError
-        Metadata.new(false)
-      end
+      file = find_by_key!(key)
+      Metadata.new(true, file.size, file.created_at, file.updated_at)
+    rescue AssetCloud::AssetNotFoundError
+      Metadata.new(false)
     end
 
     private
@@ -47,11 +45,11 @@ module AssetCloud
 
     def absolute_key(key = nil)
       if key.to_s.starts_with?(path_prefix)
-        return key
+        key
       else
         args = [path_prefix]
         args << key.to_s if key
-        args.join('/')
+        args.join("/")
       end
     end
 
