@@ -40,7 +40,7 @@ describe AssetCloud::GCSBucket do
     expect(file.class).to(eq(Google::Cloud::Storage::File))
   end
 
-  if RUBY_VERSION >= "2.7"
+  if RUBY_VERSION >= "3.0"
     it "#write writes a file into the bucket" do
       local_path = "#{directory}/products/key.txt"
       key = "test/key.txt"
