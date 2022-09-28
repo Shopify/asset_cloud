@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+gem "aws-sdk-s3", ">= 1.60.2"
+
 require "aws-sdk-s3"
 
 module AssetCloud

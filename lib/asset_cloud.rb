@@ -16,18 +16,17 @@ require "asset_cloud/buckets/memory_bucket"
 require "asset_cloud/buckets/versioned_memory_bucket"
 require "asset_cloud/base"
 
-# S3
-require "asset_cloud/buckets/s3_bucket"
-
-# GCS
-require "asset_cloud/buckets/gcs_bucket"
-
 # Extensions
 require "asset_cloud/free_key_locator"
 require "asset_cloud/callbacks"
 require "asset_cloud/validations"
 
 require "asset_cloud/asset_extension"
+
+module AssetCloud
+  autoload(:S3Bucket, "asset_cloud/buckets/s3_bucket")
+  autoload(:GCSBucket, "asset_cloud/buckets/gcs_bucket")
+end
 
 AssetCloud::Base.class_eval do
   include AssetCloud::FreeKeyLocator
