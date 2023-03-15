@@ -103,6 +103,10 @@ module AssetCloud
       end
     end
 
+    def rename(new_key)
+      cloud.rename(key, new_key)
+    end
+
     def metadata
       @metadata ||= cloud.stat(key)
     end

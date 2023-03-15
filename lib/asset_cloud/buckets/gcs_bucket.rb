@@ -13,6 +13,17 @@ module AssetCloud
       downloaded.read
     end
 
+    def rename(key, new_key)
+      file = find_by_key!(key)
+
+      return if new_key.blank?
+
+      renamed_file = file.copy(new_key)
+      file.delete
+
+      renamed_file
+    end
+
     def write(key, data, options = {})
       bucket.create_file(
         data,

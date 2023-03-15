@@ -24,6 +24,10 @@ module AssetCloud
       raise NotImplementedError
     end
 
+    def rename(key, new_key)
+      raise NotImplementedError
+    end
+
     def write(key, data)
       raise NotImplementedError
     end

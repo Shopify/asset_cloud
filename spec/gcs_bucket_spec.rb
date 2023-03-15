@@ -117,6 +117,29 @@ describe AssetCloud::GCSBucket do
     end.not_to(raise_error)
   end
 
+  it "#rename creates a copy with a new name and deletes the original file from the bucket" do
+    key = "test/key.txt"
+    new_key = "test/new_key.txt"
+    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}")
+      .and_return(Google::Cloud::Storage::File.new))
+    expect_any_instance_of(Google::Cloud::Storage::File)
+      .to(receive(:copy).with(new_key)).and_return(Google::Cloud::Storage::File.new)
+    expect_any_instance_of(Google::Cloud::Storage::File).to(receive(:delete).with(no_args))
+
+    expect do
+      @bucket.rename(key, new_key)
+    end.not_to(raise_error)
+  end
+
+  it "#rename returns if new_key is empty" do
+    key = "test/key.txt"
+    new_key = ""
+    expect_any_instance_of(MockGCSBucket).to(receive(:file).with("s#{@cloud.url}/#{key}")
+      .and_return(Google::Cloud::Storage::File.new))
+
+    expect(@bucket.rename(key, new_key)).to(be_nil)
+  end
+
   it "#read returns the data of the file" do
     value = "hello world"
     key = "tmp/new_file.txt"
