@@ -8,7 +8,7 @@ module AssetCloud
       # Check weather the suggested key name is free. If so we
       # simply return it.
 
-      if !exist?(key) && !options[:force_uuid]
+      if !options[:force_uuid] && !exist?(key)
         key
       else
         ext         = File.extname(key)

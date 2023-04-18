@@ -35,7 +35,6 @@ describe "FreeFilenameLocator", "when asked to return a free key such as the one
   end
 
   it "should append a UUID to the key before the extensions if the force_uuid option is passed" do
-    expect(FindFreeKey).to(receive(:exist?).with("free.txt").and_return(false))
     expect(FindFreeKey).to(receive(:exist?).with("free_as-in-beer.txt").and_return(false))
     allow(SecureRandom).to(receive(:uuid).and_return("as-in-beer"))
 
