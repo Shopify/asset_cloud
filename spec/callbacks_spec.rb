@@ -3,7 +3,9 @@
 require "spec_helper"
 
 class AfterStoreCallback
-  def self.after_store(*args); end
+  class << self
+    def after_store(*args); end
+  end
 end
 
 class CallbackAsset < AssetCloud::Asset

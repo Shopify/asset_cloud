@@ -24,21 +24,23 @@ module AssetCloud
 
     class_attribute :extnames
 
-    def self.applies_to(*args)
-      extnames = args.map do |arg|
-        arg = arg.to_s.downcase
-        arg = ".#{arg}" unless arg.starts_with?(".")
-        arg
+    class << self
+      def applies_to(*args)
+        extnames = args.map do |arg|
+          arg = arg.to_s.downcase
+          arg = ".#{arg}" unless arg.starts_with?(".")
+          arg
+        end
+        self.extnames = extnames
       end
-      self.extnames = extnames
-    end
 
-    def self.applies_to_asset?(asset)
-      extnames = self.extnames || []
-      extnames.each do |extname|
-        return true if asset.key.downcase.ends_with?(extname)
+      def applies_to_asset?(asset)
+        extnames = self.extnames || []
+        extnames.each do |extname|
+          return true if asset.key.downcase.ends_with?(extname)
+        end
+        false
       end
-      false
     end
 
     def initialize(asset)

@@ -47,39 +47,51 @@ module AssetCloud
     class_attribute :asset_extension_classes
     self.asset_extension_classes = {}.freeze
 
-    def self.bucket(*args)
-      asset_class = if args.last.is_a?(Hash)
-        convert_to_class_name_if_possible(args.pop[:asset_class])
-      end
+    class << self
+      def bucket(*args)
+        asset_class = if args.last.is_a?(Hash)
+          convert_to_class_name_if_possible(args.pop[:asset_class])
+        end
 
-      bucket_class = if args.last.is_a?(Class)
-        convert_to_class_name_if_possible(args.pop)
-      else
-        raise ArgumentError, "requires a bucket class"
-      end
+        bucket_class = if args.last.is_a?(Class)
+          convert_to_class_name_if_possible(args.pop)
+        else
+          raise ArgumentError, "requires a bucket class"
+        end
 
-      if (bucket_name = args.first)
-        self.bucket_classes = bucket_classes.merge(bucket_name.to_sym => bucket_class).freeze
-        self.asset_classes = asset_classes.merge(bucket_name.to_sym => asset_class).freeze if asset_class
-      else
-        self.root_bucket_class = bucket_class
-        if asset_class
-          raise ArgumentError, "asset_class on the root bucket cannot be a proc" if asset_class.is_a?(Proc)
+        if (bucket_name = args.first)
+          self.bucket_classes = bucket_classes.merge(bucket_name.to_sym => bucket_class).freeze
+          self.asset_classes = asset_classes.merge(bucket_name.to_sym => asset_class).freeze if asset_class
+        else
+          self.root_bucket_class = bucket_class
+          if asset_class
+            raise ArgumentError, "asset_class on the root bucket cannot be a proc" if asset_class.is_a?(Proc)
 
-          self.root_asset_class = asset_class
+            self.root_asset_class = asset_class
+          end
         end
       end
-    end
 
-    def self.asset_extensions(*args)
-      opts = args.last.is_a?(Hash) ? args.pop.slice(:only, :except) : {}
-      opts.each do |k, v|
-        opts[k] = [v].flatten.map(&:to_sym)
+      def asset_extensions(*args)
+        opts = args.last.is_a?(Hash) ? args.pop.slice(:only, :except) : {}
+        opts.each do |k, v|
+          opts[k] = [v].flatten.map(&:to_sym)
+        end
+
+        args.each do |klass|
+          klass = convert_to_class_name_if_possible(klass)
+          self.asset_extension_classes = asset_extension_classes.merge(klass => opts).freeze
+        end
       end
 
-      args.each do |klass|
-        klass = convert_to_class_name_if_possible(klass)
-        self.asset_extension_classes = asset_extension_classes.merge(klass => opts).freeze
+      private
+
+      def convert_to_class_name_if_possible(klass)
+        if klass.is_a?(Class) && klass.name.present?
+          klass.name
+        else
+          klass
+        end
       end
     end
 
@@ -258,14 +270,6 @@ module AssetCloud
 
     def constantize_if_necessary(klass)
       klass.is_a?(Class) ? klass : klass.constantize
-    end
-
-    private_class_method def self.convert_to_class_name_if_possible(klass)
-      if klass.is_a?(Class) && klass.name.present?
-        klass.name
-      else
-        klass
-      end
     end
 
     def check_key_for_errors(key)

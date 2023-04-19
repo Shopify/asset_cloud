@@ -29,10 +29,12 @@ module AssetCloud
       yield self if block_given?
     end
 
-    def self.at(cloud, key, value = nil, metadata = nil, &block)
-      file = new(cloud, key, value, metadata, &block)
-      file.new_asset = false
-      file
+    class << self
+      def at(cloud, key, value = nil, metadata = nil, &block)
+        file = new(cloud, key, value, metadata, &block)
+        file.new_asset = false
+        file
+      end
     end
 
     def <=>(other)

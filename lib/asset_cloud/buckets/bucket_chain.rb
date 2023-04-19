@@ -2,15 +2,17 @@
 
 module AssetCloud
   class BucketChain < Bucket
-    # returns a new Bucket class which writes to each given Bucket
-    # but only uses the first one for reading
-    def self.chain(*klasses)
-      Class.new(self) do
-        attr_reader :chained_buckets
+    class << self
+      # returns a new Bucket class which writes to each given Bucket
+      # but only uses the first one for reading
+      def chain(*klasses)
+        Class.new(self) do
+          attr_reader :chained_buckets
 
-        define_method "initialize" do |cloud, name|
-          super(cloud, name)
-          @chained_buckets = klasses.map { |klass| klass.new(cloud, name) }
+          define_method "initialize" do |cloud, name|
+            super(cloud, name)
+            @chained_buckets = klasses.map { |klass| klass.new(cloud, name) }
+          end
         end
       end
     end

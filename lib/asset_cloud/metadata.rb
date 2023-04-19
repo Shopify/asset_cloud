@@ -23,12 +23,14 @@ module AssetCloud
     end
     # rubocop:enable Metrics/ParameterLists
 
-    def self.existing
-      new(true)
-    end
+    class << self
+      def existing
+        new(true)
+      end
 
-    def self.non_existing
-      new(false)
+      def non_existing
+        new(false)
+      end
     end
 
     def inspect
