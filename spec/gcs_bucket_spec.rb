@@ -14,6 +14,11 @@ class MockGCSBucket < AssetCloud::GCSBucket
   end
 
   def create_file(data, key, options = {})
+    created_files << [data, key, options]
+  end
+
+  def created_files
+    @created_files ||= []
   end
 end
 
@@ -40,29 +45,13 @@ describe AssetCloud::GCSBucket do
     expect(file.class).to(eq(Google::Cloud::Storage::File))
   end
 
-  if RUBY_VERSION >= "2.7"
-    it "#write writes a file into the bucket" do
-      local_path = "#{directory}/products/key.txt"
-      key = "test/key.txt"
-      expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
-        local_path,
-        "s#{@cloud.url}/#{key}",
-      ))
+  it "#write writes a file into the bucket" do
+    local_path = "#{directory}/products/key.txt"
+    key = "test/key.txt"
 
-      @bucket.write(key, local_path)
-    end
-  else
-    it "#write writes a file into the bucket" do
-      local_path = "#{directory}/products/key.txt"
-      key = "test/key.txt"
-      expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
-        local_path,
-        "s#{@cloud.url}/#{key}",
-        {},
-      ))
+    @bucket.write(key, local_path)
 
-      @bucket.write(key, local_path)
-    end
+    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", {}]))
   end
 
   it "#write writes a file into the bucket with metadata" do
@@ -71,39 +60,33 @@ describe AssetCloud::GCSBucket do
     metadata = {
       "X-Robots-Tag" => "none",
     }
-    expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
-      local_path,
-      "s#{@cloud.url}/#{key}",
-      metadata: metadata,
-    ))
 
     @bucket.write(key, local_path, metadata: metadata)
+
+    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", { metadata: metadata }]))
   end
 
   it "#write writes a file into the bucket with acl" do
     local_path = "#{directory}/products/key.txt"
     key = "test/key.txt"
     acl = "public"
-    expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
-      local_path,
-      "s#{@cloud.url}/#{key}",
-      acl: acl,
-    ))
 
     @bucket.write(key, local_path, acl: acl)
+    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", { acl: acl }]))
   end
 
   it "#write writes a file into the bucket with content_disposition" do
     local_path = "#{directory}/products/key.txt"
     key = "test/key.txt"
     content_disposition = "attachment"
-    expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
-      local_path,
-      "s#{@cloud.url}/#{key}",
-      content_disposition: content_disposition,
-    ))
 
     @bucket.write(key, local_path, content_disposition: content_disposition)
+
+    expect(@bucket.created_files).to(include([
+      local_path,
+      "s#{@cloud.url}/#{key}",
+      { content_disposition: content_disposition },
+    ]))
   end
 
   it "#delete removes the file from the bucket" do
