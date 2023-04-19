@@ -58,7 +58,7 @@ describe AssetCloud::GCSBucket do
       expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
         local_path,
         "s#{@cloud.url}/#{key}",
-        {}
+        {},
       ))
 
       @bucket.write(key, local_path)
@@ -74,7 +74,7 @@ describe AssetCloud::GCSBucket do
     expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
       local_path,
       "s#{@cloud.url}/#{key}",
-      metadata: metadata
+      metadata: metadata,
     ))
 
     @bucket.write(key, local_path, metadata: metadata)
@@ -87,7 +87,7 @@ describe AssetCloud::GCSBucket do
     expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
       local_path,
       "s#{@cloud.url}/#{key}",
-      acl: acl
+      acl: acl,
     ))
 
     @bucket.write(key, local_path, acl: acl)
@@ -100,7 +100,7 @@ describe AssetCloud::GCSBucket do
     expect_any_instance_of(MockGCSBucket).to(receive(:create_file).with(
       local_path,
       "s#{@cloud.url}/#{key}",
-      content_disposition: content_disposition
+      content_disposition: content_disposition,
     ))
 
     @bucket.write(key, local_path, content_disposition: content_disposition)

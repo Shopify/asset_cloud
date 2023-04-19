@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.files = %x(git ls-files).split($INPUT_RECORD_SEPARATOR)
-  s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   s.add_dependency("activesupport")
 
