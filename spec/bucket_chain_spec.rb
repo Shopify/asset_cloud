@@ -3,13 +3,17 @@
 require "spec_helper"
 
 class ChainedCloud < AssetCloud::Base
-  bucket :stuff, AssetCloud::BucketChain.chain(AssetCloud::MemoryBucket,
+  bucket :stuff, AssetCloud::BucketChain.chain(
     AssetCloud::MemoryBucket,
-    AssetCloud::FileSystemBucket)
+    AssetCloud::MemoryBucket,
+    AssetCloud::FileSystemBucket,
+  )
 
-  bucket :versioned_stuff, AssetCloud::BucketChain.chain(AssetCloud::FileSystemBucket,
+  bucket :versioned_stuff, AssetCloud::BucketChain.chain(
+    AssetCloud::FileSystemBucket,
     AssetCloud::VersionedMemoryBucket,
-    AssetCloud::MemoryBucket)
+    AssetCloud::MemoryBucket,
+  )
 end
 
 describe AssetCloud::BucketChain do

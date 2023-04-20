@@ -21,7 +21,7 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
 
     @cloud.gcs_connection = Google::Cloud::Storage.new(
       project_id: ENV["GCS_PROJECT_ID"],
-      credentials: ENV["GCS_KEY_FILEPATH"]
+      credentials: ENV["GCS_KEY_FILEPATH"],
     )
     @bucket = @cloud.buckets[:tmp]
   end

@@ -122,8 +122,12 @@ describe "Asset" do
 
   describe "when fetched from the bucket" do
     before do
-      @asset = AssetCloud::Asset.at(@cloud, "products/key.txt", "value",
-        AssetCloud::Metadata.new(true, "value".size, Time.now, Time.now))
+      @asset = AssetCloud::Asset.at(
+        @cloud,
+        "products/key.txt",
+        "value",
+        AssetCloud::Metadata.new(true, "value".size, Time.now, Time.now),
+      )
     end
 
     it "should be return new_asset? => false" do

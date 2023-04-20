@@ -3,7 +3,9 @@
 require "spec_helper"
 
 class AfterStoreCallback
-  def self.after_store(*args); end
+  class << self
+    def after_store(*args); end
+  end
 end
 
 class CallbackAsset < AssetCloud::Asset
@@ -157,7 +159,7 @@ describe CallbackAsset do
     local_asset = local_fs.asset_at("callback_assets/foo")
 
     expect(local_asset).to(receive(:callback_before_store).and_return(true))
-    expect(::AfterStoreCallback).to(receive(:after_store))
+    expect(AfterStoreCallback).to(receive(:after_store))
 
     expect(local_asset.store).to(eq(true))
   end

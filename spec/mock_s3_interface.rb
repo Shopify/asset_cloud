@@ -3,8 +3,15 @@
 require "ostruct"
 
 class MockS3Interface
-  VALID_ACLS = ["private", "public-read", "public-read-write", "authenticated-read", "aws-exec-read",
-                "bucket-owner-read", "bucket-owner-full-control",]
+  VALID_ACLS = [
+    "private",
+    "public-read",
+    "public-read-write",
+    "authenticated-read",
+    "aws-exec-read",
+    "bucket-owner-read",
+    "bucket-owner-full-control",
+  ]
 
   attr_reader :bucket_storage
 

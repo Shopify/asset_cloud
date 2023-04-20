@@ -65,7 +65,7 @@ module AssetCloud
         client: Aws::S3::Encryption::Client.new(
           client: source_bucket.client,
           encryption_key: key,
-        )
+        ),
       ).bucket(source_bucket.name)
     end
 
