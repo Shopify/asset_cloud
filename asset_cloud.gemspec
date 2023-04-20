@@ -4,7 +4,7 @@
 require "English"
 Gem::Specification.new do |s|
   s.name = "asset_cloud"
-  s.version = "2.7.1"
+  s.version = "2.7.2"
 
   s.authors = ["Shopify"]
   s.summary = "An abstraction layer around arbitrary and diverse asset stores."
