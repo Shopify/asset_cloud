@@ -35,13 +35,13 @@ module AssetCloud
         end
 
         define_singleton_method(before) do |*callbacks, &block|
-          callbacks << block if block_given?
+          callbacks << block unless block.nil?
           callbacks = (_callbacks[before] || []) + callbacks
           self._callbacks = _callbacks.merge(before => callbacks).freeze
         end
 
         define_singleton_method(after) do |*callbacks, &block|
-          callbacks << block if block_given?
+          callbacks << block unless block.nil?
           callbacks = (_callbacks[after] || []) + callbacks
           self._callbacks = _callbacks.merge(after => callbacks).freeze
         end

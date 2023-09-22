@@ -16,7 +16,13 @@ class CallbackAsset < AssetCloud::Asset
   after_validate :add_spice
   validate :valid_value
 
+  before_validate(&:proc_executed_before)
+  after_validate(&:proc_executed_after)
+
   after_store ::AfterStoreCallback
+
+  def proc_executed_before(*args); end
+  def proc_executed_after(*args); end
 
   private
 
@@ -135,6 +141,26 @@ describe CallbackAsset do
     expect(@asset).not_to(receive(:callback_after_delete))
 
     @asset.value = "foo"
+    expect(@asset.store).to(eq(true))
+    expect(@asset.value).to(eq("valid spice"))
+  end
+
+  it "should run before_validate with procs" do
+    expect(@asset).to(receive(:callback_before_store).and_return(true))
+    expect(@asset).to(receive(:proc_executed_before))
+
+    @asset.value = "foo"
+
+    expect(@asset.store).to(eq(true))
+    expect(@asset.value).to(eq("valid spice"))
+  end
+
+  it "should run after_validate with procs" do
+    expect(@asset).to(receive(:callback_before_store).and_return(true))
+    expect(@asset).to(receive(:proc_executed_after))
+
+    @asset.value = "foo"
+
     expect(@asset.store).to(eq(true))
     expect(@asset.value).to(eq("valid spice"))
   end
