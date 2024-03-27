@@ -1,8 +1,7 @@
 name: asset-cloud
 
 up:
-  - ruby:
-      version: 3.2.2
+  - ruby
   - bundler
 
 commands:
