@@ -1,5 +1,9 @@
 # Asset Cloud Version History
 
+## Unreleased
+
+* Refactor AssetCloud::Callbacks.execute_callbacks to allow for subclassing
+
 ## Version 2.7.2, 2023-04-20
 
 * Swap the order of operations for checking UUID and asset exist logic in free key locator (https://github.com/Shopify/asset_cloud/pull/83)

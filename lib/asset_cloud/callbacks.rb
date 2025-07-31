@@ -61,24 +61,28 @@ module AssetCloud
 
     def execute_callbacks(symbol, args)
       callbacks_for(symbol).each do |callback|
-        result = case callback
-        when Symbol
-          send(callback, *args)
-        when Proc, Method
-          callback.call(self, *args)
-        else
-          if callback.respond_to?(symbol)
-            callback.send(symbol, self, *args)
-          else
-            raise StandardError,
-              "Callbacks must be a symbol denoting the method to call, " \
-                "a string to be evaluated, a block to be invoked, " \
-                "or an object responding to the callback method."
-          end
-        end
+        result = execute_callback(symbol, callback, args)
         return false if result == false
       end
       true
+    end
+
+    def execute_callback(symbol, callback, args)
+      case callback
+      when Symbol
+        send(callback, *args)
+      when Proc, Method
+        callback.call(self, *args)
+      else
+        if callback.respond_to?(symbol)
+          callback.send(symbol, self, *args)
+        else
+          raise StandardError,
+            "Callbacks must be a symbol denoting the method to call, " \
+              "a string to be evaluated, a block to be invoked, " \
+              "or an object responding to the callback method."
+        end
+      end
     end
 
     def callbacks_for(symbol)
