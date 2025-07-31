@@ -1,8 +1,9 @@
 # Asset Cloud Version History
 
-## Unreleased
+## Version 2.7.3, 2025-07-31
 
 * Refactor AssetCloud::Callbacks.execute_callbacks to allow for subclassing
+* Fix usage of Procs with callback methods
 
 ## Version 2.7.2, 2023-04-20
 

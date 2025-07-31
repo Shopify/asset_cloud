@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    asset_cloud (2.7.2)
+    asset_cloud (2.7.3)
       activesupport
 
 GEM
