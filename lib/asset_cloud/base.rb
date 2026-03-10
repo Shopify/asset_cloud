@@ -172,12 +172,14 @@ module AssetCloud
     end
 
     def read(key)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Reading from #{key}" }
 
       bucket_for(key).read(key)
     end
 
     def stat(key)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Statting #{key}" }
 
       bucket_for(key).stat(key)
@@ -202,6 +204,7 @@ module AssetCloud
     end
 
     def delete(key)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Deleting #{key}" }
 
       bucket_for(key).delete(key)
