@@ -214,6 +214,24 @@ describe BasicCloud do
     end
   end
 
+  describe "path traversal protection" do
+    it "should raise IllegalPath on read with traversal key" do
+      expect { @fs.read("../secret.txt") }.to(raise_error(AssetCloud::IllegalPath))
+    end
+
+    it "should raise IllegalPath on delete with traversal key" do
+      expect { @fs.delete("../secret.txt") }.to(raise_error(AssetCloud::IllegalPath))
+    end
+
+    it "should raise IllegalPath on stat with traversal key" do
+      expect { @fs.stat("../secret.txt") }.to(raise_error(AssetCloud::IllegalPath))
+    end
+
+    it "should raise IllegalPath on write with traversal key" do
+      expect { @fs.write("../secret.txt", "data") }.to(raise_error(AssetCloud::IllegalPath))
+    end
+  end
+
   describe "MATCH_BUCKET" do
     it "should match following stuff " do
       "products/key.txt" =~ AssetCloud::Base::MATCH_BUCKET
