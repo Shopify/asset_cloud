@@ -186,6 +186,7 @@ module AssetCloud
     end
 
     def ls(key)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Listing objects in #{key}" }
 
       bucket_for(key).ls(key)
@@ -228,16 +229,19 @@ module AssetCloud
     # versioning
 
     def read_version(key, version)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Reading from #{key} at version #{version}" }
       bucket_for(key).read_version(key, version)
     end
 
     def versions(key)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Getting all versions for #{key}" }
       bucket_for(key).versions(key)
     end
 
     def version_details(key)
+      check_key_for_errors(key)
       logger&.info { "  [#{self.class.name}] Getting all version details for #{key}" }
       bucket_for(key).version_details(key)
     end
