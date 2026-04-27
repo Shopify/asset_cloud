@@ -230,6 +230,22 @@ describe BasicCloud do
     it "should raise IllegalPath on write with traversal key" do
       expect { @fs.write("../secret.txt", "data") }.to(raise_error(AssetCloud::IllegalPath))
     end
+
+    it "should raise IllegalPath on ls with traversal key" do
+      expect { @fs.ls("../secret") }.to(raise_error(AssetCloud::IllegalPath))
+    end
+
+    it "should raise IllegalPath on read_version with traversal key" do
+      expect { @fs.read_version("../secret.txt", 1) }.to(raise_error(AssetCloud::IllegalPath))
+    end
+
+    it "should raise IllegalPath on versions with traversal key" do
+      expect { @fs.versions("../secret.txt") }.to(raise_error(AssetCloud::IllegalPath))
+    end
+
+    it "should raise IllegalPath on version_details with traversal key" do
+      expect { @fs.version_details("../secret.txt") }.to(raise_error(AssetCloud::IllegalPath))
+    end
   end
 
   describe "MATCH_BUCKET" do
