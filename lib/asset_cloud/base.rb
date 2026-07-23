@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "uri/rfc2396_parser"
+require "asset_cloud/free_key_locator"
+require "asset_cloud/callbacks"
 
 module AssetCloud
   class IllegalPath < StandardError
@@ -286,5 +288,9 @@ module AssetCloud
       logger&.info { "  [#{self.class.name}]   bad key #{e.message}" }
       raise
     end
+
+    include AssetCloud::FreeKeyLocator
+    include AssetCloud::Callbacks
+    callback_methods :write, :delete
   end
 end

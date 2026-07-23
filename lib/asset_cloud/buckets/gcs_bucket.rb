@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+gem "google-cloud-storage"
+require "google-cloud-storage"
+
 module AssetCloud
   class GCSBucket < Bucket
     def ls(key = nil)
