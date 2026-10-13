@@ -136,4 +136,60 @@ describe AssetCloud::GCSBucket do
     expect(stats.created_at).to(eq(expected_time))
     expect(stats.updated_at).to(eq(expected_time))
   end
+
+  describe "#write with a path prefix" do
+    let(:local_path) { "#{directory}/products/key.txt" }
+
+    before do
+      @cloud = GCSCloud.new(directory, "/assets/files")
+      @bucket = MockGCSBucket.new(@cloud, "")
+      allow(@cloud).to(receive(:gcs_bucket).and_return(@bucket))
+    end
+
+    it "writes to keys already under the prefix without changing them" do
+      key = "s#{@cloud.url}/test/key.txt"
+      prefix = "s#{@cloud.url}"
+
+      @bucket.write(key, local_path)
+      @bucket.write(prefix, local_path)
+
+      expect(@bucket.created_files).to(eq([
+        [local_path, key, {}],
+        [local_path, prefix, {}],
+      ]))
+    end
+
+    it "writes to the unchanged key when the prefix ends with a slash" do
+      @cloud.url += "/"
+      key = "s#{@cloud.url}test/key.txt"
+
+      @bucket.write(key, local_path)
+
+      expect(@bucket.created_files).to(eq([[local_path, key, {}]]))
+    end
+
+    it "writes to the unchanged key when the prefix is empty" do
+      @bucket = Class.new(MockGCSBucket) do
+        def path_prefix
+          ""
+        end
+      end.new(@cloud, "")
+      allow(@cloud).to(receive(:gcs_bucket).and_return(@bucket))
+      key = "deployments/key.txt"
+
+      @bucket.write(key, local_path)
+
+      expect(@bucket.created_files).to(eq([[local_path, key, {}]]))
+    end
+  end
+
+  it "#write does not write to a sibling prefix" do
+    local_path = "#{directory}/products/key.txt"
+    sibling = "s#{@cloud.url}_other/private.txt"
+
+    @bucket.write(sibling, local_path)
+
+    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{sibling}", {}]))
+    expect(@bucket.created_files.map { |f| f[1] }).not_to(include(sibling))
+  end
 end

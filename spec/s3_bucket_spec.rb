@@ -12,6 +12,15 @@ class S3Cloud < AssetCloud::Base
   end
 end
 
+class RootS3Cloud < AssetCloud::Base
+  bucket AssetCloud::S3Bucket
+  attr_accessor :s3_connection, :s3_bucket_name
+
+  def s3_bucket(_key)
+    s3_connection.bucket(s3_bucket_name)
+  end
+end
+
 describe AssetCloud::S3Bucket do
   directory = File.dirname(__FILE__) + "/files"
 
@@ -66,5 +75,38 @@ describe AssetCloud::S3Bucket do
     @bucket.write(key, value)
     data = @bucket.read(key)
     expect(data).to(eq(value))
+  end
+
+  describe "with a relative path prefix" do
+    before(:each) do
+      @prefixed_cloud = RootS3Cloud.new(directory, "tenant-a/assets")
+      @prefixed_cloud.s3_connection = MockS3Interface.new("a", "b")
+      @prefixed_cloud.s3_bucket_name = "asset-cloud-test"
+      @s3_bucket = @prefixed_cloud.s3_bucket(nil)
+    end
+
+    it "#write writes to keys already under the prefix without changing them" do
+      ["tenant-a/assets/logo.png", "tenant-a/assets"].each do |key|
+        @prefixed_cloud.write(key, "contents")
+
+        expect(@s3_bucket.object(key).get.body).to(eq("contents"))
+      end
+    end
+
+    it "#read cannot reach an object under a sibling prefix" do
+      @s3_bucket.object("tenant-a/assets_other/private.txt").put(body: "secret")
+
+      expect { @prefixed_cloud.read("tenant-a/assets_other/private.txt") }
+        .to(raise_error(AssetCloud::AssetNotFoundError))
+    end
+
+    it "#write cannot overwrite an object under a sibling prefix" do
+      @s3_bucket.object("tenant-a/assets_other/private.txt").put(body: "secret")
+
+      @prefixed_cloud.write("tenant-a/assets_other/private.txt", "overwritten")
+
+      expect(@s3_bucket.object("tenant-a/assets_other/private.txt").get.body).to(eq("secret"))
+      expect(@s3_bucket.object("tenant-a/assets/tenant-a/assets_other/private.txt").get.body).to(eq("overwritten"))
+    end
   end
 end
