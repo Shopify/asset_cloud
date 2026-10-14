@@ -49,7 +49,25 @@ describe AssetCloud::GCSBucket do
     value = "hello world"
     key = "test/key.txt"
 
-    @bucket.write(key, value)
+    expect { @bucket.write(key, value) }.not_to(output.to_stderr)
+
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
+  end
+
+  it "#write writes binary String content with null bytes without a warning" do
+    value = "\xFF\x00asset content".b
+    key = "test/binary.bin"
+
+    expect { @bucket.write(key, value) }.not_to(output.to_stderr)
+
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
+  end
+
+  it "#write writes String content with a path-incompatible encoding without a warning" do
+    value = "asset content".encode("UTF-16LE")
+    key = "test/utf16.txt"
+
+    expect { @bucket.write(key, value) }.not_to(output.to_stderr)
 
     expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
   end
@@ -127,7 +145,10 @@ describe AssetCloud::GCSBucket do
       command.release!
     end
 
-    bucket.write("test/path.txt", local_path)
+    expect { bucket.write("test/path.txt", local_path) }.to(output(
+      "AssetCloud::GCSBucket#write treats String paths as literal content. " \
+        "Pass an open File or IO object to upload file contents.\n",
+    ).to_stderr)
 
     expect(uploaded_content).to(eq(local_path))
     expect(uploaded_content).not_to(eq(File.binread(local_path)))
