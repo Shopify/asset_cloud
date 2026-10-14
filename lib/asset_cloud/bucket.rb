@@ -38,5 +38,15 @@ module AssetCloud
     def versioned?
       respond_to?(:read_version)
     end
+
+    private
+
+    def key_within_prefix?(key, prefix)
+      return true if prefix.empty?
+
+      key = key.to_s
+      boundary = prefix.end_with?("/") ? prefix : "#{prefix}/"
+      key == prefix || key.start_with?(boundary)
+    end
   end
 end

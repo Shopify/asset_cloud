@@ -74,7 +74,7 @@ module AssetCloud
     end
 
     def absolute_key(key = nil)
-      if key.to_s.starts_with?(path_prefix)
+      if key_within_prefix?(key, path_prefix)
         key
       else
         args = [path_prefix]
