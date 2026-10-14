@@ -203,7 +203,7 @@ describe AssetCloud::GCSBucket do
   end
 
   describe "#write with a path prefix" do
-    let(:local_path) { "#{directory}/products/key.txt" }
+    let(:value) { "hello world" }
 
     before do
       @cloud = GCSCloud.new(directory, "/assets/files")
@@ -215,12 +215,12 @@ describe AssetCloud::GCSBucket do
       key = "s#{@cloud.url}/test/key.txt"
       prefix = "s#{@cloud.url}"
 
-      @bucket.write(key, local_path)
-      @bucket.write(prefix, local_path)
+      @bucket.write(key, value)
+      @bucket.write(prefix, value)
 
-      expect(@bucket.created_files).to(eq([
-        [local_path, key, {}],
-        [local_path, prefix, {}],
+      expect(@bucket.created_files).to(match([
+        [have_attributes(string: value), key, {}],
+        [have_attributes(string: value), prefix, {}],
       ]))
     end
 
@@ -228,9 +228,9 @@ describe AssetCloud::GCSBucket do
       @cloud.url += "/"
       key = "s#{@cloud.url}test/key.txt"
 
-      @bucket.write(key, local_path)
+      @bucket.write(key, value)
 
-      expect(@bucket.created_files).to(eq([[local_path, key, {}]]))
+      expect(@bucket.created_files).to(match([[have_attributes(string: value), key, {}]]))
     end
 
     it "writes to the unchanged key when the prefix is empty" do
@@ -242,19 +242,19 @@ describe AssetCloud::GCSBucket do
       allow(@cloud).to(receive(:gcs_bucket).and_return(@bucket))
       key = "deployments/key.txt"
 
-      @bucket.write(key, local_path)
+      @bucket.write(key, value)
 
-      expect(@bucket.created_files).to(eq([[local_path, key, {}]]))
+      expect(@bucket.created_files).to(match([[have_attributes(string: value), key, {}]]))
     end
   end
 
   it "#write does not write to a sibling prefix" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     sibling = "s#{@cloud.url}_other/private.txt"
 
-    @bucket.write(sibling, local_path)
+    @bucket.write(sibling, value)
 
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{sibling}", {}]))
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{sibling}", {}]))
     expect(@bucket.created_files.map { |f| f[1] }).not_to(include(sibling))
   end
 end
