@@ -45,48 +45,113 @@ describe AssetCloud::GCSBucket do
     expect(file.class).to(eq(Google::Cloud::Storage::File))
   end
 
-  it "#write writes a file into the bucket" do
-    local_path = "#{directory}/products/key.txt"
+  it "#write writes String content into the bucket" do
+    value = "hello world"
     key = "test/key.txt"
 
-    @bucket.write(key, local_path)
+    expect { @bucket.write(key, value) }.not_to(output.to_stderr)
 
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", {}]))
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
+  end
+
+  it "#write writes binary String content with null bytes without a warning" do
+    value = "\xFF\x00asset content".b
+    key = "test/binary.bin"
+
+    expect { @bucket.write(key, value) }.not_to(output.to_stderr)
+
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
+  end
+
+  it "#write writes String content with a path-incompatible encoding without a warning" do
+    value = "asset content".encode("UTF-16LE")
+    key = "test/utf16.txt"
+
+    expect { @bucket.write(key, value) }.not_to(output.to_stderr)
+
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
   end
 
   it "#write writes a file into the bucket with metadata" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     key = "test/key.txt"
     metadata = {
       "X-Robots-Tag" => "none",
     }
 
-    @bucket.write(key, local_path, metadata: metadata)
+    @bucket.write(key, value, metadata: metadata)
 
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", { metadata: metadata }]))
+    expect(@bucket.created_files).to(include([
+      have_attributes(string: value),
+      "s#{@cloud.url}/#{key}",
+      { metadata: metadata },
+    ]))
   end
 
   it "#write writes a file into the bucket with acl" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     key = "test/key.txt"
     acl = "public"
 
-    @bucket.write(key, local_path, acl: acl)
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", { acl: acl }]))
+    @bucket.write(key, value, acl: acl)
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", { acl: acl }]))
   end
 
   it "#write writes a file into the bucket with content_disposition" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     key = "test/key.txt"
     content_disposition = "attachment"
 
-    @bucket.write(key, local_path, content_disposition: content_disposition)
+    @bucket.write(key, value, content_disposition: content_disposition)
 
     expect(@bucket.created_files).to(include([
-      local_path,
+      have_attributes(string: value),
       "s#{@cloud.url}/#{key}",
       { content_disposition: content_disposition },
     ]))
+  end
+
+  it "#write passes an existing IO object through unchanged" do
+    data = StringIO.new("hello world")
+    key = "test/io.txt"
+    expect(@bucket).to(receive(:create_file).with(data, "s#{@cloud.url}/#{key}").and_return(:uploaded_file))
+
+    expect(@bucket.write(key, data)).to(eq(:uploaded_file))
+  end
+
+  it "#write passes an open File through unchanged" do
+    key = "test/file.txt"
+
+    File.open("#{directory}/products/key.txt", "rb") do |file|
+      expect(@bucket).to(receive(:create_file).with(file, "s#{@cloud.url}/#{key}"))
+
+      @bucket.write(key, file)
+    end
+  end
+
+  it "#write uploads a String path as literal content through the GCS client" do
+    service = Google::Cloud::Storage::Service.new("test-project", nil)
+    gcs_bucket = Google::Cloud::Storage::Bucket.new_lazy("test-bucket", service)
+    allow(@cloud).to(receive(:gcs_bucket).and_return(gcs_bucket))
+    bucket = AssetCloud::GCSBucket.new(@cloud, "")
+    local_path = "#{directory}/products/key.txt"
+    uploaded_content = nil
+
+    expect(service.service).to(receive(:execute_or_queue_command)) do |command|
+      command.prepare!
+      uploaded_content = command.upload_io.read
+      Google::Apis::StorageV1::Object.new(name: "test/path.txt")
+    ensure
+      command.release!
+    end
+
+    expect { bucket.write("test/path.txt", local_path) }.to(output(
+      "AssetCloud::GCSBucket#write treats String paths as literal content. " \
+        "Pass an open File or IO object to upload file contents.\n",
+    ).to_stderr)
+
+    expect(uploaded_content).to(eq(local_path))
+    expect(uploaded_content).not_to(eq(File.binread(local_path)))
   end
 
   it "#delete removes the file from the bucket" do
@@ -138,7 +203,7 @@ describe AssetCloud::GCSBucket do
   end
 
   describe "#write with a path prefix" do
-    let(:local_path) { "#{directory}/products/key.txt" }
+    let(:value) { "hello world" }
 
     before do
       @cloud = GCSCloud.new(directory, "/assets/files")
@@ -150,12 +215,12 @@ describe AssetCloud::GCSBucket do
       key = "s#{@cloud.url}/test/key.txt"
       prefix = "s#{@cloud.url}"
 
-      @bucket.write(key, local_path)
-      @bucket.write(prefix, local_path)
+      @bucket.write(key, value)
+      @bucket.write(prefix, value)
 
-      expect(@bucket.created_files).to(eq([
-        [local_path, key, {}],
-        [local_path, prefix, {}],
+      expect(@bucket.created_files).to(match([
+        [have_attributes(string: value), key, {}],
+        [have_attributes(string: value), prefix, {}],
       ]))
     end
 
@@ -163,9 +228,9 @@ describe AssetCloud::GCSBucket do
       @cloud.url += "/"
       key = "s#{@cloud.url}test/key.txt"
 
-      @bucket.write(key, local_path)
+      @bucket.write(key, value)
 
-      expect(@bucket.created_files).to(eq([[local_path, key, {}]]))
+      expect(@bucket.created_files).to(match([[have_attributes(string: value), key, {}]]))
     end
 
     it "writes to the unchanged key when the prefix is empty" do
@@ -177,19 +242,19 @@ describe AssetCloud::GCSBucket do
       allow(@cloud).to(receive(:gcs_bucket).and_return(@bucket))
       key = "deployments/key.txt"
 
-      @bucket.write(key, local_path)
+      @bucket.write(key, value)
 
-      expect(@bucket.created_files).to(eq([[local_path, key, {}]]))
+      expect(@bucket.created_files).to(match([[have_attributes(string: value), key, {}]]))
     end
   end
 
   it "#write does not write to a sibling prefix" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     sibling = "s#{@cloud.url}_other/private.txt"
 
-    @bucket.write(sibling, local_path)
+    @bucket.write(sibling, value)
 
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{sibling}", {}]))
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{sibling}", {}]))
     expect(@bucket.created_files.map { |f| f[1] }).not_to(include(sibling))
   end
 end

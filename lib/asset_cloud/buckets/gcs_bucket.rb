@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "stringio"
+
 module AssetCloud
   class GCSBucket < Bucket
     def ls(key = nil)
@@ -14,6 +16,15 @@ module AssetCloud
     end
 
     def write(key, data, options = {})
+      # The GCS client treats String sources as local file paths, not content.
+      if data.is_a?(String)
+        if local_path?(data)
+          warn("AssetCloud::GCSBucket#write treats String paths as literal content. " \
+            "Pass an open File or IO object to upload file contents.")
+        end
+        data = StringIO.new(data)
+      end
+
       bucket.create_file(
         data,
         absolute_key(key),
@@ -38,6 +49,12 @@ module AssetCloud
     end
 
     private
+
+    def local_path?(data)
+      File.exist?(data)
+    rescue ArgumentError, Encoding::CompatibilityError
+      false
+    end
 
     def bucket
       @bucket ||= cloud.gcs_bucket

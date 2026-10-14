@@ -1,5 +1,16 @@
 # Asset Cloud Version History
 
+## Unreleased
+
+* `GCSBucket#write` now stores String values as asset content, even when a String names an existing local file.
+* **Breaking change:** Callers that pass local file paths as Strings must pass an open `File` instead.
+
+  ```ruby
+  File.open("/tmp/photo.jpg", "rb") do |source|
+    bucket.write("photos/photo.jpg", source)
+  end
+  ```
+
 ## Version 2.7.3, 2025-07-31
 
 * Refactor AssetCloud::Callbacks.execute_callbacks to allow for subclassing
