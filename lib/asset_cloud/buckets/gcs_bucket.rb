@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "stringio"
+
 module AssetCloud
   class GCSBucket < Bucket
     def ls(key = nil)
@@ -14,6 +16,9 @@ module AssetCloud
     end
 
     def write(key, data, options = {})
+      # The GCS client treats String sources as local file paths, not content.
+      data = StringIO.new(data) if data.is_a?(String)
+
       bucket.create_file(
         data,
         absolute_key(key),

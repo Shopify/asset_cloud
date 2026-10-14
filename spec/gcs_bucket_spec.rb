@@ -45,48 +45,92 @@ describe AssetCloud::GCSBucket do
     expect(file.class).to(eq(Google::Cloud::Storage::File))
   end
 
-  it "#write writes a file into the bucket" do
-    local_path = "#{directory}/products/key.txt"
+  it "#write writes String content into the bucket" do
+    value = "hello world"
     key = "test/key.txt"
 
-    @bucket.write(key, local_path)
+    @bucket.write(key, value)
 
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", {}]))
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", {}]))
   end
 
   it "#write writes a file into the bucket with metadata" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     key = "test/key.txt"
     metadata = {
       "X-Robots-Tag" => "none",
     }
 
-    @bucket.write(key, local_path, metadata: metadata)
+    @bucket.write(key, value, metadata: metadata)
 
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", { metadata: metadata }]))
+    expect(@bucket.created_files).to(include([
+      have_attributes(string: value),
+      "s#{@cloud.url}/#{key}",
+      { metadata: metadata },
+    ]))
   end
 
   it "#write writes a file into the bucket with acl" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     key = "test/key.txt"
     acl = "public"
 
-    @bucket.write(key, local_path, acl: acl)
-    expect(@bucket.created_files).to(include([local_path, "s#{@cloud.url}/#{key}", { acl: acl }]))
+    @bucket.write(key, value, acl: acl)
+    expect(@bucket.created_files).to(include([have_attributes(string: value), "s#{@cloud.url}/#{key}", { acl: acl }]))
   end
 
   it "#write writes a file into the bucket with content_disposition" do
-    local_path = "#{directory}/products/key.txt"
+    value = "hello world"
     key = "test/key.txt"
     content_disposition = "attachment"
 
-    @bucket.write(key, local_path, content_disposition: content_disposition)
+    @bucket.write(key, value, content_disposition: content_disposition)
 
     expect(@bucket.created_files).to(include([
-      local_path,
+      have_attributes(string: value),
       "s#{@cloud.url}/#{key}",
       { content_disposition: content_disposition },
     ]))
+  end
+
+  it "#write passes an existing IO object through unchanged" do
+    data = StringIO.new("hello world")
+    key = "test/io.txt"
+    expect(@bucket).to(receive(:create_file).with(data, "s#{@cloud.url}/#{key}").and_return(:uploaded_file))
+
+    expect(@bucket.write(key, data)).to(eq(:uploaded_file))
+  end
+
+  it "#write passes an open File through unchanged" do
+    key = "test/file.txt"
+
+    File.open("#{directory}/products/key.txt", "rb") do |file|
+      expect(@bucket).to(receive(:create_file).with(file, "s#{@cloud.url}/#{key}"))
+
+      @bucket.write(key, file)
+    end
+  end
+
+  it "#write uploads a String path as literal content through the GCS client" do
+    service = Google::Cloud::Storage::Service.new("test-project", nil)
+    gcs_bucket = Google::Cloud::Storage::Bucket.new_lazy("test-bucket", service)
+    allow(@cloud).to(receive(:gcs_bucket).and_return(gcs_bucket))
+    bucket = AssetCloud::GCSBucket.new(@cloud, "")
+    local_path = "#{directory}/products/key.txt"
+    uploaded_content = nil
+
+    expect(service.service).to(receive(:execute_or_queue_command)) do |command|
+      command.prepare!
+      uploaded_content = command.upload_io.read
+      Google::Apis::StorageV1::Object.new(name: "test/path.txt")
+    ensure
+      command.release!
+    end
+
+    bucket.write("test/path.txt", local_path)
+
+    expect(uploaded_content).to(eq(local_path))
+    expect(uploaded_content).not_to(eq(File.binread(local_path)))
   end
 
   it "#delete removes the file from the bucket" do

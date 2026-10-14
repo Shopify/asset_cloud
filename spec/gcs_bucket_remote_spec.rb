@@ -41,7 +41,9 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
     local_path = "#{directory}/products/key.txt"
     key = "test/ls.txt"
 
-    @bucket.write(key, local_path)
+    File.open(local_path, "rb") do |source|
+      @bucket.write(key, source)
+    end
 
     file = @bucket.ls(key)
     expect(file.name).to(eq("s#{@cloud.url}/#{key}"))
@@ -51,7 +53,11 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
     local_path = "#{directory}/products/key.txt"
     key = "test/key.txt"
 
-    @bucket.write(key, local_path)
+    File.open(local_path, "rb") do |source|
+      @bucket.write(key, source)
+    end
+
+    expect(@bucket.read(key)).to(eq(File.binread(local_path)))
   end
 
   it "#write writes a file into the bucket with metadata" do
@@ -61,7 +67,9 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
       "X-Robots-Tag" => "none",
     }
 
-    file = @bucket.write(key, local_path, metadata: metadata)
+    file = File.open(local_path, "rb") do |source|
+      @bucket.write(key, source, metadata: metadata)
+    end
     expect(file.metadata).to(eq(metadata))
   end
 
@@ -70,7 +78,9 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
     key = "test/key.txt"
     acl = "public"
 
-    file = @bucket.write(key, local_path, acl: acl)
+    file = File.open(local_path, "rb") do |source|
+      @bucket.write(key, source, acl: acl)
+    end
     expect(file.acl).to(be_truthy)
   end
 
@@ -79,7 +89,9 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
     key = "test/key.txt"
     content_disposition = "attachment"
 
-    file = @bucket.write(key, local_path, content_disposition: content_disposition)
+    file = File.open(local_path, "rb") do |source|
+      @bucket.write(key, source, content_disposition: content_disposition)
+    end
     expect(file.content_disposition).to(eq(content_disposition))
   end
 
@@ -101,7 +113,7 @@ describe AssetCloud::GCSBucket, if: ENV["GCS_PROJECT_ID"] && ENV["GCS_KEY_FILEPA
   it "#read returns the data of the file" do
     value = "hello world"
     key = "tmp/new_file.txt"
-    @bucket.write(key, StringIO.new(value))
+    @bucket.write(key, value)
 
     data = @bucket.read(key)
     expect(data).to(eq(value))
