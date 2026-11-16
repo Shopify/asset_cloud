@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Ruby ${{ matrix.ruby }}
     strategy:
       fail-fast: false
@@ -25,7 +25,7 @@ jobs:
       run: bundle exec rspec
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: RuboCop
     steps:
 
