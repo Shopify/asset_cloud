@@ -11,7 +11,7 @@ module AssetCloud
       options[:prefix] = key if key
 
       objects = cloud.s3_bucket(key).objects(options)
-      objects.map { |o| cloud[relative_key(o.key)] }
+      objects.select { |o| key_within_prefix?(o.key, path_prefix) }.map { |o| cloud[relative_key(o.key)] }
     end
 
     def read(key, options = {})

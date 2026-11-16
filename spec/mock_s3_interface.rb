@@ -53,9 +53,9 @@ class MockS3Interface
       @storage = {}
     end
 
-    def objects(**options)
+    def objects(options = {})
       objects = @storage.values
-      objects = objects.select { |v| v.start_with?(options[:prefix]) } if options[:prefix]
+      objects = objects.select { |v| v.key.start_with?(options[:prefix]) } if options[:prefix]
       objects
     end
 
