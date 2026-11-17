@@ -85,6 +85,62 @@ describe AssetCloud::S3Bucket do
       @s3_bucket = @prefixed_cloud.s3_bucket(nil)
     end
 
+    describe "#ls" do
+      before(:each) do
+        [
+          "tenant-a/assets",
+          "tenant-a/assets/logo.png",
+          "tenant-a/assets/icons/logo.png",
+          "tenant-a/assets_other/private.txt",
+          "tenant-a/assets-archive/private.txt",
+          "tenant-a/assets2/private.txt",
+        ].each do |key|
+          @s3_bucket.object(key).put(body: "contents")
+        end
+      end
+
+      it "lists only objects within the configured prefix through the public API" do
+        assets = @prefixed_cloud.ls("tenant-a/assets")
+
+        expect(assets.map(&:key)).to(contain_exactly("tenant-a/assets", "logo.png", "icons/logo.png"))
+      end
+
+      it "lists only objects within the configured prefix when no key is given" do
+        assets = @prefixed_cloud.bucket_for(nil).ls
+
+        expect(assets.map(&:key)).to(contain_exactly("tenant-a/assets", "logo.png", "icons/logo.png"))
+      end
+
+      it "supports partial key prefixes within the configured prefix" do
+        assets = @prefixed_cloud.ls("lo")
+
+        expect(assets.map(&:key)).to(contain_exactly("logo.png"))
+      end
+
+      it "supports a configured prefix ending in a slash" do
+        @prefixed_cloud.url = "tenant-a/assets/"
+
+        assets = @prefixed_cloud.bucket_for(nil).ls
+
+        expect(assets.map(&:key)).to(contain_exactly("tenant-a/assets/logo.png", "tenant-a/assets/icons/logo.png"))
+      end
+
+      it "allows all objects when the configured prefix is empty" do
+        @prefixed_cloud.url = ""
+
+        assets = @prefixed_cloud.bucket_for(nil).ls
+
+        expect(assets.map(&:key)).to(contain_exactly(
+          "tenant-a/assets",
+          "tenant-a/assets/logo.png",
+          "tenant-a/assets/icons/logo.png",
+          "tenant-a/assets_other/private.txt",
+          "tenant-a/assets-archive/private.txt",
+          "tenant-a/assets2/private.txt",
+        ))
+      end
+    end
+
     it "#write writes to keys already under the prefix without changing them" do
       ["tenant-a/assets/logo.png", "tenant-a/assets"].each do |key|
         @prefixed_cloud.write(key, "contents")
