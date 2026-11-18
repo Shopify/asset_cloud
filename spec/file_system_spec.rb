@@ -44,6 +44,38 @@ describe FileSystemCloud do
     expect(@fs.ls("products").collect(&:key)).to(eq(["products/key.txt"]))
   end
 
+  it "should list the literal directory when its name contains brackets" do
+    @fs.write("tmp/[a]lice/owned.txt", "owned")
+    @fs.write("tmp/alice/private.txt", "private")
+
+    assets = @fs.ls("tmp/[a]lice")
+
+    expect(assets.map(&:key)).to(eq(["tmp/[a]lice/owned.txt"]))
+    expect(assets.map(&:value)).to(eq(["owned"]))
+  end
+
+  it "should not expand bracket ranges into sibling directories" do
+    @fs.write("tmp/bob/private.txt", "private")
+
+    expect(@fs.ls("tmp/[a-z][a-z][a-z]")).to(eq([]))
+  end
+
+  it "should treat brackets literally in every directory component" do
+    @fs.write("tmp/[a]/[b]/owned.txt", "owned")
+    @fs.write("tmp/a/b/private.txt", "private")
+
+    expect(@fs.ls("tmp/[a]/[b]").map(&:key)).to(eq(["tmp/[a]/[b]/owned.txt"]))
+  end
+
+  it "should list only immediate non-hidden files in sorted order" do
+    @fs.write("tmp/list/z.txt", "last")
+    @fs.write("tmp/list/a.txt", "first")
+    @fs.write("tmp/list/.hidden.txt", "hidden")
+    @fs.write("tmp/list/nested/file.txt", "nested")
+
+    expect(@fs.ls("tmp/list").map(&:key)).to(eq(["tmp/list/a.txt", "tmp/list/z.txt"]))
+  end
+
   describe "when modifying file system" do
     it "should call write after storing an asset" do
       expect(@fs.buckets[:tmp]).to(receive(:write).with("tmp/new_file.test", "hello world").and_return(true))
