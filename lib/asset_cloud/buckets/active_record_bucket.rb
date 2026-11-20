@@ -8,7 +8,8 @@ module AssetCloud
 
     def ls(key = name)
       col = records.connection.quote_column_name(key_attribute)
-      records.all(conditions: ["#{col} LIKE ?", "#{key}%"]).map do |r|
+      prefix = key.to_s.gsub(/[!%_]/) { |char| "!#{char}" }
+      records.all(conditions: ["#{col} LIKE ? ESCAPE '!'", "#{prefix}%"]).map do |r|
         cloud[r.send(key_attribute)]
       end
     end

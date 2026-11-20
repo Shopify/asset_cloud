@@ -4,9 +4,10 @@ module AssetCloud
   class FileSystemBucket < Bucket
     def ls(key = nil)
       objects = []
-      base_path = File.join(path_for(key), "*")
+      base_path = path_for(key)
 
-      Dir.glob(base_path).each do |f|
+      Dir.glob("*", base: base_path).each do |filename|
+        f = File.join(base_path, filename)
         next unless File.file?(f)
 
         objects.push(cloud[relative_path_for(f)])

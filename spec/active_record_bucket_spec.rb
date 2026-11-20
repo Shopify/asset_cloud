@@ -31,19 +31,35 @@ describe AssetCloud::ActiveRecordBucket do
     before do
       expect(MockRecords).to(receive(:connection).and_return(@mock_connection = double("connection")))
       expect(@mock_connection).to(receive(:quote_column_name).with("name").and_return("`name`"))
-      expect(@mock_record = double("record")).to(receive(:name).and_return("stuff/a1"))
+      @mock_record = double("record", name: "stuff/a1")
     end
 
     it "should return a list of assets which start with the given prefix" do
-      expect(MockRecords).to(receive(:all).with(conditions: ["`name` LIKE ?", "stuff/a%"]).and_return([@mock_record]))
+      conditions = ["`name` LIKE ? ESCAPE '!'", "stuff/a%"]
+      expect(MockRecords).to(receive(:all).with(conditions: conditions).and_return([@mock_record]))
 
       expect(@bucket.ls("stuff/a").size).to(eq(1))
     end
 
     it "should return a list of all assets when a prefix is not given" do
-      expect(MockRecords).to(receive(:all).with(conditions: ["`name` LIKE ?", "stuff%"]).and_return([@mock_record]))
+      conditions = ["`name` LIKE ? ESCAPE '!'", "stuff%"]
+      expect(MockRecords).to(receive(:all).with(conditions: conditions).and_return([@mock_record]))
 
       expect(@bucket.ls.size).to(eq(1))
+    end
+
+    it "should escape underscores in a public listing prefix" do
+      conditions = ["`name` LIKE ? ESCAPE '!'", "stuff/a!_%"]
+      expect(MockRecords).to(receive(:all).with(conditions: conditions).and_return([]))
+
+      expect(@cloud.ls("stuff/a_")).to(eq([]))
+    end
+
+    it "should escape every SQL LIKE wildcard and the escape character" do
+      conditions = ["`name` LIKE ? ESCAPE '!'", "stuff/a!_!!!%b!_%"]
+      expect(MockRecords).to(receive(:all).with(conditions: conditions).and_return([]))
+
+      expect(@bucket.ls("stuff/a_!%b_")).to(eq([]))
     end
   end
 
